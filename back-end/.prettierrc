@@ -1,0 +1,4 @@
+{
+  "usePrettierrc": false,
+  "singleQuote": true, "trailingComma": "all"
+}
