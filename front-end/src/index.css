@@ -1,0 +1,35 @@
+#root {
+  margin: 0;
+  text-align: center;
+  height: 100vh;
+}
+
+:root {
+  --brand50: #efe6ff;
+  --brand100: #ccb8fd;
+  --brand200: #aa8af7;
+  --brand300: #895bf1;
+  --brand400: #7540ee;
+  --brand500: #4d13d3;
+  --brand600: #3c0ea5;
+  --brand700: #2a0977;
+  --brand800: #190549;
+  --brand900: #0b001d;
+}
+
+.flex-screen {
+  display: flex;
+  height: 100%;
+}
+
+.instructions {
+  border-radius: 0.5rem;
+  color: white;
+  background-color: var(--brand400);
+  padding: 1em;
+  text-align: left;
+}
+
+.offscreen {
+  display: none;
+}
