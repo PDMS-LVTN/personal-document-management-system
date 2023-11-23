@@ -1,0 +1,23 @@
+.container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.semi-circle {
+  --length: calc(100vh / 2);
+  background-color: rgba(255, 255, 255, 0.13);
+  width: var(--length);
+  height: calc(2 * var(--length));
+  border-radius: var(--length) 0 0 var(--length);
+  position: absolute;
+  right: 0;
+}
+
+.intersect {
+  width: 110%;
+  height: 100vh;
+  position: absolute;
+  left: -2em;
+  top: 5%;
+}
