@@ -1,17 +1,32 @@
 import "../index.css";
-import { Box, Flex, Text, Button, Checkbox } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Text,
+  Button,
+  Checkbox,
+  Divider,
+  AbsoluteCenter,
+} from "@chakra-ui/react";
 import { ControlledInput } from "../components/ControlledInput";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useRef, useState, useEffect, useContext } from "react";
 import AuthContext from "../context/AuthProvider";
 import users from "../temp/users";
-
 import axios from "../api/axios";
+import { jwtDecode } from "jwt-decode";
+
 const LOGIN_URL = "/auth";
 
 interface response {
   roles?: [];
   accessToken?: string;
+}
+
+interface JwtPayload {
+  email: string;
+  sub: string;
+  name: string;
 }
 
 const Login = () => {
@@ -58,9 +73,9 @@ const Login = () => {
       console.log(response);
       // const accessToken = response?.data?.accessToken;
       // const roles = response?.data?.roles;
-      const accessToken = response?.accessToken;
-      const roles = response?.roles;
-      setAuth({ user, pwd, roles, accessToken });
+      // const accessToken = response?.accessToken;
+      // const roles = response?.roles;
+      setAuth({ ...auth, email: user });
       setUser("");
       setPwd("");
       navigate(from, { replace: true });
@@ -78,6 +93,31 @@ const Login = () => {
       errRef.current.focus();
     }
   };
+
+  function handleCallbackResponse(response) {
+    console.log("Encoded JWT ID token: " + response.credential);
+    let userObject: JwtPayload = jwtDecode(response.credential);
+    console.log(userObject);
+    setAuth({
+      email: userObject.email,
+      sub: userObject.sub,
+      name: userObject.name,
+    });
+    navigate(from, { replace: true });
+  }
+
+  useEffect(() => {
+    // global google
+    google.accounts.id.initialize({
+      client_id:
+        "944399081621-abj2rgnnudn10ta6ng95hitjuaaacjih.apps.googleusercontent.com",
+      callback: handleCallbackResponse,
+    });
+    google.accounts.id.renderButton(document.getElementById("signInDiv"), {
+      theme: "outline",
+      size: "large",
+    });
+  }, []);
 
   return (
     <Box p="5em" w="50%">
@@ -159,6 +199,17 @@ const Login = () => {
           </form>
         </div>
       </Flex>
+      <Box position="relative" padding="10">
+        <Divider />
+        <AbsoluteCenter bg="white" px="4" textColor="text.inactive">
+          OR
+        </AbsoluteCenter>
+      </Box>
+
+      <div
+        id="signInDiv"
+        style={{ display: "flex", justifyContent: "center" }}
+      ></div>
     </Box>
   );
 };
