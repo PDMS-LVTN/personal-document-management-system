@@ -1,5 +1,9 @@
 /* eslint-disable prettier/prettier */
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+// import { Note } from 'src/note/entities/note.entity';
+// import { Tag } from 'src/tag/entities/tag.entity';
+// import { User } from 'src/user/entities/user.entity';
+import { DataSourceOptions } from 'typeorm';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -46,14 +50,30 @@ class ConfigService {
 
       migrationsTableName: 'migration',
 
-      migrations: ['src/migration/*.ts'],
+      migrations: ['./migrations/*.ts'],
 
-    //   cli: {
-    //     migrationsDir: 'src/migration',
-    //   },
+      // cli: {
+      //   migrationsDir: 'src/migration',
+      // },
 
       ssl: this.isProduction(),
-    //   synchronize: true,
+      //   synchronize: true,
+    };
+  }
+
+  public dataSourceOptions(): DataSourceOptions {
+   return{
+      type: 'mysql',
+      host: this.getValue('MYSQL_HOST'),
+      port: parseInt(this.getValue('MYSQL_PORT')),
+      username: this.getValue('MYSQL_USER'),
+      password: this.getValue('MYSQL_PASSWORD'),
+      database: this.getValue('MYSQL_DATABASE'),
+      entities: ['**/*.entity{.ts,.js}'],
+      // entities: [User, Note, Tag],
+      migrationsTableName: 'migration',
+      migrations: ['./migrations/*.ts'],
+      ssl: this.isProduction(),
     };
   }
 }

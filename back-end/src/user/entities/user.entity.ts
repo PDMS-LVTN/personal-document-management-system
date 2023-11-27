@@ -1,15 +1,25 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+// import { Note } from 'src/note/entities/note.entity';
+import { IsEmail } from 'class-validator';
+import { Note } from '../../note/entities/note.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'user' })
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
+  @IsEmail()
+  @Column({ type: 'varchar', width: 255 })
   email: string;
 
-  @Column()
+  @Column({ type: 'varchar', width: 255 })
   password: string;
+
+  @Column({ type: 'text' })
+  refresh_token: string;
+
+  @OneToMany(() => Note, (note) => note.user)
+  notes: Note[];
 
   constructor(private item: Partial<User>) {
     Object.assign(this, item);

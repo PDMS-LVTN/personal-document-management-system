@@ -1,32 +1,66 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { EntityManager } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly entityManager: EntityManager) {}
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
 
-  async create(createUserDto: CreateUserDto) {
-    const user = new User(createUserDto);
-    await this.entityManager.save(user);
-    // return 'This action adds a new user';
+  private readonly logger = new Logger(UserService.name);
+
+  async createUser(createUserDto: CreateUserDto) {
+    // Check if user exists
+    const userExists = await this.getUserByEmail(createUserDto.email);
+    if (userExists) {
+      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+    }
+
+    //Hash password
+    const saltOrRounds = 10;
+    createUserDto.password = await bcrypt.hash(
+      createUserDto.password,
+      saltOrRounds,
+    );
+
+    //Create user
+    const newUser = this.userRepository.create({
+      ...createUserDto,
+      refresh_token: 'refresh-token',
+    });
+    return await this.userRepository.save(newUser);
   }
 
-  findAll() {
-    return `This action returns all user`;
+  // async logOutUser(req: Request, res: Response) {
+  //   res.clearCookie('token');
+  //   return res.send({ message: 'Log out successfully' });
+  // }
+
+  async findOneUser(id: string) {
+    return await this.userRepository.findOneBy({ id });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    return await this.userRepository.update(id, updateUserDto);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async getUserByEmail(req: any) {
+    const user = await this.userRepository.findOne({
+      where: { email: req.email },
+    });
+    if (!user) {
+      throw new HttpException('User is not existed', HttpStatus.UNAUTHORIZED);
+    }
+    return user;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+  // remove(id: number) {
+  //   return `This action removes a #${id} user`;
+  // }
 }

@@ -31,12 +31,14 @@ Link timeline: https://docs.google.com/spreadsheets/d/1fPXXwAfYwxhDNKFUH82ZwL834
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Installation
+cd back-end
 
 ```bash
 $ npm install
 ```
 
 ## Running the app
+cd back-end -> cd src
 
 ```bash
 # development
@@ -60,6 +62,28 @@ $ npm run test:e2e
 
 # test coverage
 $ npm run test:cov
+```
+
+## Migration
+
+```bash
+# run migration
+$ npm run migration:run 
+
+# generate migration
+$ npm run migration:generate
+```
+
+## Create component
+```bash
+# CRUD component including module, service, controller, entity, dto template
+$ nest g resource \<name\> 
+# module 
+$ nest g module \<name\>
+# service
+$ nest g service \<name\>
+# controller
+$ nest g controller \<name\>
 ```
 
 ## Support
