@@ -11,7 +11,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   private readonly logger = new Logger(UserService.name);
 
@@ -54,9 +54,9 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: { email: req.email },
     });
-    if (!user) {
-      throw new HttpException('User is not existed', HttpStatus.UNAUTHORIZED);
-    }
+    // if (!user) {
+    //   throw new HttpException('User is not existed', HttpStatus.UNAUTHORIZED);
+    // }
     return user;
   }
 
@@ -64,3 +64,5 @@ export class UserService {
   //   return `This action removes a #${id} user`;
   // }
 }
+
+

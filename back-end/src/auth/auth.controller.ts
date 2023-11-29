@@ -1,4 +1,4 @@
-import { Controller, Request, Post, UseGuards } from '@nestjs/common';
+import { Controller, Request, Post, UseGuards, Response } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -8,7 +8,7 @@ import { RefreshJwtAuthGuard } from './refresh-jwt-auth.guard';
 @ApiTags('auth')
 @Controller('api/auth/')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   // @UseGuards(LocalAuthGuard)
   // @Public()
@@ -20,9 +20,12 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Public()
   @Post('login')
-  async login(@Request() auth) {
-    return await this.authService.login(auth.user);
+  async login(@Request() auth, @Response({ passthrough: true }) response: Response) {
+    return await this.authService.login(auth.user, response);
   }
+  // async login(@Request() auth) {
+  //   return await this.authService.login(auth.user);
+  // }
 
   @UseGuards(RefreshJwtAuthGuard)
   @Post('refresh')

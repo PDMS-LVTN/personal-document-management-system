@@ -1,9 +1,3 @@
-#root {
-  margin: 0;
-  text-align: center;
-  height: 100vh;
-}
-
 :root {
   --brand50: #efe6ff;
   --brand100: #ccb8fd;
@@ -15,6 +9,12 @@
   --brand700: #2a0977;
   --brand800: #190549;
   --brand900: #0b001d;
+}
+
+#root {
+  margin: 0;
+  text-align: center;
+  height: 100vh;
 }
 
 .flex-screen {

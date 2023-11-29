@@ -6,23 +6,37 @@ const style = {
     color: "white",
     size: "xl",
     mt: "20%",
+    logoSize: "50px",
+    gap: "10px",
   },
   dark: {
     background: "#7540EE",
     color: "black",
+    size: "md",
+    logoSize: "40px",
+    gap: "5px",
   },
 };
 
 function Logo({ type = "light" }) {
   return (
     <Box
-      style={{ display: "flex", gap: "10px", alignItems: "center" }}
+      style={{ display: "flex", gap: style[type].gap, alignItems: "center" }}
       p="1em"
       pos="relative"
       zIndex="2"
     >
-      <Box p="2px" border="4px solid white" borderRadius="16px">
-        <object data="brand-icon-white.svg" height="50px" width="50px" />
+      <Box
+        p="2px"
+        border="4px solid white"
+        borderRadius="16px"
+        bg={style[type].background}
+      >
+        <object
+          data="brand-icon-white.svg"
+          height={style[type].logoSize}
+          width={style[type].logoSize}
+        />
       </Box>
       <Text
         fontSize={style[type]?.size}

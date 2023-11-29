@@ -13,6 +13,7 @@
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mdxeditor/editor": "^1.11.2",
     "axios": "^1.6.2",
     "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
