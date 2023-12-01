@@ -11,13 +11,15 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   private readonly logger = new Logger(UserService.name);
 
   async createUser(createUserDto: CreateUserDto) {
     // Check if user exists
-    const userExists = await this.getUserByEmail(createUserDto.email);
+    const userExists = await this.getUserByEmail({
+      email: createUserDto.email,
+    });
     if (userExists) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
@@ -37,11 +39,6 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
 
-  // async logOutUser(req: Request, res: Response) {
-  //   res.clearCookie('token');
-  //   return res.send({ message: 'Log out successfully' });
-  // }
-
   async findOneUser(id: string) {
     return await this.userRepository.findOneBy({ id });
   }
@@ -54,15 +51,6 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: { email: req.email },
     });
-    // if (!user) {
-    //   throw new HttpException('User is not existed', HttpStatus.UNAUTHORIZED);
-    // }
     return user;
   }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
 }
-
-

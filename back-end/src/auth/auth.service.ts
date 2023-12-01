@@ -2,7 +2,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  NotAcceptableException, Response
+  NotAcceptableException,
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
@@ -19,7 +19,7 @@ export class AuthService {
     private jwtService: JwtService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   private readonly logger = new Logger(AuthService.name);
 
