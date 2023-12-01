@@ -15,9 +15,6 @@ export class User {
   @Column({ type: 'varchar', width: 255 })
   password: string;
 
-  @Column({ type: 'text' })
-  refresh_token: string;
-
   @OneToMany(() => Note, (note) => note.user)
   notes: Note[];
 

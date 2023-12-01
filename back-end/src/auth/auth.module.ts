@@ -17,7 +17,7 @@ import { RefreshTokenStrategy } from './refreshtoken.strategy';
     PassportModule,
     JwtModule.register({
       secret: 'secretKey',
-      signOptions: { expiresIn: '3600s' },
+      signOptions: { expiresIn: '10s' },
     }),
     TypeOrmModule.forFeature([User]),
   ],

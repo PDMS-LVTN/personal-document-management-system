@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from '../auth/auth.decorator';
+import { User } from './entities/user.entity';
 // import { AuthenticateUserDto } from './dto/authenticate-user.dto';
 
 @ApiTags('user')
@@ -28,9 +29,11 @@ export class UserController {
   }
 
   @Post('get_by_email')
-  async getUserByEmail(@Body() req: { email: string }) {
-    console.log(req);
-    return this.userService.getUserByEmail(req);
+  async getUserByEmail(
+    @Body() req: { email: string },
+  ): Promise<User | undefined> {
+    console.log(req.email);
+    return this.userService.getUserByEmail({ email: req.email });
   }
 
   @Patch(':id')
