@@ -1,25 +1,38 @@
 import "../index.css";
-import { Box, Flex, Text, Button, Checkbox } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Text,
+  Button,
+  Checkbox,
+  Divider,
+  AbsoluteCenter,
+} from "@chakra-ui/react";
 import { ControlledInput } from "../components/ControlledInput";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useRef, useState, useEffect, useContext } from "react";
 import AuthContext from "../context/AuthProvider";
-import users from "../temp/users";
-
 import axios from "../api/axios";
-const LOGIN_URL = "/auth";
+import { jwtDecode } from "jwt-decode";
+import { useAuthentication } from "../store/useAuth";
 
-interface response {
-  roles?: [];
-  accessToken?: string;
+const LOGIN_URL = "/auth/login";
+const GGLOGIN_URL = "/auth/loginGoogle";
+
+interface JwtPayload {
+  email: string;
+  sub: string;
 }
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/home";
 
-  const { auth, setAuth } = useContext(AuthContext);
+  const from = location.state?.from?.pathname || "/notes";
+
+  // const { auth, setAuth } = useContext(AuthContext);
+  const auth = useAuthentication((state) => state.auth);
+  const setAuth = useAuthentication((state) => state.setAuth);
   const userRef = useRef<HTMLDivElement>(null);
   const errRef = useRef<HTMLDivElement>(null);
 
@@ -38,36 +51,26 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // const response = await axios.post(
-      //   LOGIN_URL,
-      //   JSON.stringify({ user, pwd }),
-      //   {
-      //     headers: { "Content-Type": "application/json" },
-      //     withCredentials: true,
-      //   }
-      // );
-
+      const response = await axios.post(
+        LOGIN_URL,
+        JSON.stringify({ email: user, password: pwd }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
       // console.log(JSON.stringify(response?.data));
-
-      let response: response = {};
-      if (user in users) {
-        response = users[user];
-      } else {
-        throw new Error();
-      }
       console.log(response);
-      // const accessToken = response?.data?.accessToken;
-      // const roles = response?.data?.roles;
-      const accessToken = response?.accessToken;
-      const roles = response?.roles;
-      setAuth({ user, pwd, roles, accessToken });
+      // refresh token is saved to cookies by server
+      setAuth({ email: user, accessToken: response?.data?.access_token });
       setUser("");
       setPwd("");
+      console.log(from);
+      console.log(auth);
       navigate(from, { replace: true });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
-        console.log(err);
       } else if (err.response?.status === 400) {
         setErrMsg("Missing Username or Password");
       } else if (err.response?.status === 401) {
@@ -78,6 +81,54 @@ const Login = () => {
       errRef.current.focus();
     }
   };
+
+  const handleCallbackResponse = async (response) => {
+    console.log("Encoded JWT ID token: " + response.credential);
+    let userObject: JwtPayload = jwtDecode(response.credential);
+    console.log(userObject);
+    try {
+      const response = await axios.post(
+        GGLOGIN_URL,
+        JSON.stringify({ email: userObject.email, password: userObject.sub }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(JSON.stringify(response?.data));
+      setAuth({
+        email: userObject.email,
+        accessToken: response?.data?.access_token,
+      });
+      navigate(from, { replace: true });
+    } catch (err) {
+      if (!err?.response) {
+        setErrMsg("No Server Response");
+      } else if (err.response?.status === 400) {
+        setErrMsg("Missing Username or Password");
+      } else if (err.response?.status === 401) {
+        setErrMsg("Unauthorized");
+      } else {
+        setErrMsg("Login Failed");
+      }
+    }
+  };
+
+  // TODO:
+  // - editor
+
+  useEffect(() => {
+    // global google
+    google.accounts.id.initialize({
+      client_id:
+        "944399081621-abj2rgnnudn10ta6ng95hitjuaaacjih.apps.googleusercontent.com",
+      callback: handleCallbackResponse,
+    });
+    google.accounts.id.renderButton(document.getElementById("signInDiv"), {
+      theme: "outline",
+      size: "large",
+    });
+  }, []);
 
   return (
     <Box p="5em" w="50%">
@@ -159,6 +210,17 @@ const Login = () => {
           </form>
         </div>
       </Flex>
+      <Box position="relative" padding="10">
+        <Divider />
+        <AbsoluteCenter bg="white" px="4" textColor="text.inactive">
+          OR
+        </AbsoluteCenter>
+      </Box>
+
+      <div
+        id="signInDiv"
+        style={{ display: "flex", justifyContent: "center" }}
+      ></div>
     </Box>
   );
 };

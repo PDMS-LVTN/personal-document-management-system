@@ -12,8 +12,9 @@ import SignUp from "./pages/SignUp.tsx";
 import Login from "./pages/Login.tsx";
 import { Password } from "./pages/PassWord.tsx";
 import HomeLayout from "./layouts/HomeLayout.tsx";
-import { AuthProvider } from "./context/AuthProvider.tsx";
+// import { AuthProvider } from "./context/AuthProvider.tsx";
 import RequireAuth from "./components/RequireAuth.tsx";
+import Notes from "./pages/Notes.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,7 +25,9 @@ const router = createBrowserRouter(
         <Route path="password" element={<Password />} />
       </Route>
       <Route element={<RequireAuth />}>
-        <Route path="/home" element={<HomeLayout />} />
+        <Route element={<HomeLayout />}>
+          <Route path="/notes" element={<Notes />} />
+        </Route>
       </Route>
     </>
   )
@@ -58,9 +61,9 @@ const theme = extendTheme({
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <AuthProvider>
+      {/* <AuthProvider> */}
         <RouterProvider router={router} />
-      </AuthProvider>
+      {/* </AuthProvider> */}
     </ChakraProvider>
   </React.StrictMode>
 );

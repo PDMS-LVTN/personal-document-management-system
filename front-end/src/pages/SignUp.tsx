@@ -3,14 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { ControlledInput } from "../components/ControlledInput";
 import "../index.css";
 import { useRef, useState, useEffect } from "react";
-
 import axios from "../api/axios";
-import users from "../temp/users";
 
 // const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const USER_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
-const REGISTER_URL = "/register";
+const REGISTER_URL = "/user/sign_up";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -41,7 +39,7 @@ const SignUp = () => {
   }, [user]);
 
   useEffect(() => {
-    setValidPwd(PWD_REGEX.test(pwd));
+    // setValidPwd(PWD_REGEX.test(pwd));
     setValidMatch(pwd === matchPwd);
   }, [pwd, matchPwd]);
 
@@ -53,28 +51,26 @@ const SignUp = () => {
     e.preventDefault();
     // if button enabled with JS hack
     const v1 = USER_REGEX.test(user);
-    const v2 = PWD_REGEX.test(pwd);
+    // const v2 = PWD_REGEX.test(pwd);
+    const v2 = true;
     if (!v1 || !v2) {
       setErrMsg("Invalid Entry");
       return;
     }
     try {
-      // const response = await axios.post(
-      //   REGISTER_URL,
-      //   JSON.stringify({ user, pwd }),
-      //   {
-      //     headers: { "Content-Type": "application/json" },
-      //     withCredentials: true,
-      //   }
-      // );
+      const response = await axios.post(
+        REGISTER_URL,
+        JSON.stringify({ email: user, password: pwd }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
 
-      users[user] = {
-        roles: [1, 2],
-        accessToken: 123456,
-      };
       // TODO: remove console.logs before deployment
-      // console.log(JSON.stringify(response?.data));
-      //console.log(JSON.stringify(response))
+      console.log(response);
+      console.log(JSON.stringify(response?.data));
+
       //clear state and controlled inputs
       setUser("");
       setPwd("");
@@ -154,11 +150,6 @@ const SignUp = () => {
                 userFocus && user && !validName ? "instructions" : "offscreen"
               }
             >
-              {/* 4 to 24 characters.
-                <br />
-                Must begin with a letter.
-                <br />
-                Letters, numbers, underscores, hyphens allowed. */}
               This is not a valid email address.
             </p>
             <ControlledInput

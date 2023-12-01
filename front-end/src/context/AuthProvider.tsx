@@ -1,10 +1,9 @@
 import { createContext, useState } from "react";
 
 interface IAuth {
-  user: string;
-  pwd: string;
-  roles: number[];
-  accessToken: string;
+  email: string;
+  sub: string;
+  name: string;
 }
 interface IAuthContext {
   auth: IAuth; // Whatever you need to add here
@@ -19,10 +18,9 @@ const AuthContext = createContext<IAuthContext>({
 
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({
-    user: "",
-    pwd: "",
-    roles: [0],
-    accessToken: "",
+    email: "",
+    sub: "",
+    name: "",
   });
 
   return (
