@@ -112,9 +112,6 @@ const Login = () => {
     }
   };
 
-  // TODO:
-  // - editor
-
   useEffect(() => {
     // global google
     google.accounts.id.initialize({

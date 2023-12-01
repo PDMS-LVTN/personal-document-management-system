@@ -2,7 +2,7 @@ import {
   diffSourcePlugin,
   markdownShortcutPlugin,
   frontmatterPlugin,
-  //   headingsPlugin,
+  headingsPlugin,
   imagePlugin,
   linkDialogPlugin,
   linkPlugin,
@@ -16,8 +16,11 @@ import {
   directivesPlugin,
   AdmonitionDirectiveDescriptor,
 } from "@mdxeditor/editor";
-import { headingsPlugin } from "@mdxeditor/editor/plugins/headings";
 import { CustomToolbar } from "./CustomToolbar";
+
+const simpleImageUploadHandler = (image: File) => {
+  return Promise.resolve(URL.createObjectURL(image));
+};
 
 export const ALL_PLUGINS = [
   toolbarPlugin({ toolbarContents: () => <CustomToolbar /> }),
@@ -27,9 +30,10 @@ export const ALL_PLUGINS = [
   linkPlugin(),
   linkDialogPlugin(),
   imagePlugin({
+    imageUploadHandler: simpleImageUploadHandler,
     imageAutocompleteSuggestions: [
-      "https://via.placeholder.com/150",
-      "https://via.placeholder.com/150",
+      "https://picsum.photos/200/300",
+      "https://picsum.photos/200",
     ],
   }),
   tablePlugin(),
