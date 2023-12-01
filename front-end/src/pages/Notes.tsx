@@ -1,47 +1,25 @@
-import { Button, GridItem } from "@chakra-ui/react";
-import axios from "../api/axios";
-import { useAuthentication } from "../store/useAuth";
-
-const URL = "note/all_note"
-
+import { GridItem } from "@chakra-ui/react";
+import "@mdxeditor/editor/style.css";
+import markdown from "../assets/demo-contents.md?raw";
+import { ALL_PLUGINS } from "../editor/_boilerplate";
+import { MDXEditor } from "@mdxeditor/editor";
 const Notes = () => {
-
-  const auth = useAuthentication((state) => state.auth);
-  const setAuth = useAuthentication((state) => state.setAuth);
-
-
-
-  const handleSubmit = async (e) => {
-    console.log(auth?.accessToken)
-    try {
-      const response = await axios.post(
-        URL,
-        JSON.stringify({  }),
-        {
-          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${auth.accessToken}` },
-        }
-      );
-      
-    } catch (err) {
-     console.log(err.response.data)
-      setAuth(undefined)
-      }
-    }
-
   return (
     <>
-      <GridItem rowSpan={1} colSpan={3} bg="#FAF9FE" />
-      <GridItem rowSpan={1} colSpan={6} bg="white">
-      <Button
-              colorScheme="brand"
-              backgroundColor="brand.400"
-              color="white"
-              w="100%"
-              size="lg"
-              onClick={handleSubmit}
-            >
-              GET NOTES
-            </Button>
+      <GridItem id="notes" rowSpan={1} colSpan={3} bg="#FAF9FE"></GridItem>
+      <GridItem
+        id="editor"
+        rowSpan={1}
+        colSpan={6}
+        bg="white"
+        sx={{ overflowY: "scroll" }}
+      >
+        <MDXEditor
+          markdown={markdown}
+          onChange={(md) => console.log("change", { md })}
+          plugins={ALL_PLUGINS}
+          contentEditableClassName="prose inside-editor max-w-full"
+        />
       </GridItem>
     </>
   );

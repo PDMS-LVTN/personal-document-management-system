@@ -1,7 +1,6 @@
 import { Box, Flex, Text, Button } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { ControlledInput } from "../components/ControlledInput";
-import "../index.css";
 import { useRef, useState, useEffect } from "react";
 import axios from "../api/axios";
 

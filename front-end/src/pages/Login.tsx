@@ -1,4 +1,3 @@
-import "../index.css";
 import {
   Box,
   Flex,
@@ -60,7 +59,6 @@ const Login = () => {
         }
       );
       // console.log(JSON.stringify(response?.data));
-      console.log(response);
       // refresh token is saved to cookies by server
       setAuth({ email: user, accessToken: response?.data?.access_token });
       setUser("");
@@ -72,7 +70,7 @@ const Login = () => {
       if (!err?.response) {
         setErrMsg("No Server Response");
       } else if (err.response?.status === 400) {
-        setErrMsg("Missing Username or Password");
+        setErrMsg("Wrong Username or Password");
       } else if (err.response?.status === 401) {
         setErrMsg("Unauthorized");
       } else {
@@ -84,7 +82,7 @@ const Login = () => {
 
   const handleCallbackResponse = async (response) => {
     console.log("Encoded JWT ID token: " + response.credential);
-    let userObject: JwtPayload = jwtDecode(response.credential);
+    const userObject: JwtPayload = jwtDecode(response.credential);
     console.log(userObject);
     try {
       const response = await axios.post(
