@@ -17,6 +17,7 @@ import { jwtDecode } from "jwt-decode";
 import { useAuthentication } from "../store/useAuth";
 
 const LOGIN_URL = "/auth/login";
+const GGLOGIN_URL = "/auth/loginGoogle";
 
 interface JwtPayload {
   email: string;
@@ -58,7 +59,6 @@ const Login = () => {
           withCredentials: true,
         }
       );
-
       // console.log(JSON.stringify(response?.data));
       console.log(response);
       // refresh token is saved to cookies by server
@@ -82,13 +82,37 @@ const Login = () => {
     }
   };
 
-  function handleCallbackResponse(response) {
+  const handleCallbackResponse = async (response) => {
     console.log("Encoded JWT ID token: " + response.credential);
     let userObject: JwtPayload = jwtDecode(response.credential);
     console.log(userObject);
-    // setAuth({ email: user, accessToken: response?.data?.accessToken });
-    navigate(from, { replace: true });
-  }
+    try {
+      const response = await axios.post(
+        GGLOGIN_URL,
+        JSON.stringify({ email: userObject.email, password: userObject.sub }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(JSON.stringify(response?.data));
+      setAuth({
+        email: userObject.email,
+        accessToken: response?.data?.access_token,
+      });
+      navigate(from, { replace: true });
+    } catch (err) {
+      if (!err?.response) {
+        setErrMsg("No Server Response");
+      } else if (err.response?.status === 400) {
+        setErrMsg("Missing Username or Password");
+      } else if (err.response?.status === 401) {
+        setErrMsg("Unauthorized");
+      } else {
+        setErrMsg("Login Failed");
+      }
+    }
+  };
 
   // TODO:
   // - editor
