@@ -15,6 +15,9 @@ import HomeLayout from "./layouts/HomeLayout.tsx";
 // import { AuthProvider } from "./context/AuthProvider.tsx";
 import RequireAuth from "./components/RequireAuth.tsx";
 import Notes from "./pages/Notes.tsx";
+
+import "./tailwind.css";
+import "@mdxeditor/editor/style.css";
 import "./index.css";
 
 const router = createBrowserRouter(

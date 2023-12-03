@@ -1,5 +1,4 @@
 import { GridItem } from "@chakra-ui/react";
-import "@mdxeditor/editor/style.css";
 import markdown from "../assets/demo-contents.md?raw";
 import { ALL_PLUGINS } from "../editor/_boilerplate";
 import { MDXEditor } from "@mdxeditor/editor";
@@ -18,7 +17,7 @@ const Notes = () => {
           markdown={markdown}
           onChange={(md) => console.log("change", { md })}
           plugins={ALL_PLUGINS}
-          contentEditableClassName="prose inside-editor max-w-full"
+          contentEditableClassName="prose prose-lg inside-editor max-w-full"
         />
       </GridItem>
     </>
