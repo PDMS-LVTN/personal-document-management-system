@@ -4,10 +4,11 @@ import { persist, devtools } from 'zustand/middleware'
 interface User {
     email: string;
     accessToken: string;
+    id: string
 }
 interface AuthStore {
     auth: User | undefined; // Whatever you need to add here
-    setAuth: (auth: User|undefined) => void;
+    setAuth: (auth: User | undefined) => void;
 }
 
 export const useAuthentication = create<AuthStore>()(devtools(persist((set) => ({

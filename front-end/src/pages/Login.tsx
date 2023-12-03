@@ -6,6 +6,10 @@ import {
   Checkbox,
   Divider,
   AbsoluteCenter,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from "@chakra-ui/react";
 import { ControlledInput } from "../components/ControlledInput";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -30,8 +34,8 @@ const Login = () => {
   const from = location.state?.from?.pathname || "/notes";
 
   // const { auth, setAuth } = useContext(AuthContext);
-  const auth = useAuthentication((state) => state.auth);
   const setAuth = useAuthentication((state) => state.setAuth);
+  const auth = useAuthentication((state) => state.auth);
   const userRef = useRef<HTMLDivElement>(null);
   const errRef = useRef<HTMLDivElement>(null);
 
@@ -47,6 +51,20 @@ const Login = () => {
     setErrMsg("");
   }, [user, pwd]);
 
+  const handleResponseError = (err) => {
+    console.log(err);
+    if (!err?.response) {
+      setErrMsg("No Server Response");
+    } else if (err.response?.status === 406) {
+      setErrMsg("Wrong Username or Password");
+    } else if (err.response?.status === 401) {
+      setErrMsg("Unauthorized");
+    } else {
+      setErrMsg("Login failed of unknown reason");
+    }
+    errRef.current.focus();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -55,60 +73,39 @@ const Login = () => {
         JSON.stringify({ email: user, password: pwd }),
         {
           headers: { "Content-Type": "application/json" },
-          withCredentials: true,
         }
       );
-      // console.log(JSON.stringify(response?.data));
-      // refresh token is saved to cookies by server
-      setAuth({ email: user, accessToken: response?.data?.access_token });
+      setAuth({
+        email: user,
+        accessToken: response?.data?.access_token,
+        id: response?.data?.id,
+      });
       setUser("");
       setPwd("");
-      console.log(from);
-      console.log(auth);
       navigate(from, { replace: true });
     } catch (err) {
-      if (!err?.response) {
-        setErrMsg("No Server Response");
-      } else if (err.response?.status === 400) {
-        setErrMsg("Wrong Username or Password");
-      } else if (err.response?.status === 401) {
-        setErrMsg("Unauthorized");
-      } else {
-        setErrMsg("Login Failed");
-      }
-      errRef.current.focus();
+      handleResponseError(err);
     }
   };
 
   const handleCallbackResponse = async (response) => {
-    console.log("Encoded JWT ID token: " + response.credential);
     const userObject: JwtPayload = jwtDecode(response.credential);
-    console.log(userObject);
     try {
       const response = await axios.post(
         GGLOGIN_URL,
         JSON.stringify({ email: userObject.email, password: userObject.sub }),
         {
           headers: { "Content-Type": "application/json" },
-          withCredentials: true,
         }
       );
-      console.log(JSON.stringify(response?.data));
       setAuth({
         email: userObject.email,
         accessToken: response?.data?.access_token,
+        id: response?.data?.id,
       });
       navigate(from, { replace: true });
     } catch (err) {
-      if (!err?.response) {
-        setErrMsg("No Server Response");
-      } else if (err.response?.status === 400) {
-        setErrMsg("Missing Username or Password");
-      } else if (err.response?.status === 401) {
-        setErrMsg("Unauthorized");
-      } else {
-        setErrMsg("Login Failed");
-      }
+      handleResponseError(err);
     }
   };
 
@@ -142,14 +139,17 @@ const Login = () => {
             Welcome back! Please login to your account.
           </Text>
         </div>
-        <div>
-          <p
+        <section>
+          <Alert
+            status="error"
             ref={errRef}
-            // className={errMsg ? "errmsg" : "offscreen"}
+            sx={{ display: errMsg ? "flex" : "none", mb: "3em" }}
             aria-live="assertive"
           >
-            {errMsg}
-          </p>
+            <AlertIcon />
+            <AlertTitle>Login failed</AlertTitle>
+            <AlertDescription>{errMsg}</AlertDescription>
+          </Alert>
           <form
             style={{
               display: "flex",
@@ -203,7 +203,7 @@ const Login = () => {
               LOGIN
             </Button>
           </form>
-        </div>
+        </section>
       </Flex>
       <Box position="relative" padding="10">
         <Divider />

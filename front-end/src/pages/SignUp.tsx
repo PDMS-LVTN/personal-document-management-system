@@ -1,4 +1,13 @@
-import { Box, Flex, Text, Button } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Text,
+  Button,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+} from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { ControlledInput } from "../components/ControlledInput";
 import { useRef, useState, useEffect } from "react";
@@ -38,7 +47,7 @@ const SignUp = () => {
   }, [user]);
 
   useEffect(() => {
-    // setValidPwd(PWD_REGEX.test(pwd));
+    setValidPwd(PWD_REGEX.test(pwd));
     setValidMatch(pwd === matchPwd);
   }, [pwd, matchPwd]);
 
@@ -50,8 +59,8 @@ const SignUp = () => {
     e.preventDefault();
     // if button enabled with JS hack
     const v1 = USER_REGEX.test(user);
-    // const v2 = PWD_REGEX.test(pwd);
-    const v2 = true;
+    const v2 = PWD_REGEX.test(pwd);
+    // const v2 = true;
     if (!v1 || !v2) {
       setErrMsg("Invalid Entry");
       return;
@@ -62,7 +71,7 @@ const SignUp = () => {
         JSON.stringify({ email: user, password: pwd }),
         {
           headers: { "Content-Type": "application/json" },
-          withCredentials: true,
+          // withCredentials: true,
         }
       );
 
@@ -115,13 +124,16 @@ const SignUp = () => {
           </div>
         </div>
         <section>
-          <p
+          <Alert
+            status="error"
             ref={errRef}
-            className={errMsg ? "errmsg" : "offscreen"}
+            sx={{ display: errMsg ? "flex" : "none", mb: "3em" }}
             aria-live="assertive"
           >
-            {errMsg}
-          </p>
+            <AlertIcon />
+            <AlertTitle>Sign up failed</AlertTitle>
+            <AlertDescription>{errMsg}</AlertDescription>
+          </Alert>
           <form
             style={{
               display: "flex",
