@@ -23,14 +23,15 @@ interface AppStore {
 
 export const useApp = create<AppStore>()(devtools(persist((set) => ({
     expired: false,
-    setExpired: (state) => set({ expired: state }),
+    setExpired: (isExpired) => set((state) => ({ ...state, expired: isExpired })),
     currentTab: "note",
-    setCurrentTab: (tab) => set({ currentTab: tab }),
+    setCurrentTab: (tab) => set((state) => ({ ...state, currentTab: tab })),
     currentNote: undefined,
-    setCurrentNote: (note) => set({ currentNote: note }),
+    setCurrentNote: (note) => set((state) => ({ ...state, currentNote: note })),
     dirtyNotes: [],
-    addDirtyNote: (noteId) => set((state) => ({ dirtyNotes: [...state.dirtyNotes, noteId] })),
+    addDirtyNote: (noteId) => set((state) => ({ ...state, dirtyNotes: [...state.dirtyNotes, noteId] })),
     removeDirtyNote: (noteId) => set((state) => ({
+        ...state,
         dirtyNotes:
             state.dirtyNotes.filter((id) => id !== noteId)
     })),

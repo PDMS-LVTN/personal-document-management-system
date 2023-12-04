@@ -55,7 +55,6 @@ const Notes = () => {
         }
       );
       console.log(response.data);
-      // ref.current?.setMarkdown(markdown);
       setNotes(
         // Replace the state
         [
@@ -71,6 +70,7 @@ const Notes = () => {
         content: response.data.content,
       };
       setCurrentNote(currentNote);
+      ref.current?.setMarkdown(markdown);
     } catch (error) {
       if (error.response?.status === 403) {
         setAuth(undefined);
@@ -95,7 +95,7 @@ const Notes = () => {
       );
       console.log(response.data);
       setNotes(
-        notes.map((note, i) => {
+        notes.map((note) => {
           if (note.id === currentNote.id) {
             return { ...currentNote, content: processedMarkdown };
           } else {
@@ -211,21 +211,21 @@ const Notes = () => {
         {notes.length > 0 ? (
           notes.map((noteItem) => {
             return (
-              <Suspense fallback={<Skeleton />}>
+              <Suspense key={noteItem?.id} fallback={<Skeleton />}>
                 <Flex
-                  key={noteItem?.id}
                   justify="space-between"
                   bgColor={currentNote?.id === noteItem?.id ? "brand.50" : ""}
                   className="note"
                   pl="2em"
                   pr="2em"
-                  onClick={() =>
+                  onClick={() => {
                     setCurrentNote({
                       title: noteItem?.title,
                       id: noteItem?.id,
                       content: noteItem?.content,
-                    })
-                  }
+                    });
+                    ref.current?.setMarkdown(noteItem.content);
+                  }}
                 >
                   <Flex alignItems="center">
                     <Button
