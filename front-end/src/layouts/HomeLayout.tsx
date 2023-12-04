@@ -6,8 +6,8 @@ import {
   InputRightElement,
   Input,
   Button,
-  Text,
   Flex,
+  Skeleton,
 } from "@chakra-ui/react";
 import Logo from "../components/Logo";
 import SearchIcon from "../assets/search-icon.svg";
@@ -15,6 +15,7 @@ import SignOutIcon from "../assets/sign-out-icon.svg";
 import SideBar from "../components/SideBar";
 import { useAuthentication } from "../store/useAuth";
 import { useApp } from "../store/useApp";
+import { Suspense } from "react";
 
 function HomeLayout() {
   const auth = useAuthentication((state) => state.auth);
@@ -62,14 +63,16 @@ function HomeLayout() {
         gap="1em"
       >
         <Flex justifyContent="left" alignItems="center" gap="1em">
-          <Input
-            w="5em"
-            variant="unstyled"
-            value={currentNote ? currentNote.title : ""}
-            onChange={(e) => {
-              setCurrentNote({ ...currentNote, title: e.target.value });
-            }}
-          />
+          <Suspense fallback={<Skeleton />}>
+            <Input
+              // w="5em"
+              variant="unstyled"
+              value={currentNote ? currentNote.title : ""}
+              onChange={(e) => {
+                setCurrentNote({ ...currentNote, title: e.target.value });
+              }}
+            />
+          </Suspense>
         </Flex>
         <Flex justifyContent="right" alignItems="center" gap="1em">
           <p>{auth.email}</p>

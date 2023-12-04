@@ -14,4 +14,4 @@ interface AuthStore {
 export const useAuthentication = create<AuthStore>()(devtools(persist((set) => ({
     auth: undefined,
     setAuth: (newAuth) => set({ auth: newAuth })
-}), { name: "user" })))
+}), { name: "user store" })))

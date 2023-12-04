@@ -14,10 +14,11 @@ interface AppStore {
     setCurrentTab: (tab: string) => void
     currentNote: Note | undefined
     setCurrentNote: (note: Note | undefined) => void
-    // list of editing notes that is not yet saved
+    // list of editing notes that are not yet saved
     dirtyNotes: string[]
     addDirtyNote: (noteId: string) => void
     removeDirtyNote: (noteId: string) => void
+    clean: () => void
 }
 
 export const useApp = create<AppStore>()(devtools(persist((set) => ({
@@ -33,5 +34,6 @@ export const useApp = create<AppStore>()(devtools(persist((set) => ({
         dirtyNotes:
             state.dirtyNotes.filter((id) => id !== noteId)
     })),
+    clean: () => set({ expired: false, currentNote: undefined, dirtyNotes: [] })
 
-}), { name: "note" })))
+}), { name: "app store" })))

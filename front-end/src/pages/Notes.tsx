@@ -2,6 +2,7 @@ import {
   Button,
   Flex,
   GridItem,
+  Skeleton,
   Text,
   Tooltip,
   useToast,
@@ -17,7 +18,7 @@ import BlackOptionsIcon from "../assets/black-options-icon.svg";
 import BlackDotIcon from "../assets/black-dot-icon.svg";
 import TrashCanIcon from "../assets/trashcan-icon.svg";
 import PinIcon from "../assets/pin-icon.svg";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { useAuthentication } from "../store/useAuth";
 
 import useAxiosJWT from "../hooks/useAxiosJWT";
@@ -29,6 +30,7 @@ const ALL_NOTE = "note/all_note";
 const Notes = () => {
   const [notes, setNotes] = useState([]);
   const currentNote = useApp((state) => state.currentNote);
+  const clean = useApp((state) => state.clean);
   const setCurrentNote = useApp((state) => state.setCurrentNote);
   const axiosJWT = useAxiosJWT();
   const toast = useToast();
@@ -53,8 +55,7 @@ const Notes = () => {
         }
       );
       console.log(response.data);
-      ref.current?.setMarkdown(markdown);
-      console.log(notes);
+      // ref.current?.setMarkdown(markdown);
       setNotes(
         // Replace the state
         [
@@ -64,10 +65,16 @@ const Notes = () => {
           response.data,
         ]
       );
+      const currentNote = {
+        id: response.data.id,
+        title: response.data.title,
+        content: response.data.content,
+      };
+      setCurrentNote(currentNote);
     } catch (error) {
       if (error.response?.status === 403) {
         setAuth(undefined);
-        setCurrentNote(undefined);
+        clean();
       }
     }
   };
@@ -105,7 +112,7 @@ const Notes = () => {
     } catch (error) {
       if (error.response?.status === 403) {
         setAuth(undefined);
-        setCurrentNote(undefined);
+        clean();
       }
     }
   };
@@ -124,8 +131,10 @@ const Notes = () => {
         isClosable: true,
       });
     } catch (error) {
-      if (error.response?.status === 403) setAuth(undefined);
-      setCurrentNote(undefined);
+      if (error.response?.status === 403) {
+        setAuth(undefined);
+        clean();
+      }
     }
   };
 
@@ -202,71 +211,66 @@ const Notes = () => {
         {notes.length > 0 ? (
           notes.map((noteItem) => {
             return (
-              <Flex
-                key={noteItem?.id}
-                justify="space-between"
-                bgColor={currentNote?.id === noteItem?.id ? "brand.50" : ""}
-                className="note"
-                pl="2em"
-                pr="2em"
-                onClick={() =>
-                  setCurrentNote({
-                    title: noteItem?.title,
-                    id: noteItem?.id,
-                    content: noteItem?.content,
-                  })
-                }
-              >
-                <Flex alignItems="center">
-                  <Button
-                    variant="ghost"
-                    mr="0.5em"
-                    style={{
-                      height: "40px",
-                      width: "40px",
-                      padding: "7px",
-                      borderRadius: "50%",
-                    }}
-                  >
-                    <img src={DownCaret} alt="down-caret" />
-                  </Button>
-                  <Button
-                    ml="-1em"
-                    variant="ghost"
-                    onClick={() => {
-                      console.log(noteItem?.content);
-                      ref.current?.setMarkdown(noteItem?.content);
-                    }}
-                  >
-                    {noteItem?.title}
-                  </Button>
+              <Suspense fallback={<Skeleton />}>
+                <Flex
+                  key={noteItem?.id}
+                  justify="space-between"
+                  bgColor={currentNote?.id === noteItem?.id ? "brand.50" : ""}
+                  className="note"
+                  pl="2em"
+                  pr="2em"
+                  onClick={() =>
+                    setCurrentNote({
+                      title: noteItem?.title,
+                      id: noteItem?.id,
+                      content: noteItem?.content,
+                    })
+                  }
+                >
+                  <Flex alignItems="center">
+                    <Button
+                      variant="ghost"
+                      mr="0.5em"
+                      style={{
+                        height: "40px",
+                        width: "40px",
+                        padding: "7px",
+                        borderRadius: "50%",
+                      }}
+                    >
+                      <img src={DownCaret} alt="down-caret" />
+                    </Button>
+                    <Button ml="-1em" variant="ghost">
+                      {noteItem?.title}
+                    </Button>
+                  </Flex>
+                  <div>
+                    <Button
+                      variant="ghost"
+                      mr="0.5em"
+                      style={{
+                        height: "40px",
+                        width: "40px",
+                        padding: "7px",
+                        borderRadius: "50%",
+                      }}
+                    >
+                      <img src={BlackOptionsIcon} alt="options" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      style={{
+                        height: "40px",
+                        width: "40px",
+                        padding: "7px",
+                        borderRadius: "50%",
+                      }}
+                    >
+                      <img src={BlackPlusIcon} alt="plus icon" />
+                    </Button>
+                  </div>
                 </Flex>
-                <div>
-                  <Button
-                    variant="ghost"
-                    mr="0.5em"
-                    style={{
-                      height: "40px",
-                      width: "40px",
-                      padding: "7px",
-                      borderRadius: "50%",
-                    }}
-                  >
-                    <img src={BlackOptionsIcon} alt="options" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    style={{
-                      height: "40px",
-                      width: "40px",
-                      padding: "7px",
-                      borderRadius: "50%",
-                    }}
-                  >
-                    <img src={BlackPlusIcon} alt="plus icon" />
-                  </Button>
-                </div>
-              </Flex>
+              </Suspense>
             );
           })
         ) : (
@@ -317,13 +321,15 @@ const Notes = () => {
         {/* There is only one editor instance.       */}
         {/* This editor is shared between all notes. */}
         {currentNote ? (
-          <MDXEditor
-            ref={ref}
-            markdown={currentNote.content}
-            // onChange={() => {}}
-            plugins={ALL_PLUGINS}
-            contentEditableClassName="prose prose-lg inside-editor max-w-full"
-          />
+          <Suspense fallback={<Skeleton />}>
+            <MDXEditor
+              ref={ref}
+              markdown={currentNote.content}
+              // onChange={() => {}}
+              plugins={ALL_PLUGINS}
+              contentEditableClassName="prose prose-lg inside-editor max-w-full"
+            />
+          </Suspense>
         ) : (
           <Text pl="2em" pr="2em" color="text.inactive">
             <strong>Select</strong> or <strong>Create</strong> a new note to
