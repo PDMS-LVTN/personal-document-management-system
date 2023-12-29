@@ -21,7 +21,7 @@
     "typeorm": "ts-node --require tsconfig-paths/register ./node_modules/typeorm/cli",
     "migration:generate": "npm run typeorm -- -d ./src/config/datasource.service.ts migration:generate ./migrations/%npm_config_name%",
     "migration:run": "npm run typeorm migration:run -- -d ./src/config/datasource.service.ts",
-    "migration:revert": "npm run typeorm -- migration:revert"
+    "migration:revert": "npm run typeorm -- -d ./src/config/datasource.service.ts migration:revert"
 
   },
   "dependencies": {

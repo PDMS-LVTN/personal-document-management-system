@@ -38,22 +38,8 @@ export class AuthService {
     return user;
   }
 
-  async login(user: User, res) {
+  async login(user: User) {
     const payload = { id: user.id, email: user.email };
-    const access_token = this.jwtService.sign(payload);
-    const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
-    await this.userRepository.update(user.id, {
-      refresh_token: refresh_token,
-    });
-    res.cookie('refresh-token', refresh_token, { httpOnly: true });
-    return {
-      access_token,
-      // refresh_token,
-    };
-  }
-
-  async refreshToken(user: any) {
-    const payload = { id: user.id, email: user.email, password: user.password };
     const access_token = this.jwtService.sign(payload);
     return {
       access_token,

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { Note } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -20,7 +20,7 @@ export class NoteService {
 
   findAllNote(req: { user_id: string }) {
     return this.noteRepository.find({
-      where: { user_id: req.user_id },
+      where: { user_id: Equal(req.user_id) },
       relations: {
         user: true,
         parentNote: true,
@@ -32,7 +32,7 @@ export class NoteService {
 
   async findOneNote(id: string) {
     return this.noteRepository.findOne({
-      where: { id },
+      where: { id: Equal(id) },
       relations: {
         user: true,
         parentNote: true,

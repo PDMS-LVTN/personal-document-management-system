@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -32,10 +32,7 @@ export class UserService {
     );
 
     //Create user
-    const newUser = this.userRepository.create({
-      ...createUserDto,
-      refresh_token: 'refresh-token',
-    });
+    const newUser = this.userRepository.create(createUserDto);
     return await this.userRepository.save(newUser);
   }
 
@@ -49,7 +46,7 @@ export class UserService {
 
   async getUserByEmail(req: any) {
     const user = await this.userRepository.findOne({
-      where: { email: req.email },
+      where: { email: Equal(req.email) },
     });
     return user;
   }
