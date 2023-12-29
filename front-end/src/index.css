@@ -13,7 +13,6 @@
 
 #root {
   margin: 0;
-  text-align: center;
   height: 100vh;
 }
 
@@ -32,4 +31,19 @@
 
 .offscreen {
   display: none;
+}
+
+.inside-editor {
+  padding-left: 3em;
+}
+
+.resize-handle {
+  display: block;
+  position: absolute;
+  cursor: col-resize;
+  width: 7px;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  border-right: 2px solid transparent;
 }

@@ -11,13 +11,14 @@ import { User } from '../user/entities/user.entity';
 import { JwtStrategy } from './jwt.strategy';
 import { RefreshTokenStrategy } from './refreshtoken.strategy';
 
+require('dotenv').config();
 @Module({
   imports: [
     UserModule,
     PassportModule,
     JwtModule.register({
-      secret: 'secretKey',
-      signOptions: { expiresIn: '10s' },
+      secret: process.env.SECRET,
+      signOptions: { expiresIn: '3h' },
     }),
     TypeOrmModule.forFeature([User]),
   ],
@@ -30,4 +31,4 @@ import { RefreshTokenStrategy } from './refreshtoken.strategy';
     RefreshTokenStrategy,
   ],
 })
-export class AuthModule {}
+export class AuthModule { }

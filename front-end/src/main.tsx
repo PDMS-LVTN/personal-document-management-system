@@ -16,6 +16,10 @@ import HomeLayout from "./layouts/HomeLayout.tsx";
 import RequireAuth from "./components/RequireAuth.tsx";
 import Notes from "./pages/Notes.tsx";
 
+import "./tailwind.css";
+import "@mdxeditor/editor/style.css";
+import "./index.css";
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -62,7 +66,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       {/* <AuthProvider> */}
-        <RouterProvider router={router} />
+      <RouterProvider router={router} />
       {/* </AuthProvider> */}
     </ChakraProvider>
   </React.StrictMode>

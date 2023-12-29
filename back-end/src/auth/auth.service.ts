@@ -19,7 +19,7 @@ export class AuthService {
     private jwtService: JwtService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   private readonly logger = new Logger(AuthService.name);
 
@@ -42,6 +42,7 @@ export class AuthService {
     const payload = { id: user.id, email: user.email };
     const access_token = this.jwtService.sign(payload);
     return {
+      id: user.id,
       access_token,
     };
   }

@@ -1,5 +1,4 @@
 import { Outlet } from "react-router-dom";
-import "../index.css";
 import {
   Grid,
   GridItem,
@@ -7,17 +6,24 @@ import {
   InputRightElement,
   Input,
   Button,
+  Flex,
+  Skeleton,
 } from "@chakra-ui/react";
 import Logo from "../components/Logo";
 import SearchIcon from "../assets/search-icon.svg";
 import SignOutIcon from "../assets/sign-out-icon.svg";
 import SideBar from "../components/SideBar";
-import useAuth from "../hooks/useAuth";
 import { useAuthentication } from "../store/useAuth";
+import { useApp } from "../store/useApp";
+import { Suspense } from "react";
 
 function HomeLayout() {
   const auth = useAuthentication((state) => state.auth);
   const setAuth = useAuthentication((state) => state.setAuth);
+
+  const currentNote = useApp((state) => state.currentNote);
+  const setCurrentNote = useApp((state) => state.setCurrentNote);
+
   return (
     <Grid
       h="100%"
@@ -51,23 +57,41 @@ function HomeLayout() {
         bg="white"
         display="flex"
         alignItems="center"
-        justifyContent="right"
+        justifyContent="space-between"
         pr="2em"
+        pl="2em"
         gap="1em"
       >
-        <p>{auth.email}</p>
-        <Button
-          onClick={() => setAuth(undefined)}
-          style={{
-            height: "50px",
-            width: "50px",
-            padding: "15px",
-            background: "var(--brand400)",
-            borderRadius: "50%",
-          }}
-        >
-          <img src={SignOutIcon} alt="sign-out" />
-        </Button>
+        <Flex justifyContent="left" alignItems="center" gap="1em">
+          <Suspense fallback={<Skeleton />}>
+            <Input
+              // w="5em"
+              variant="unstyled"
+              value={currentNote ? currentNote.title : ""}
+              onChange={(e) => {
+                setCurrentNote({ ...currentNote, title: e.target.value });
+              }}
+            />
+          </Suspense>
+        </Flex>
+        <Flex justifyContent="right" alignItems="center" gap="1em">
+          <p>{auth.email}</p>
+          <Button
+            onClick={() => {
+              setAuth(undefined);
+              setCurrentNote(undefined);
+            }}
+            style={{
+              height: "50px",
+              width: "50px",
+              padding: "15px",
+              background: "var(--brand400)",
+              borderRadius: "50%",
+            }}
+          >
+            <img src={SignOutIcon} alt="sign-out" />
+          </Button>
+        </Flex>
       </GridItem>
       <GridItem rowSpan={1} colSpan={1} bg="white">
         <SideBar />
