@@ -24,14 +24,11 @@ export class Note {
   @Column({ type: 'longtext', nullable: true })
   content: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', default: 0 })
   size: number;
 
   @Column({ type: 'tinyint' })
   read_only: boolean;
-
-  @Column({ type: 'int' })
-  number_of_character: number;
 
   @Column('uuid', { nullable: true })
   parent_id: string;
@@ -50,7 +47,7 @@ export class Note {
     default: () => 'CURRENT_TIMESTAMP(6)',
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
-  update_at: Date;
+  updated_at: Date;
 
   @OneToMany(() => Note, (note) => note.parentNote, {
     onDelete: 'CASCADE',

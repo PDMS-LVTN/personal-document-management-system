@@ -8,13 +8,10 @@ export class CreateNoteDto {
   content: string;
 
   @ApiProperty()
-  size: number;
+  size: number = 0;
 
   @ApiProperty()
   read_only: boolean;
-
-  @ApiProperty()
-  number_of_character: number;
 
   @ApiProperty()
   parent_id: string;

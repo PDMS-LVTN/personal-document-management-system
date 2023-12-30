@@ -8,16 +8,17 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ImageContentService } from './image_content.service';
-import { CreateImageContentDto } from './dto/create-image_content.dto';
+// import { CreateImageContentDto } from './dto/create-image_content.dto';
 import { UpdateImageContentDto } from './dto/update-image_content.dto';
 
-@Controller('image-content')
+@Controller('api/image_content/')
 export class ImageContentController {
   constructor(private readonly imageContentService: ImageContentService) {}
 
-  @Post()
-  create(@Body() createImageContentDto: CreateImageContentDto) {
-    return this.imageContentService.create(createImageContentDto);
+  @Post('upload')
+  create() {
+    // return this.imageContentService.create();
+    return;
   }
 
   @Get()
