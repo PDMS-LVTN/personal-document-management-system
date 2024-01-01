@@ -5,7 +5,7 @@ export class CreateNoteDto {
   title: string;
 
   @ApiProperty()
-  content: string;
+  content?: string;
 
   @ApiProperty()
   size: number = 0;
@@ -14,7 +14,7 @@ export class CreateNoteDto {
   read_only: boolean;
 
   @ApiProperty()
-  parent_id: string;
+  parent_id?: string;
 
   @ApiProperty()
   user_id: string;

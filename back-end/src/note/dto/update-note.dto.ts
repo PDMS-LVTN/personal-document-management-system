@@ -7,7 +7,7 @@ export class UpdateNoteDto extends PartialType(CreateNoteDto) {
   title: string;
 
   @ApiProperty()
-  content: string;
+  content?: string;
 
   @ApiProperty()
   size: number;
@@ -19,5 +19,5 @@ export class UpdateNoteDto extends PartialType(CreateNoteDto) {
   number_of_character: number;
 
   @ApiProperty()
-  parent_id: string;
+  parent_id?: string;
 }

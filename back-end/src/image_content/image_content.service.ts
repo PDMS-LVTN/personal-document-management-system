@@ -1,26 +1,47 @@
 import { Injectable } from '@nestjs/common';
 import { CreateImageContentDto } from './dto/create-image_content.dto';
 import { UpdateImageContentDto } from './dto/update-image_content.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ImageContent } from './entities/image_content.entity';
+import { Equal, Repository } from 'typeorm';
 
 @Injectable()
 export class ImageContentService {
-  create(createImageContentDto: CreateImageContentDto) {
-    return 'This action adds a new imageContent';
+  constructor(
+    @InjectRepository(ImageContent)
+    private readonly imageContentRepository: Repository<ImageContent>,
+  ) {}
+
+  uploadImage(createImageContentDtos: CreateImageContentDto[]) {
+    createImageContentDtos.map((e) => {
+      const newImageContent = this.imageContentRepository.create(e);
+      this.imageContentRepository.save(newImageContent);
+    });
   }
 
-  findAll() {
-    return `This action returns all imageContent`;
+  findAllImageContentMatched() {
+    // return this.imageContentRepository.find({
+    //   where: { user_id: Equal(req.user_id) },
+    //   relations: {
+    //     user: true,
+    //   },
+    // });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} imageContent`;
+  findOneImageContent(id: number) {
+    return this.imageContentRepository.findOne({
+      where: { id: Equal(id) },
+      relations: {
+        note: true,
+      },
+    });
   }
 
-  update(id: number, updateImageContentDto: UpdateImageContentDto) {
+  update(id: string, updateImageContentDto: UpdateImageContentDto) {
     return `This action updates a #${id} imageContent`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} imageContent`;
+  removeImageContent(id: number) {
+    return this.imageContentRepository.delete(id);
   }
 }

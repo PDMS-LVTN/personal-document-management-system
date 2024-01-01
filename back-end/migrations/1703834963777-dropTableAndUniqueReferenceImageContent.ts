@@ -6,24 +6,24 @@ export class DropTableAndUniqueReferenceImageContent1703834963777
   name = 'DropTableAndUniqueReferenceImageContent1703834963777';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // await queryRunner.query(`DROP TABLE \`recent_note\``);
-    // await queryRunner.query(`DROP TABLE \`favorite_note\``);
-    // await queryRunner.query(`DROP TABLE \`pinned_note\``);
-    // await queryRunner.query(
-    //   `ALTER TABLE \`note\` ADD \`is_favorited\` tinyint NOT NULL`,
-    // );
-    // await queryRunner.query(
-    //   `ALTER TABLE \`note\` ADD \`is_pinned\` tinyint NOT NULL`,
-    // );
-    // await queryRunner.query(
-    //   `ALTER TABLE \`image_content\` DROP FOREIGN KEY \`FK_3ee135f9dac26c491ef1dd24a31\``,
-    // );
-    // await queryRunner.query(
-    //   `ALTER TABLE \`image_content\` DROP INDEX \`REL_3ee135f9dac26c491ef1dd24a3\``,
-    // );
-    // await queryRunner.query(
-    //   `ALTER TABLE \`image_content\` ADD CONSTRAINT \`FK_3ee135f9dac26c491ef1dd24a31\` FOREIGN KEY (\`note_ID\`) REFERENCES \`note\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE`,
-    // );
+    await queryRunner.query(`DROP TABLE \`recent_note\``);
+    await queryRunner.query(`DROP TABLE \`favorite_note\``);
+    await queryRunner.query(`DROP TABLE \`pinned_note\``);
+    await queryRunner.query(
+      `ALTER TABLE \`note\` ADD \`is_favorited\` tinyint NOT NULL`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`note\` ADD \`is_pinned\` tinyint NOT NULL`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`image_content\` DROP FOREIGN KEY \`FK_3ee135f9dac26c491ef1dd24a31\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`image_content\` DROP INDEX \`REL_3ee135f9dac26c491ef1dd24a3\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`image_content\` ADD CONSTRAINT \`FK_3ee135f9dac26c491ef1dd24a31\` FOREIGN KEY (\`note_ID\`) REFERENCES \`note\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
     await queryRunner.query(
       `CREATE TABLE \`applies\` (\`tag_id\` varchar(36) NOT NULL, \`note_id\` varchar(36) NOT NULL, INDEX \`IDX_tag_id\` (\`tag_id\`), INDEX \`IDX_note_id\` (\`note_id\`), PRIMARY KEY (\`tag_id\`, \`note_id\`)) ENGINE=InnoDB`,
     );

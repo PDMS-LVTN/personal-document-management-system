@@ -9,9 +9,6 @@ import { NoteModule } from './note/note.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
-import { PinnedNoteModule } from './pinned_note/pinned_note.module';
-import { FavoriteNoteModule } from './favorite_note/favorite_note.module';
-import { RecentNoteModule } from './recent_note/recent_note.module';
 import { ImageContentModule } from './image_content/image_content.module';
 
 @Module({
@@ -22,9 +19,6 @@ import { ImageContentModule } from './image_content/image_content.module';
     TagModule,
     NoteModule,
     AuthModule,
-    PinnedNoteModule,
-    FavoriteNoteModule,
-    RecentNoteModule,
     ImageContentModule,
   ],
   controllers: [AppController],

@@ -18,7 +18,11 @@ import {
 } from "@mdxeditor/editor";
 import { CustomToolbar } from "./CustomToolbar";
 
+export const tempState = {waitingImage: []}
+
 const simpleImageUploadHandler = (image: File) => {
+  console.log(image);
+  tempState.waitingImage.push(image)
   return Promise.resolve(URL.createObjectURL(image));
 };
 

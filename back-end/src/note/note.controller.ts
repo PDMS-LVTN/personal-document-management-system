@@ -19,7 +19,6 @@ export class NoteController {
 
   @Post('add_note')
   async createNote(@Body() createNoteDto: CreateNoteDto) {
-    console.log(createNoteDto);
     return await this.noteService.createNote(createNoteDto);
   }
 

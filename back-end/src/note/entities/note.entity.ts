@@ -71,7 +71,7 @@ export class Note {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToMany(() => Note, (note) => note.backlinks, {
+  @ManyToMany(() => Note, (note) => note.headlinks, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
@@ -88,15 +88,15 @@ export class Note {
   })
   backlinks: Note[];
 
-  @ManyToMany(() => Note, (note) => note.headlinks, {
+  @ManyToMany(() => Note, (note) => note.backlinks, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   headlinks: Note[];
 
-  @OneToMany(() => Tag, (tag) => tag.id, {
+  @ManyToMany(() => Tag, (tag) => tag.notes, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  tags: Tag[];
+  tags?: Tag[];
 }

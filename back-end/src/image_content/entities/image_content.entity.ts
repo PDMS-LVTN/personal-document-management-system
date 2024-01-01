@@ -18,6 +18,9 @@ export class ImageContent {
   @Column({ type: 'longtext' })
   content: string;
 
+  @Column('uuid')
+  note_ID: string;
+
   @OneToOne(() => Note, (note) => note.id, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

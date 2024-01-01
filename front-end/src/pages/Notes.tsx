@@ -8,7 +8,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import markdown from "../assets/default-content.md?raw";
-import { ALL_PLUGINS } from "../editor/_boilerplate";
+import { ALL_PLUGINS, tempState } from "../editor/_boilerplate";
 import { MDXEditor, MDXEditorMethods } from "@mdxeditor/editor";
 import ToolsIcon from "../assets/tools-icon.svg";
 import PlusIcon from "../assets/plus-icon.svg";
@@ -49,6 +49,7 @@ const Notes = () => {
           title: "Untitled",
           content: markdown,
           read_only: false,
+          size: 0,
         }),
         {
           headers: { "Content-Type": "application/json" },
@@ -72,10 +73,11 @@ const Notes = () => {
       setCurrentNote(currentNote);
       ref.current?.setMarkdown(markdown);
     } catch (error) {
-      if (error.response?.status === 403) {
-        setAuth(undefined);
-        clean();
-      }
+      console.log(error);
+      // if (error.response?.status === 403) {
+      //   setAuth(undefined);
+      //   clean();
+      // }
     }
   };
 
@@ -104,6 +106,33 @@ const Notes = () => {
           }
         })
       );
+      console.log(tempState.waitingImage);
+
+      // Create a form data object
+      const formData = new FormData();
+
+      // Optional, if you want to use a DTO on your server to grab this data
+      formData.append("note_ID", currentNote.id);
+
+      // Append each of the files
+      tempState.waitingImage.forEach((file) => {
+        console.log(file.rawFile)
+        formData.append("files[]", file);
+        console.log(formData)
+      });
+      console.log(formData)
+      try {
+        const response = await axiosJWT.post(
+          `image_content/upload`,
+            formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        console.log(response)
+      } catch (error) {
+        console.log(error);
+      }
       toast({
         title: `Your note has been updated.`,
         status: "success",

@@ -19,12 +19,12 @@ export class AuthService {
     private jwtService: JwtService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   private readonly logger = new Logger(AuthService.name);
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.userService.getUserByEmail({ email });
+    const user = await this.userService.getUserByEmail({ email: email });
     if (!user) {
       throw new NotAcceptableException('Email is not exist');
     }
