@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ImageContent } from './entities/image_content.entity';
 import { Equal, Repository } from 'typeorm';
 
+require('dotenv').config();
+const fs = require('fs');
 @Injectable()
 export class ImageContentService {
   constructor(
@@ -37,11 +39,12 @@ export class ImageContentService {
     });
   }
 
-  update(id: string, updateImageContentDto: UpdateImageContentDto) {
-    return `This action updates a #${id} imageContent`;
-  }
+  async removeImageContent(path: string) {
+    // Remove image file from destination folder
+    fs.unlinkSync(`${process.env.UPLOAD_PATH}/${path}`);
 
-  removeImageContent(id: number) {
-    return this.imageContentRepository.delete(id);
+    // Remove image_content item from database
+    const image_content = await this.imageContentRepository.findOneBy({ path });
+    return await this.imageContentRepository.remove(image_content);
   }
 }

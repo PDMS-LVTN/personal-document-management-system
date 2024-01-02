@@ -125,16 +125,8 @@ export class ImageContentController {
     return this.imageContentService.findOneImageContent(id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateImageContentDto: UpdateImageContentDto,
-  ) {
-    return this.imageContentService.update(id, updateImageContentDto);
-  }
-
-  @Delete(':id')
-  removeImageContent(@Param('id') id: number) {
-    return this.imageContentService.removeImageContent(id);
+  @Delete()
+  removeImageContent(@Body() req: { path: string }) {
+    return this.imageContentService.removeImageContent(req.path);
   }
 }
