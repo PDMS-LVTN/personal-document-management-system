@@ -10,10 +10,10 @@ export class DropTableAndUniqueReferenceImageContent1703834963777
     await queryRunner.query(`DROP TABLE \`favorite_note\``);
     await queryRunner.query(`DROP TABLE \`pinned_note\``);
     await queryRunner.query(
-      `ALTER TABLE \`note\` ADD \`is_favorited\` tinyint NOT NULL`,
+      `ALTER TABLE \`note\` ADD \`is_favorited\` tinyint NOT NULL DEFAULT 0`,
     );
     await queryRunner.query(
-      `ALTER TABLE \`note\` ADD \`is_pinned\` tinyint NOT NULL`,
+      `ALTER TABLE \`note\` ADD \`is_pinned\` tinyint NOT NULL DEFAULT 0`,
     );
     await queryRunner.query(
       `ALTER TABLE \`image_content\` DROP FOREIGN KEY \`FK_3ee135f9dac26c491ef1dd24a31\``,
