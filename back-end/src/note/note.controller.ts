@@ -28,6 +28,11 @@ export class NoteController {
     return await this.noteService.createNote(createNoteDto);
   }
 
+  @Post('add_child_note')
+  async createChildNote(@Body() createNoteDto: CreateNoteDto) {
+    return await this.noteService.createNote(createNoteDto);
+  }
+
   // @UseGuards(JwtAuthGuard) //Required Authenticate
   @Post('all_note')
   findAllNote(@Body() req: { user_id: string }) {

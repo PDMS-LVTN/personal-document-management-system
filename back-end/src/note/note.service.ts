@@ -26,10 +26,14 @@ export class NoteService {
 
   findAllNote(req: { user_id: string }) {
     return this.noteRepository.find({
+      select: {
+        id: true,
+        title: true,
+        parent_id: true,
+      },
       where: { user_id: Equal(req.user_id) },
       relations: {
         user: true,
-        parentNote: true,
         childNotes: true,
       },
     });
