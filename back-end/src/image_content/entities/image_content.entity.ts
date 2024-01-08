@@ -2,6 +2,7 @@ import { Note } from '../../note/entities/note.entity';
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -15,6 +16,7 @@ export class ImageContent {
   @Column({ type: 'varchar', width: 255 })
   path: string;
 
+  @Index({ fulltext: true })
   @Column({ type: 'longtext' })
   content: string;
 

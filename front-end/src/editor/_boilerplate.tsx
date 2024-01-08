@@ -21,9 +21,16 @@ import { CustomToolbar } from "./CustomToolbar";
 export const tempState = {waitingImage: []}
 
 const simpleImageUploadHandler = (image: File) => {
-  console.log(image);
-  tempState.waitingImage.push(image)
-  return Promise.resolve(URL.createObjectURL(image));
+  // console.log(image);
+  const ext = image.name.substring(image.name.indexOf('.'))
+  const url = URL.createObjectURL(image)
+  const pos = url.lastIndexOf('/');
+  const fileName = url.substring(pos + 1);
+
+  const newFile = new File([image], fileName + ext, {type: image.type});
+  // console.log(newFile)
+  tempState.waitingImage.push(newFile)
+  return Promise.resolve(url);
 };
 
 export const ALL_PLUGINS = [

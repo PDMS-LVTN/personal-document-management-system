@@ -10,6 +10,9 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { ImageContentModule } from './image_content/image_content.module';
+// import { SearchModule } from './search/search.module';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -20,6 +23,10 @@ import { ImageContentModule } from './image_content/image_content.module';
     NoteModule,
     AuthModule,
     ImageContentModule,
+    // SearchModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads/image_content'),
+    }),
   ],
   controllers: [AppController],
   providers: [

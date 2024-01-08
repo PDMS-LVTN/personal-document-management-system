@@ -4,6 +4,12 @@ import { UpdateImageContentDto } from './dto/update-image_content.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImageContent } from './entities/image_content.entity';
 import { Equal, Repository } from 'typeorm';
+import { Note } from 'src/note/entities/note.entity';
+import { lastValueFrom, of } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { error } from 'console';
+// import { SearchService } from '../search/search.service';
+// /search/search.service';
 
 require('dotenv').config();
 const fs = require('fs');
@@ -12,23 +18,98 @@ export class ImageContentService {
   constructor(
     @InjectRepository(ImageContent)
     private readonly imageContentRepository: Repository<ImageContent>,
+    // private readonly searchService: SearchService,
+    private readonly httpService: HttpService,
   ) {}
 
-  uploadImage(createImageContentDtos: CreateImageContentDto[]) {
+  async uploadImage(files, req) {
+    const response = [];
+    files.map((file: any) => {
+      const fileName = file.originalname;
+      if (!fileName) {
+        return of(error, 'File type must be png, jpg, jpeg');
+      }
+      response.push(fileName);
+      // Find matching file name between content and response array. Add right extension at the end of all urls
+      req.body.content = req.body.content.replace(
+        fileName.substring(0, fileName.indexOf('.')),
+        fileName,
+      );
+    });
+
+    // Call api OCR extract text. Only images that OCR extracts text will be returned. Pass array of image's name
+    const access_token = req.headers['authorization'].split(' ')[1];
+
+    const headersRequest = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${access_token}`,
+    };
+
+    const ocr_res = this.httpService.post(
+      process.env.OCR_PATH,
+      JSON.stringify(response),
+      {
+        headers: headersRequest,
+      },
+    );
+
+    const results = await (await lastValueFrom(ocr_res)).data;
+    // console.log(results);
+
+    // Map results to rel (array of dto) and pass to uploadImage service
+    const rel: CreateImageContentDto[] = [];
+
+    Object.entries(results).map((entry) => {
+      const relFile: CreateImageContentDto = {
+        note_ID: '',
+        path: '',
+        content: '',
+      };
+      relFile.note_ID = req.body.note_ID.toString();
+      relFile.path = entry[0];
+      relFile.content = entry[1] as string;
+      rel.push(relFile);
+    });
+
+    console.log(rel);
+
+    // Save image and text in database
+    return this.updateImageContent(rel);
+  }
+
+  async updateImageContent(createImageContentDtos: CreateImageContentDto[]) {
     createImageContentDtos.map((e) => {
       const newImageContent = this.imageContentRepository.create(e);
       this.imageContentRepository.save(newImageContent);
+      // this.searchService.indexImageContent(e);
     });
   }
 
-  findAllImageContentMatched() {
-    // return this.imageContentRepository.find({
-    //   where: { user_id: Equal(req.user_id) },
-    //   relations: {
-    //     user: true,
-    //   },
-    // });
+  searchImageContent(req) {
+    // Return all notes that match keyword and search results only for one user's image_content.
+
+    // Using full text search of MySQL, QUERY EXPANSION MODE. Faster with index compared with LIKE commands.
+    // Full text search can search keyword Vietnamese without accents when Vietnamese is stored. But searching result of separated words with multiple words leads to stuck with a lot of irrelevant matches.
+    // "QUERY EXPANSION" will search with related keywords, multiple words will search for separated words.
+    // "BOOLEAN MODE" can search for exact keywords, can not search with related keywords.
+    const searchQuery = req.body.keyword;
+
+    return this.imageContentRepository
+      .createQueryBuilder('image_content')
+      .innerJoinAndSelect('image_content.note', 'note', 'note.user_id = :id', {
+        id: req.body.user_id,
+      })
+      .where(
+        `MATCH(image_content.content) AGAINST ('${searchQuery}' WITH QUERY EXPANSION)`,
+      )
+      .getMany();
   }
+
+  // elasticSearchImageContent(req) {
+  //   // Return all notes that match keyword and search results only for one user's image_content.
+  //   // Using ElasticSearch
+  //   return this.searchService.search(req.body.keyword);
+  // }
 
   findOneImageContent(id: number) {
     return this.imageContentRepository.findOne({

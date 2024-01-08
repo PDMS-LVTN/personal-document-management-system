@@ -4,19 +4,16 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateNoteDto extends PartialType(CreateNoteDto) {
   @ApiProperty()
-  title: string;
+  title?: string;
 
   @ApiProperty()
   content?: string;
 
   @ApiProperty()
-  size: number;
+  size?: number;
 
   @ApiProperty()
-  read_only: boolean;
-
-  @ApiProperty()
-  number_of_character: number;
+  read_only?: boolean;
 
   @ApiProperty()
   parent_id?: string;
