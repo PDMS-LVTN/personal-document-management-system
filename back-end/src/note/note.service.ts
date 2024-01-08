@@ -16,7 +16,7 @@ export class NoteService {
     @InjectRepository(ImageContent)
     private readonly imageContentRepository: Repository<ImageContent>,
     private readonly imageContentService: ImageContentService,
-  ) {}
+  ) { }
 
   createNote(createNoteDto: CreateNoteDto) {
     const newNote = this.noteRepository.create(createNoteDto);
@@ -68,7 +68,12 @@ export class NoteService {
     // Method 2:
 
     // Upload images to upload folder and save in image_content table
-    this.imageContentService.uploadImage(files, req);
+    try {
+      await this.imageContentService.uploadImage(files, req);
+    }
+    catch (error) {
+      return error
+    }
 
     // Retrieve note's content and edit image's url (replace blob by localhost)
     req.body.content = req.body.content.replaceAll(

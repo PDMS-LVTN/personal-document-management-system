@@ -14,11 +14,11 @@ import { Password } from "./pages/PassWord.tsx";
 import HomeLayout from "./layouts/HomeLayout.tsx";
 // import { AuthProvider } from "./context/AuthProvider.tsx";
 import RequireAuth from "./components/RequireAuth.tsx";
-import Notes from "./pages/Notes.tsx";
 
 import "./tailwind.css";
 import "@mdxeditor/editor/style.css";
 import "./index.css";
+import NoteContainer from "./pages/Notes/NoteContainer.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,7 +30,7 @@ const router = createBrowserRouter(
       </Route>
       <Route element={<RequireAuth />}>
         <Route element={<HomeLayout />}>
-          <Route path="/notes" element={<Notes />} />
+          <Route path="/notes" element={<NoteContainer />} />
         </Route>
       </Route>
     </>
