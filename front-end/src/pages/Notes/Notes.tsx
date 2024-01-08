@@ -25,7 +25,7 @@ import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
 type Props = {
   notes: any[];
   handler: {
-    createNote: () => void;
+    createNote: (id) => void;
     clickANoteHandler: (id) => void;
     deleteNote: () => void;
     updateNote: () => void;
@@ -89,7 +89,7 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
                   borderRadius: "50%",
                   background: "var(--brand400)",
                 }}
-                onClick={handler.createNote}
+                onClick={() => handler.createNote(null)}
               >
                 <img src={PlusIcon} alt="create" />
               </Button>
@@ -149,6 +149,7 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
                         padding: "7px",
                         borderRadius: "50%",
                       }}
+                      onClick={() => handler.createNote(noteItem?.id)}
                     >
                       <img src={BlackPlusIcon} alt="plus icon" />
                     </Button>

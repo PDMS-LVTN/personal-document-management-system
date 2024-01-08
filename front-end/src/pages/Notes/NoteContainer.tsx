@@ -25,7 +25,7 @@ function NoteContainer() {
   const ref = useRef<MDXEditorMethods>();
   const currentNote = useApp((state) => state.currentNote);
 
-  const createNote = async () => {
+  const createNote = async (id) => {
     try {
       const response = await axiosJWT.post(
         CREATE_NOTE,
@@ -35,6 +35,7 @@ function NoteContainer() {
           content: markdown,
           read_only: false,
           size: 0,
+          parent_id: id,
         }),
         {
           headers: { "Content-Type": "application/json" },
@@ -165,7 +166,7 @@ function NoteContainer() {
         headers: { "Content-Type": "application/json" },
       });
       console.log(response.data);
-      const noteItem = response.data.note;
+      const noteItem = response.data;
       setCurrentNote({
         title: noteItem?.title,
         id: noteItem?.id,
