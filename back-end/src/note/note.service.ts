@@ -48,6 +48,7 @@ export class NoteService {
       select: {
         id: true,
         title: true,
+        content: true,
         childNotes: {
           id: true,
         },
