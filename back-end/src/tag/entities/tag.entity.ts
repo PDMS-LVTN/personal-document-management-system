@@ -1,3 +1,4 @@
+import { User } from 'src/user/entities/user.entity';
 import { Note } from '../../note/entities/note.entity';
 import {
   Entity,
@@ -5,6 +6,8 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity()
@@ -15,11 +18,26 @@ export class Tag {
   @Column({ type: 'varchar', width: 255 })
   description: string;
 
-  @ManyToOne(() => Note, (note) => note.id, {
+  // @Column({ type: 'varchar', width: 36 })
+  // note_ID: string;
+
+  // @Column({ type: 'varchar', width: 36 })
+  // user_ID: string;
+
+  @ManyToMany(() => Note, (note) => note.tags, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
-    nullable: true,
   })
-  @JoinColumn({ name: 'note_ID', referencedColumnName: 'id' })
-  note: Note;
+  @JoinTable({
+    name: 'applies',
+    joinColumn: {
+      name: 'tag_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'note_id',
+      referencedColumnName: 'id',
+    },
+  })
+  notes?: Note[];
 }

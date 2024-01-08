@@ -13,32 +13,32 @@ import { UpdateTagDto } from './dto/update-tag.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('tag')
-@Controller('api/tag')
+@Controller('api/tag/')
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
-  @Post()
-  create(@Body() createTagDto: CreateTagDto) {
-    return this.tagService.create(createTagDto);
+  @Post('create_tag')
+  createTag(@Body() createTagDto: CreateTagDto) {
+    return this.tagService.createTag(createTagDto);
   }
 
-  @Get()
-  findAll() {
-    return this.tagService.findAll();
+  @Get('all_tag')
+  findAllTag(@Body() req: { user_id: string }) {
+    return this.tagService.findAllTag(req);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tagService.findOne(+id);
+  findOneTag(@Param('id') id: string) {
+    return this.tagService.findOneTag(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
-    return this.tagService.update(+id, updateTagDto);
+  updateTag(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
+    return this.tagService.updateTag(id, updateTagDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tagService.remove(+id);
+  removeTag(@Param('id') id: string) {
+    return this.tagService.removeTag(id);
   }
 }

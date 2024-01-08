@@ -8,7 +8,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import markdown from "../assets/default-content.md?raw";
-import { ALL_PLUGINS } from "../editor/_boilerplate";
+import { ALL_PLUGINS, tempState } from "../editor/_boilerplate";
 import { MDXEditor, MDXEditorMethods } from "@mdxeditor/editor";
 import ToolsIcon from "../assets/tools-icon.svg";
 import PlusIcon from "../assets/plus-icon.svg";
@@ -49,6 +49,7 @@ const Notes = () => {
           title: "Untitled",
           content: markdown,
           read_only: false,
+          size: 0,
         }),
         {
           headers: { "Content-Type": "application/json" },
@@ -72,49 +73,83 @@ const Notes = () => {
       setCurrentNote(currentNote);
       ref.current?.setMarkdown(markdown);
     } catch (error) {
-      if (error.response?.status === 403) {
-        setAuth(undefined);
-        clean();
-      }
+      console.log(error);
+      // if (error.response?.status === 403) {
+      //   setAuth(undefined);
+      //   clean();
+      // }
     }
   };
 
   const updateNote = async () => {
+    // try {
+    //   const processedMarkdown: string = ref.current?.getMarkdown().trim();
+    //   console.log(processedMarkdown);
+    //   const response = await axiosJWT.patch(
+    //     `note/${currentNote.id}`,
+    //     JSON.stringify({
+    //       content: processedMarkdown,
+    //       title: currentNote?.title,
+    //     }),
+    //     {
+    //       headers: { "Content-Type": "application/json" },
+    //     }
+    //   );
+    //   console.log(response.data);
+    //   setNotes(
+    //     notes.map((note) => {
+    //       if (note.id === currentNote.id) {
+    //         return { ...currentNote, content: processedMarkdown };
+    //       } else {
+    //         // The rest haven't changed
+    //         return note;
+    //       }
+    //     })
+    //   );
+      
+    // } catch (error) {
+    //   if (error.response?.status === 403) {
+    //     setAuth(undefined);
+    //     clean();
+    //   }
+    // }
+    const processedMarkdown: string = ref.current?.getMarkdown().trim();
+    console.log(tempState.waitingImage);
+
+    // Create a form data object
+    const formData = new FormData();
+
+    // Optional, if you want to use a DTO on your server to grab this data
+    formData.append("note_ID", currentNote.id);
+
+    // Append each of the files
+    tempState.waitingImage.forEach((file) => {
+      console.log(file.rawFile)
+      formData.append("files[]", file);
+      
+      console.log(file)
+    });
+    console.log(formData)
+
+    formData.append("content",processedMarkdown)
+    formData.append("title",currentNote?.title)
     try {
-      const processedMarkdown: string = ref.current?.getMarkdown().trim();
-      console.log(processedMarkdown);
       const response = await axiosJWT.patch(
-        `note/${currentNote.id}`,
-        JSON.stringify({
-          content: processedMarkdown,
-          title: currentNote?.title,
-        }),
+            `note/${currentNote.id}`,
+          formData,
         {
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      console.log(response.data);
-      setNotes(
-        notes.map((note) => {
-          if (note.id === currentNote.id) {
-            return { ...currentNote, content: processedMarkdown };
-          } else {
-            // The rest haven't changed
-            return note;
-          }
-        })
-      );
-      toast({
-        title: `Your note has been updated.`,
-        status: "success",
-        isClosable: true,
-      });
+      console.log(response)
     } catch (error) {
-      if (error.response?.status === 403) {
-        setAuth(undefined);
-        clean();
-      }
+      console.log(error);
     }
+    toast({
+      title: `Your note has been updated.`,
+      status: "success",
+      isClosable: true,
+    });
   };
 
   const deleteNote = async () => {
@@ -164,6 +199,21 @@ const Notes = () => {
       controller.abort();
     };
   }, []);
+
+  const clickANoteHandler = async (id) => {
+    try {
+      const response = await axiosJWT.get(
+        `note/${id}`,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      console.log(response.data);
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <>
@@ -240,7 +290,7 @@ const Notes = () => {
                     >
                       <img src={DownCaret} alt="down-caret" />
                     </Button>
-                    <Button ml="-1em" variant="ghost">
+                    <Button ml="-1em" variant="ghost" onClick={()=>clickANoteHandler(noteItem?.id)}>
                       {noteItem?.title}
                     </Button>
                   </Flex>

@@ -1,10 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-// import { Note } from 'src/note/entities/note.entity';
-// import { Tag } from 'src/tag/entities/tag.entity';
-// import { User } from 'src/user/entities/user.entity';
 import { DataSourceOptions } from 'typeorm';
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
@@ -13,11 +9,9 @@ class ConfigService {
 
   private getValue(key: string, throwOnMissing = true): string {
     const value = this.env[key];
-    // console.log(this.env)
     if (!value && throwOnMissing) {
       throw new Error(`config error - missing env.${key}`);
     }
-
     return value;
   }
 
@@ -27,7 +21,6 @@ class ConfigService {
   }
 
   public getPort() {
-    // console.log(this.getValue('PORT', true));
     return this.getValue('PORT', true);
   }
 
@@ -57,12 +50,12 @@ class ConfigService {
       // },
 
       ssl: this.isProduction(),
-      //   synchronize: true,
+      synchronize: false,
     };
   }
 
   public dataSourceOptions(): DataSourceOptions {
-   return{
+    return {
       type: 'mysql',
       host: this.getValue('MYSQL_HOST'),
       port: parseInt(this.getValue('MYSQL_PORT')),

@@ -5,19 +5,16 @@ export class CreateNoteDto {
   title: string;
 
   @ApiProperty()
-  content: string;
+  content?: string;
 
   @ApiProperty()
-  size: number;
+  size: number = 0;
 
   @ApiProperty()
   read_only: boolean;
 
   @ApiProperty()
-  number_of_character: number;
-
-  @ApiProperty()
-  parent_id: string;
+  parent_id?: string;
 
   @ApiProperty()
   user_id: string;

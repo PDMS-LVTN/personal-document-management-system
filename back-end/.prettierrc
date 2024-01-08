@@ -2,5 +2,6 @@
   "usePrettierrc": false,
   "singleQuote": true, 
   "trailingComma": "all",
-  "endOfLine": "auto"
+  "endOfLine": "auto",
+  "paddedBlocks": "off"
 }
