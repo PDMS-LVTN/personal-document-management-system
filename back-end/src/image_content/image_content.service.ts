@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateImageContentDto } from './dto/create-image_content.dto';
 import { UpdateImageContentDto } from './dto/update-image_content.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImageContent } from './entities/image_content.entity';
 import { Equal, Repository } from 'typeorm';
 import { Note } from 'src/note/entities/note.entity';
-import { lastValueFrom, of } from 'rxjs';
+import { catchError, lastValueFrom, of } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { error } from 'console';
 // import { SearchService } from '../search/search.service';
@@ -20,7 +20,7 @@ export class ImageContentService {
     private readonly imageContentRepository: Repository<ImageContent>,
     // private readonly searchService: SearchService,
     private readonly httpService: HttpService,
-  ) {}
+  ) { }
 
   async uploadImage(files, req) {
     const response = [];
@@ -45,15 +45,21 @@ export class ImageContentService {
       Authorization: `Bearer ${access_token}`,
     };
 
-    const ocr_res = this.httpService.post(
-      process.env.OCR_PATH,
-      JSON.stringify(response),
-      {
-        headers: headersRequest,
-      },
+    const ocr_res = await lastValueFrom(
+      this.httpService.post(
+        process.env.OCR_PATH,
+        JSON.stringify(response),
+        {
+          headers: headersRequest,
+        },
+      ).pipe(
+        catchError((error) => {
+          throw new HttpException('An error occurred during the OCR request', HttpStatus.INTERNAL_SERVER_ERROR);
+        }),
+      ),
     );
 
-    const results = await (await lastValueFrom(ocr_res)).data;
+    const results = ocr_res.data
     // console.log(results);
 
     // Map results to rel (array of dto) and pass to uploadImage service
@@ -69,13 +75,13 @@ export class ImageContentService {
       relFile.path = entry[0];
       relFile.content = entry[1] as string;
       rel.push(relFile);
-    });
-
+    }); 
+  
     console.log(rel);
 
     // Save image and text in database
     return this.updateImageContent(rel);
-  }
+  }  
 
   async updateImageContent(createImageContentDtos: CreateImageContentDto[]) {
     createImageContentDtos.map((e) => {

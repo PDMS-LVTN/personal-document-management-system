@@ -21,7 +21,7 @@ import path = require('path');
 @ApiTags('note')
 @Controller('api/note/')
 export class NoteController {
-  constructor(private readonly noteService: NoteService) {}
+  constructor(private readonly noteService: NoteService) { }
 
   @Post('add_note')
   async createNote(@Body() createNoteDto: CreateNoteDto) {
