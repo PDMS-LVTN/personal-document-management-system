@@ -6,7 +6,8 @@ import { Note } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImageContent } from '../image_content/entities/image_content.entity';
 import { ImageContentService } from '../image_content/image_content.service';
-import { ImageContentController } from '../image_content/image_content.controller';
+
+require('dotenv').config();
 
 @Injectable()
 export class NoteService {
@@ -16,20 +17,22 @@ export class NoteService {
     @InjectRepository(ImageContent)
     private readonly imageContentRepository: Repository<ImageContent>,
     private readonly imageContentService: ImageContentService,
-  ) { }
+  ) {}
 
-  createNote(createNoteDto: CreateNoteDto) {
+  async createNote(createNoteDto: CreateNoteDto) {
     const newNote = this.noteRepository.create(createNoteDto);
-    return this.noteRepository.save(newNote);
+    return await this.noteRepository.save(newNote);
     // await this.noteRepository.create(newNote);
   }
 
-  findAllNote(req: { user_id: string }) {
-    return this.noteRepository.find({
+  async findAllNote(req: { user_id: string }) {
+    return await this.noteRepository.find({
       select: {
         id: true,
         title: true,
-        parent_id: true,
+        childNotes: {
+          id: true,
+        },
       },
       where: { user_id: Equal(req.user_id) },
       relations: {
@@ -41,23 +44,37 @@ export class NoteService {
   }
 
   async findOneNote(id: string) {
-    const note = await this.noteRepository.findOne({
+    return await this.noteRepository.findOne({
+      select: {
+        id: true,
+        title: true,
+        childNotes: {
+          id: true,
+        },
+      },
       where: { id: Equal(id) },
       relations: {
         user: true,
-        parentNote: true,
-        childNotes: true,
+        headlinks: true,
+        backlinks: true,
       },
     });
-    // const image_path = await this.imageRepository.find({
-    //   select: {
-    //     path: true,
-    //   },
-    //   where: { note_ID: Equal(id) },
-    // });
-    // console.log(note);
-    return { note };
     // return this.noteRepository.findOneBy({ id }); //Display without relations
+  }
+
+  async searchNote(req) {
+    const searchQuery = req.body.keyword;
+    const notes_matching_content = await this.noteRepository
+      .createQueryBuilder('note')
+      .select(['id AS note_ID', 'title'])
+      .where('note.user_id = :id', { id: req.body.user_id })
+      .andWhere(
+        `MATCH(note.content) AGAINST ('${searchQuery}' WITH QUERY EXPANSION)`,
+      )
+      .getRawMany();
+    const notes_matching_image_content =
+      await this.imageContentService.searchImageContent(req);
+    return notes_matching_content.concat(notes_matching_image_content);
   }
 
   async updateNote(id, files, req) {
@@ -70,15 +87,14 @@ export class NoteService {
     // Upload images to upload folder and save in image_content table
     try {
       await this.imageContentService.uploadImage(files, req);
-    }
-    catch (error) {
-      return error
+    } catch (error) {
+      return error;
     }
 
     // Retrieve note's content and edit image's url (replace blob by localhost)
     req.body.content = req.body.content.replaceAll(
       'blob\\' + ':' + 'http://localhost:5173',
-      'http://localhost:8080',
+      process.env.IMAGE_SERVER_PATH,
     );
 
     // Update a note with title and content

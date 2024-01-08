@@ -20,7 +20,7 @@ export class ImageContentService {
     private readonly imageContentRepository: Repository<ImageContent>,
     // private readonly searchService: SearchService,
     private readonly httpService: HttpService,
-  ) { }
+  ) {}
 
   async uploadImage(files, req) {
     const response = [];
@@ -46,20 +46,21 @@ export class ImageContentService {
     };
 
     const ocr_res = await lastValueFrom(
-      this.httpService.post(
-        process.env.OCR_PATH,
-        JSON.stringify(response),
-        {
+      this.httpService
+        .post(process.env.OCR_PATH, JSON.stringify(response), {
           headers: headersRequest,
-        },
-      ).pipe(
-        catchError((error) => {
-          throw new HttpException('An error occurred during the OCR request', HttpStatus.INTERNAL_SERVER_ERROR);
-        }),
-      ),
+        })
+        .pipe(
+          catchError((error) => {
+            throw new HttpException(
+              'An error occurred during the OCR request',
+              HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+          }),
+        ),
     );
 
-    const results = ocr_res.data
+    const results = ocr_res.data;
     // console.log(results);
 
     // Map results to rel (array of dto) and pass to uploadImage service
@@ -75,13 +76,13 @@ export class ImageContentService {
       relFile.path = entry[0];
       relFile.content = entry[1] as string;
       rel.push(relFile);
-    }); 
-  
+    });
+
     console.log(rel);
 
     // Save image and text in database
     return this.updateImageContent(rel);
-  }  
+  }
 
   async updateImageContent(createImageContentDtos: CreateImageContentDto[]) {
     createImageContentDtos.map((e) => {
@@ -105,10 +106,11 @@ export class ImageContentService {
       .innerJoinAndSelect('image_content.note', 'note', 'note.user_id = :id', {
         id: req.body.user_id,
       })
+      .select(['note_ID', 'note.title AS title'])
       .where(
         `MATCH(image_content.content) AGAINST ('${searchQuery}' WITH QUERY EXPANSION)`,
       )
-      .getMany();
+      .getRawMany();
   }
 
   // elasticSearchImageContent(req) {

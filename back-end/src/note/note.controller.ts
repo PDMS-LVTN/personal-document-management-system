@@ -28,11 +28,6 @@ export class NoteController {
     return await this.noteService.createNote(createNoteDto);
   }
 
-  @Post('add_child_note')
-  async createChildNote(@Body() createNoteDto: CreateNoteDto) {
-    return await this.noteService.createNote(createNoteDto);
-  }
-
   // @UseGuards(JwtAuthGuard) //Required Authenticate
   @Post('all_note')
   findAllNote(@Body() req: { user_id: string }) {
@@ -43,6 +38,11 @@ export class NoteController {
   @Get(':id')
   findOneNote(@Param('id') id: string) {
     return this.noteService.findOneNote(id);
+  }
+
+  @Post('search')
+  searchNote(@Req() req: { user_id: string; keyword: string }) {
+    return this.noteService.searchNote(req);
   }
 
   @Patch(':id')

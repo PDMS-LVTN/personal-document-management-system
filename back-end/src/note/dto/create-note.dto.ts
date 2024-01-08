@@ -11,7 +11,7 @@ export class CreateNoteDto {
   size: number = 0;
 
   @ApiProperty()
-  read_only: boolean;
+  read_only: boolean = false;
 
   @ApiProperty()
   parent_id?: string;

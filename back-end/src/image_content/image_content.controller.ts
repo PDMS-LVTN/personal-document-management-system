@@ -42,38 +42,10 @@ export class ImageContentController {
     private readonly httpService: HttpService,
   ) {}
 
-  // @Post('upload')
-  // @UseInterceptors(
-  //   FilesInterceptor('files[]', 20, {
-  //     storage: diskStorage({
-  //       destination: process.env.UPLOAD_PATH,
-  //       filename: (req, file, cb) => {
-  //         // console.log(req.body);
-  //         const fileName: string = path
-  //           .parse(file.originalname)
-  //           .name.replace(/\s/g, '');
-  //         //   const pos = req.body.urls[idx].lastIndexOf('/');
-  //         // const fileName = req.body.urls[idx].substring(pos + 1) + extension;
-  //         //   const fileName: string =
-  //         const extension: string = path.parse(file.originalname).ext;
-
-  //         cb(null, `${fileName}${extension}`);
-  //       },
-  //     }),
-  //     fileFilter: (req, file, cb) => {
-  //       const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
-  //       allowedMimeTypes.includes(file.mimetype)
-  //         ? cb(null, true)
-  //         : cb(null, false);
-  //     },
-  //   }),
-  // )
-  // async uploadImage(@UploadedFiles() files, @Req() req) {
-
-  @Get('search')
-  searchImageContent(@Req() req: { user_id: string; keyword: string }) {
-    return this.imageContentService.searchImageContent(req);
-  }
+  // @Get('search')
+  // searchImageContent(@Req() req: { user_id: string; keyword: string }) {
+  //   return this.imageContentService.searchImageContent(req);
+  // }
 
   // @Get('elastic_search')
   // elasticSearchImageContent(@Req() req: { user_id: string; keyword: string }) {

@@ -11,6 +11,7 @@ import {
   JoinColumn,
   ManyToMany,
   JoinTable,
+  Index,
 } from 'typeorm';
 
 @Entity()
@@ -21,6 +22,7 @@ export class Note {
   @Column({ type: 'longtext' })
   title: string;
 
+  @Index({ fulltext: true })
   @Column({ type: 'longtext', nullable: true })
   content: string;
 
