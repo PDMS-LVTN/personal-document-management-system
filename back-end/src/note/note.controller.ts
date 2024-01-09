@@ -40,6 +40,16 @@ export class NoteController {
     return this.noteService.findOneNote(id);
   }
 
+  @Post('favorited_note')
+  findFavoritedNote(@Body() req: { user_id: string }) {
+    return this.noteService.findFavoritedNote(req);
+  }
+
+  @Post('pinned_note')
+  findPinnedNote(@Body() req: { user_id: string }) {
+    return this.noteService.findPinnedNote(req);
+  }
+
   @Post('search')
   searchNote(@Req() req: { user_id: string; keyword: string }) {
     return this.noteService.searchNote(req);

@@ -2,7 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateNoteDto } from './create-note.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateNoteDto extends PartialType(CreateNoteDto) {
+export class UpdateNoteDto {
   @ApiProperty()
   title?: string;
 
@@ -14,6 +14,12 @@ export class UpdateNoteDto extends PartialType(CreateNoteDto) {
 
   @ApiProperty()
   read_only?: boolean;
+
+  @ApiProperty()
+  is_favorited?: boolean;
+
+  @ApiProperty()
+  is_pinned?: boolean;
 
   @ApiProperty()
   parent_id?: string;
