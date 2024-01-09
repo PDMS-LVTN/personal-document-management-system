@@ -15,7 +15,7 @@ export class User {
   @Column({ type: 'varchar', width: 255 })
   password: string;
 
-  @OneToMany(() => Note, (note) => note.user)
+  @OneToMany(() => Note, (note) => note.user, { eager: true})
   notes: Note[];
 
   constructor(private item: Partial<User>) {

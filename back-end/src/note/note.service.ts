@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
-import { Equal, Repository } from 'typeorm';
+import { Equal, IsNull, Repository } from 'typeorm';
 import { Note } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImageContent } from '../image_content/entities/image_content.entity';
 import { ImageContentService } from '../image_content/image_content.service';
+import { User } from '../user/entities/user.entity';
 
 require('dotenv').config();
 
@@ -17,12 +18,20 @@ export class NoteService {
     @InjectRepository(ImageContent)
     private readonly imageContentRepository: Repository<ImageContent>,
     private readonly imageContentService: ImageContentService,
-  ) {}
+    // @InjectRepository(User)
+    // private readonly userRepository: Repository<User>
+  ) { }
 
   async createNote(createNoteDto: CreateNoteDto) {
+    const user = new User({ id: createNoteDto.user_id })
+    const parent_note = new Note()
+    parent_note.id = createNoteDto.parent_id
     const newNote = this.noteRepository.create(createNoteDto);
+    // user.notes=[newNote]
+    // await this.userRepository.save(user);
+    newNote.parentNote = parent_note
+    newNote.user = user
     return await this.noteRepository.save(newNote);
-    // await this.noteRepository.create(newNote);
   }
 
   async findAllNote(req: { user_id: string }) {
@@ -32,12 +41,14 @@ export class NoteService {
         title: true,
         childNotes: {
           id: true,
+          title: true,
         },
+        parentNote: { id: true }
       },
-      where: { user_id: Equal(req.user_id) },
+      where: { user: { id: Equal(req.user_id) }, parentNote: IsNull() },
       relations: {
-        user: true,
-        childNotes: true,
+        parentNote: true,
+        childNotes: true
       },
     });
     // return this.noteRepository.find(); //Display without relations
