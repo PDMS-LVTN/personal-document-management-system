@@ -32,6 +32,12 @@ export class Note {
   @Column({ type: 'tinyint' })
   read_only: boolean;
 
+  @Column({ type: 'tinyint' })
+  is_pinned: boolean;
+
+  @Column({ type: 'tinyint' })
+  is_favorited: boolean;
+
   @Column('uuid', { nullable: true })
   parent_id: string;
 

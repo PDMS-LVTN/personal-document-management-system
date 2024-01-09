@@ -38,7 +38,7 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
   const { notes, handler, isLoading } = props;
   const currentNote = useApp((state) => state.currentNote);
   const { onClose } = useDisclosure();
-
+  
   return (
     <>
       <Modal isOpen={isLoading} onClose={onClose}>
@@ -205,7 +205,7 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
         </Flex>
         {/* There is only one editor instance.       */}
         {/* This editor is shared between all notes. */}
-        {currentNote ? (
+        {currentNote && currentNote.content ? (
           <Suspense fallback={<Skeleton />}>
             <MDXEditor
               ref={ref}

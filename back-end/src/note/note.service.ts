@@ -45,18 +45,8 @@ export class NoteService {
 
   async findOneNote(id: string) {
     return await this.noteRepository.findOne({
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        childNotes: {
-          id: true,
-        },
-      },
       where: { id: Equal(id) },
       relations: {
-        user: true,
-        headlinks: true,
         backlinks: true,
       },
     });
@@ -64,10 +54,11 @@ export class NoteService {
   }
 
   async searchNote(req) {
+    const _ = require('lodash');
     const searchQuery = req.body.keyword;
     const notes_matching_content = await this.noteRepository
       .createQueryBuilder('note')
-      .select(['id AS note_ID', 'title'])
+      .select(['id', 'title'])
       .where('note.user_id = :id', { id: req.body.user_id })
       .andWhere(
         `MATCH(note.content) AGAINST ('${searchQuery}' WITH QUERY EXPANSION)`,
@@ -75,7 +66,11 @@ export class NoteService {
       .getRawMany();
     const notes_matching_image_content =
       await this.imageContentService.searchImageContent(req);
-    return notes_matching_content.concat(notes_matching_image_content);
+    return _.unionBy(
+      notes_matching_content,
+      notes_matching_image_content,
+      'id',
+    );
   }
 
   async updateNote(id, files, req) {
@@ -86,10 +81,12 @@ export class NoteService {
     // Method 2:
 
     // Upload images to upload folder and save in image_content table
-    try {
-      await this.imageContentService.uploadImage(files, req);
-    } catch (error) {
-      return error;
+    if (files.length > 0) {
+      try {
+        await this.imageContentService.uploadImage(files, req);
+      } catch (error) {
+        return error;
+      }
     }
 
     // Retrieve note's content and edit image's url (replace blob by localhost)

@@ -106,7 +106,7 @@ export class ImageContentService {
       .innerJoinAndSelect('image_content.note', 'note', 'note.user_id = :id', {
         id: req.body.user_id,
       })
-      .select(['note_ID', 'note.title AS title'])
+      .select(['note_ID as id', 'note.title AS title'])
       .where(
         `MATCH(image_content.content) AGAINST ('${searchQuery}' WITH QUERY EXPANSION)`,
       )
