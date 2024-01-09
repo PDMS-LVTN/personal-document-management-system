@@ -53,6 +53,26 @@ export class NoteService {
     // return this.noteRepository.findOneBy({ id }); //Display without relations
   }
 
+  async findFavoritedNote(req: { user_id: string }) {
+    return await this.noteRepository.find({
+      select: {
+        id: true,
+        title: true,
+      },
+      where: { user_id: Equal(req.user_id), is_favorited: true },
+    });
+  }
+
+  async findPinnedNote(req: { user_id: string }) {
+    return await this.noteRepository.find({
+      select: {
+        id: true,
+        title: true,
+      },
+      where: { user_id: Equal(req.user_id), is_pinned: true },
+    });
+  }
+
   async searchNote(req) {
     const _ = require('lodash');
     const searchQuery = req.body.keyword;
@@ -96,10 +116,7 @@ export class NoteService {
     );
 
     // Update a note with title and content
-    const updateNoteDto: UpdateNoteDto = {
-      title: req.body.title,
-      content: req.body.content,
-    };
+    const updateNoteDto: UpdateNoteDto = req.body;
     return this.noteRepository.update(id, updateNoteDto);
   }
 
