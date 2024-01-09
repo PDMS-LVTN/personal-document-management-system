@@ -276,7 +276,6 @@ function NoteContainer() {
   return (
     <Notes
       ref={ref}
-      notes={notes}
       handler={{
         clickANoteHandler,
         deleteNote,
