@@ -12,7 +12,6 @@ const CREATE_NOTE = "note/add_note";
 const ALL_NOTE = "note/all_note";
 
 function NoteContainer() {
-  // const [notes, setNotes] = useState([]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const clean = useApp((state) => state.clean);
   const setCurrentNote = useApp((state) => state.setCurrentNote);
@@ -58,6 +57,7 @@ function NoteContainer() {
       // );
 
       if (!id) {
+        console.log("hello");
         setTree([
           ...treeItems,
           {
@@ -67,16 +67,6 @@ function NoteContainer() {
           },
         ]);
       }
-      // } else {
-      //   currentTree.setNote([
-      //     ...currentTree.notes,
-      //     {
-      //       title: response.data.title,
-      //       id: response.data.id,
-      //       childNotes: [],
-      //     },
-      //   ]);
-      // }
 
       const currentNote = {
         id: response.data.id,
@@ -123,15 +113,29 @@ function NoteContainer() {
         isClosable: true,
       });
       tempState.waitingImage = [];
-      let index = currentTree.notes.findIndex((x) => x.id === currentNote.id);
-      currentTree.setNote([
-        ...currentTree.notes.slice(0, index),
-        {
-          ...currentTree.notes[index],
-          title: currentNote?.title,
-        },
-        ...currentTree.notes.slice(index + 1),
-      ]);
+
+      console.log(currentNote.parent);
+      if (!currentNote.parent) {
+        let index = treeItems.findIndex((x) => x.id === currentNote.id);
+        setTree([
+          ...treeItems.slice(0, index),
+          {
+            ...treeItems[index],
+            title: currentNote?.title,
+          },
+          ...treeItems.slice(index + 1),
+        ]);
+      } else {
+        let index = currentTree.notes.findIndex((x) => x.id === currentNote.id);
+        currentTree.setNote([
+          ...currentTree.notes.slice(0, index),
+          {
+            ...currentTree.notes[index],
+            title: currentNote?.title,
+          },
+          ...currentTree.notes.slice(index + 1),
+        ]);
+      }
     } catch (error) {
       console.log(error);
       toast({
@@ -149,12 +153,19 @@ function NoteContainer() {
       const response = await axiosJWT.delete(`note/${currentNote.id}`, {
         headers: { "Content-Type": "application/json" },
       });
-      // setNotes(notes.filter((note) => note.id !== currentNote.id));
-      let index = currentTree.notes.findIndex((x) => x.id === currentNote.id);
-      currentTree.setNote([
-        ...currentTree.notes.slice(0, index),
-        ...currentTree.notes.slice(index + 1),
-      ]);
+
+      console.log(currentNote.parent);
+      if (!currentNote.parent) {
+        let index = treeItems.findIndex((x) => x.id === currentNote.id);
+        setTree([...treeItems.slice(0, index), ...treeItems.slice(index + 1)]);
+      } else {
+        let index = currentTree.notes.findIndex((x) => x.id === currentNote.id);
+        currentTree.setNote([
+          ...currentTree.notes.slice(0, index),
+          ...currentTree.notes.slice(index + 1),
+        ]);
+      }
+
       setCurrentNote(undefined);
       clearCurrentTree();
       toast({
@@ -184,7 +195,6 @@ function NoteContainer() {
           }
         );
         console.log(response.data);
-        // isMounted && setNotes(response.data);
         isMounted && setTree(response.data);
       } catch (error) {
         if (error.response?.status === 403 || error.response?.status === 401) {
@@ -224,6 +234,7 @@ function NoteContainer() {
         title: noteItem?.title,
         id: noteItem?.id,
         content: noteItem?.content,
+        parent: noteItem?.parentNote,
       });
       ref.current?.setMarkdown(noteItem.content);
       return noteItem;

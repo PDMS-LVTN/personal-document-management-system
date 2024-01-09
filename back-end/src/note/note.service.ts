@@ -64,9 +64,11 @@ export class NoteService {
           id: true,
           title: true
         },
+        parentNote: { id: true }
       },
       where: { id: Equal(id) },
       relations: {
+        parentNote: true,
         childNotes: true,
         headlinks: true,
         backlinks: true,

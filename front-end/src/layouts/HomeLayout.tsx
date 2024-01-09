@@ -23,6 +23,7 @@ function HomeLayout() {
 
   const currentNote = useApp((state) => state.currentNote);
   const setCurrentNote = useApp((state) => state.setCurrentNote);
+  const clean = useApp((state) => state.clean);
 
   return (
     <Grid
@@ -79,7 +80,7 @@ function HomeLayout() {
           <Button
             onClick={() => {
               setAuth(undefined);
-              setCurrentNote(undefined);
+              clean();
             }}
             style={{
               height: "50px",
