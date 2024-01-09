@@ -1,4 +1,3 @@
-import { User } from 'src/user/entities/user.entity';
 import { Note } from '../../note/entities/note.entity';
 import {
   Entity,
