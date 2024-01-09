@@ -47,6 +47,7 @@ export class NoteService {
     return await this.noteRepository.findOne({
       where: { id: Equal(id) },
       relations: {
+        user: true,
         backlinks: true,
       },
     });
@@ -103,20 +104,25 @@ export class NoteService {
     // Upload images to upload folder and save in image_content table
     if (files.length > 0) {
       try {
-        await this.imageContentService.uploadImage(files, req);
+        await this.imageContentService.uploadImage(files, req, id);
       } catch (error) {
         return error;
       }
     }
 
+    const data = JSON.parse(req.body.data);
+
     // Retrieve note's content and edit image's url (replace blob by localhost)
-    req.body.content = req.body.content.replaceAll(
-      'blob\\' + ':' + 'http://localhost:5173',
-      process.env.IMAGE_SERVER_PATH,
-    );
+    if (data.content) {
+      data.content = data.content.replaceAll(
+        'blob\\' + ':' + 'http://localhost:5173',
+        process.env.IMAGE_SERVER_PATH,
+      );
+    }
 
     // Update a note with title and content
-    const updateNoteDto: UpdateNoteDto = req.body;
+    console.log(data);
+    const updateNoteDto: UpdateNoteDto = data;
     return this.noteRepository.update(id, updateNoteDto);
   }
 
