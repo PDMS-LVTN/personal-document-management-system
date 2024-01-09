@@ -45,18 +45,8 @@ export class NoteService {
 
   async findOneNote(id: string) {
     return await this.noteRepository.findOne({
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        childNotes: {
-          id: true,
-        },
-      },
       where: { id: Equal(id) },
       relations: {
-        user: true,
-        headlinks: true,
         backlinks: true,
       },
     });
@@ -91,10 +81,12 @@ export class NoteService {
     // Method 2:
 
     // Upload images to upload folder and save in image_content table
-    try {
-      await this.imageContentService.uploadImage(files, req);
-    } catch (error) {
-      return error;
+    if (files.length > 0) {
+      try {
+        await this.imageContentService.uploadImage(files, req);
+      } catch (error) {
+        return error;
+      }
     }
 
     // Retrieve note's content and edit image's url (replace blob by localhost)
