@@ -5,6 +5,8 @@ export interface Note {
     id: string;
     title: string;
     content: string;
+    is_favorited: boolean;
+    is_pinned: boolean;
 }
 
 interface AppStore {

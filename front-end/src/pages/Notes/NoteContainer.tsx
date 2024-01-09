@@ -52,9 +52,11 @@ function NoteContainer() {
         ]
       );
       const currentNote = {
-        id: response.data.id,
-        title: response.data.title,
-        content: response.data.content,
+        // id: response.data.id,
+        // title: response.data.title,
+        // content: response.data.content,
+        ...response.data,
+
       };
       setCurrentNote(currentNote);
       ref.current?.setMarkdown(markdown);
@@ -75,15 +77,19 @@ function NoteContainer() {
     // Create a form data object
     const formData = new FormData();
 
-    // Optional, if you want to use a DTO on your server to grab this data
-    formData.append("note_ID", currentNote.id);
+    // // Optional, if you want to use a DTO on your server to grab this data
+    // formData.append("note_ID", currentNote.id);
 
     // Append each of the files
     tempState.waitingImage.forEach((file) => {
       formData.append("files[]", file);
     });
-    formData.append("content", processedMarkdown);
-    formData.append("title", currentNote?.title);
+    formData.append("data", 
+      JSON.stringify({
+        content: processedMarkdown,
+        title: currentNote?.title,
+      })
+    );
 
     try {
       const response = await axiosJWT.patch(
@@ -112,13 +118,48 @@ function NoteContainer() {
     setLoading(false);
   };
 
-  const deleteNote = async () => {
+  const updateFavorite = async () => {
+    const formData = new FormData();
+
+    formData.append("data", 
+      JSON.stringify({
+        is_favorited: !currentNote?.is_favorited,
+      })
+    );
+
     try {
-      const response = await axiosJWT.delete(`note/${currentNote.id}`, {
+      const response = await axiosJWT.patch(
+        `note/${currentNote.id}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      setCurrentNote({...currentNote, is_favorited: !currentNote.is_favorited})
+      console.log(response);
+      toast({
+        title: `Your note has been updated. 🙂`,
+        status: "success",
+        isClosable: true,
+      });
+      tempState.waitingImage = [];
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: `Some error happened! 😢`,
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
+
+  const deleteNote = async (id) => {
+    try {
+      const response = await axiosJWT.delete(`note/${id}`, {
         headers: { "Content-Type": "application/json" },
       });
       console.log(response.data);
-      setNotes(notes.filter((note) => note.id !== currentNote.id));
+      setNotes(notes.filter((note) => note.id !== id));
       setCurrentNote(undefined);
       toast({
         title: `Your note has been deleted.`,
@@ -168,9 +209,7 @@ function NoteContainer() {
       console.log(response.data);
       const noteItem = response.data;
       setCurrentNote({
-        title: noteItem?.title,
-        id: noteItem?.id,
-        content: noteItem?.content,
+        ...noteItem
       });
       ref.current?.setMarkdown(noteItem.content);
     } catch (error) {
@@ -181,7 +220,7 @@ function NoteContainer() {
     <Notes
       ref={ref}
       notes={notes}
-      handler={{ clickANoteHandler, deleteNote, createNote, updateNote }}
+      handler={{ clickANoteHandler, deleteNote, createNote, updateNote, updateFavorite}}
       isLoading={isLoading}
     />
   );
