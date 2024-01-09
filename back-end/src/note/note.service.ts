@@ -61,6 +61,7 @@ export class NoteService {
       relations: {
         user: true,
         backlinks: true,
+        childNotes: true,
       },
     });
     // return this.noteRepository.findOneBy({ id }); //Display without relations
