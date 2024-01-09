@@ -1,12 +1,22 @@
 import {
   Button,
+  Editable,
+  EditableInput,
+  EditablePreview,
   Flex,
   GridItem,
+  Input,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
   Skeleton,
   Spinner,
   Text,
   Tooltip,
   useDisclosure,
+  useEditableControls,
 } from "@chakra-ui/react";
 import { ALL_PLUGINS } from "../../editor/_boilerplate";
 import { MDXEditor, MDXEditorMethods } from "@mdxeditor/editor";
@@ -21,18 +31,22 @@ import PinIcon from "../../assets/pin-icon.svg";
 import { Suspense, forwardRef } from "react";
 import { useApp } from "../../store/useApp";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
+import { FaRegStar, FaStar  } from "react-icons/fa";
 
 type Props = {
   notes: any[];
   handler: {
     createNote: (id) => void;
     clickANoteHandler: (id) => void;
-    deleteNote: () => void;
+    deleteNote: (id) => void;
     updateNote: () => void;
+    updateFavorite: () => void;
   };
   isLoading: boolean;
 };
 type Ref = MDXEditorMethods;
+
+
 
 const Notes = forwardRef<Ref, Props>((props, ref) => {
   const { notes, handler, isLoading } = props;
@@ -128,26 +142,49 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
                       {noteItem?.title}
                     </Button>
                   </Flex>
-                  <div>
+                  <div
+                  style={
+                    {display: 'flex',
+                    justifyContent: 'space-between'}
+                  }>
+                    <Menu>
+                      <MenuButton
+                        height =  '40px'
+                        width = '40px'
+                        padding = '7px'
+                        transition='all 0.2s'
+                        borderRadius= '50%'
+                        // borderRadius='md'
+                        // borderWidth='1px'
+                        _hover={{ bg: 'gray.100' }}
+                        _expanded={{ bg: 'blue.100' }}
+                        // _focus={{ boxShadow: 'outline' }}
+                      >
+                        <img src={BlackOptionsIcon} alt="options" />
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem>Edit Note</MenuItem>
+                        <MenuItem>
+                        Rename Note
+                        </MenuItem>
+                        <MenuItem>Copy Link</MenuItem>
+                        <MenuDivider />
+                        <MenuItem
+                          onClick={() => handler.deleteNote(noteItem?.id)}
+                        >
+                          Delete Note
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                    
                     <Button
                       variant="ghost"
-                      mr="0.5em"
                       style={{
                         height: "40px",
                         width: "40px",
                         padding: "7px",
                         borderRadius: "50%",
-                      }}
-                    >
-                      <img src={BlackOptionsIcon} alt="options" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      style={{
-                        height: "40px",
-                        width: "40px",
-                        padding: "7px",
-                        borderRadius: "50%",
+                        marginLeft: '0.5em'
                       }}
                       onClick={() => handler.createNote(noteItem?.id)}
                     >
@@ -171,7 +208,7 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
         bg="white"
         sx={{ overflowY: "scroll" }}
       >
-        <Flex justifyContent="right">
+        <Flex justifyContent="right" padding='7px'>
           <Tooltip label="Delete note">
             <Button
               isDisabled={currentNote === undefined}
@@ -182,7 +219,7 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
                 padding: "7px",
                 borderRadius: "50%",
               }}
-              onClick={handler.deleteNote}
+              onClick={() => handler.deleteNote(currentNote?.id)}
             >
               <img src={TrashCanIcon} alt="delete-note" />
             </Button>
@@ -200,6 +237,22 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
               onClick={handler.updateNote}
             >
               <img src={PinIcon} alt="save-note" />
+            </Button>
+          </Tooltip>
+
+          <Tooltip label="Favorite">
+            <Button
+              isDisabled={currentNote === undefined}
+              variant="ghost"
+              style={{
+                height: "40px",
+                width: "40px",
+                padding: "1px",
+                borderRadius: "50%",
+              }}
+              onClick={() => handler.updateFavorite()}
+            >
+              {currentNote?.is_favorited? (<FaStar size={20} color={'#7540EE'}/>) : (<FaRegStar size={20} color={'#7540EE'}/>)}
             </Button>
           </Tooltip>
         </Flex>
