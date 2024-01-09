@@ -32,11 +32,11 @@ export class Note {
   @Column({ type: 'tinyint' })
   read_only: boolean;
 
-  @Column('uuid', { nullable: true })
-  parent_id: string;
+  // @Column('uuid', { nullable: true })
+  // parent_id: string;
 
-  @Column('uuid')
-  user_id: string;
+  // @Column('uuid')
+  // user_id: string;
 
   @CreateDateColumn({
     type: 'timestamp',
@@ -51,10 +51,8 @@ export class Note {
   })
   updated_at: Date;
 
-  @OneToMany(() => Note, (note) => note.parentNote, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => Note, (note) => note.parentNote)
+  @JoinColumn({ name: 'child_notes' })
   childNotes: Note[];
 
   @ManyToOne(() => Note, (note) => note.childNotes, {
@@ -62,7 +60,7 @@ export class Note {
     onUpdate: 'CASCADE',
     nullable: true,
   })
-  @JoinColumn({ name: 'parent_id' })
+  @JoinColumn({ name: 'parent_note' })
   parentNote: Note;
 
   @ManyToOne(() => User, (user) => user.notes, {

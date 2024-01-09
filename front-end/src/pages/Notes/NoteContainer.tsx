@@ -12,7 +12,7 @@ const CREATE_NOTE = "note/add_note";
 const ALL_NOTE = "note/all_note";
 
 function NoteContainer() {
-  const [notes, setNotes] = useState([]);
+  // const [notes, setNotes] = useState([]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const clean = useApp((state) => state.clean);
   const setCurrentNote = useApp((state) => state.setCurrentNote);
@@ -21,6 +21,11 @@ function NoteContainer() {
 
   const auth = useAuthentication((state) => state.auth);
   const setAuth = useAuthentication((state) => state.setAuth);
+
+  const currentTree = useApp((state) => state.currentTree);
+  const setTree = useApp((state) => state.setTree);
+  const clearCurrentTree = useApp((state) => state.clearCurrentTree);
+  const treeItems = useApp((state) => state.treeItems);
 
   const ref = useRef<MDXEditorMethods>();
   const currentNote = useApp((state) => state.currentNote);
@@ -42,15 +47,37 @@ function NoteContainer() {
         }
       );
       console.log(response.data);
-      setNotes(
-        // Replace the state
-        [
-          // with a new array
-          ...notes, // that contains all the old items
-          // and one new item at the end
-          response.data,
-        ]
-      );
+      // setNotes(
+      //   // Replace the state
+      //   [
+      //     // with a new array
+      //     ...notes, // that contains all the old items
+      //     // and one new item at the end
+      //     response.data,
+      //   ]
+      // );
+
+      if (!id) {
+        setTree([
+          ...treeItems,
+          {
+            title: response.data.title,
+            id: response.data.id,
+            childNotes: [],
+          },
+        ]);
+      }
+      // } else {
+      //   currentTree.setNote([
+      //     ...currentTree.notes,
+      //     {
+      //       title: response.data.title,
+      //       id: response.data.id,
+      //       childNotes: [],
+      //     },
+      //   ]);
+      // }
+
       const currentNote = {
         id: response.data.id,
         title: response.data.title,
@@ -58,6 +85,7 @@ function NoteContainer() {
       };
       setCurrentNote(currentNote);
       ref.current?.setMarkdown(markdown);
+      return currentNote;
     } catch (error) {
       console.log(error);
       if (error.response?.status === 403 || error.response?.status === 401) {
@@ -71,13 +99,8 @@ function NoteContainer() {
     setLoading(true);
     console.log(tempState.waitingImage);
     const processedMarkdown: string = ref.current?.getMarkdown().trim();
-
-    // Create a form data object
     const formData = new FormData();
-
-    // Optional, if you want to use a DTO on your server to grab this data
     formData.append("note_ID", currentNote.id);
-
     // Append each of the files
     tempState.waitingImage.forEach((file) => {
       formData.append("files[]", file);
@@ -100,6 +123,15 @@ function NoteContainer() {
         isClosable: true,
       });
       tempState.waitingImage = [];
+      let index = currentTree.notes.findIndex((x) => x.id === currentNote.id);
+      currentTree.setNote([
+        ...currentTree.notes.slice(0, index),
+        {
+          ...currentTree.notes[index],
+          title: currentNote?.title,
+        },
+        ...currentTree.notes.slice(index + 1),
+      ]);
     } catch (error) {
       console.log(error);
       toast({
@@ -117,16 +149,21 @@ function NoteContainer() {
       const response = await axiosJWT.delete(`note/${currentNote.id}`, {
         headers: { "Content-Type": "application/json" },
       });
-      console.log(response.data);
-      setNotes(notes.filter((note) => note.id !== currentNote.id));
+      // setNotes(notes.filter((note) => note.id !== currentNote.id));
+      let index = currentTree.notes.findIndex((x) => x.id === currentNote.id);
+      currentTree.setNote([
+        ...currentTree.notes.slice(0, index),
+        ...currentTree.notes.slice(index + 1),
+      ]);
       setCurrentNote(undefined);
+      clearCurrentTree();
       toast({
         title: `Your note has been deleted.`,
         status: "success",
         isClosable: true,
       });
     } catch (error) {
-      if (error.response?.status === 403) {
+      if (error.response?.status === 403 || error.response?.status === 401) {
         setAuth(undefined);
         clean();
       }
@@ -147,9 +184,13 @@ function NoteContainer() {
           }
         );
         console.log(response.data);
-        isMounted && setNotes(response.data);
+        // isMounted && setNotes(response.data);
+        isMounted && setTree(response.data);
       } catch (error) {
-        if (error.response?.status === 403) setAuth(undefined);
+        if (error.response?.status === 403 || error.response?.status === 401) {
+          setAuth(undefined);
+          clean();
+        }
       }
     };
     getAllNotes();
@@ -159,6 +200,18 @@ function NoteContainer() {
       controller.abort();
     };
   }, []);
+
+  const getANote = async (id) => {
+    try {
+      const response = await axiosJWT.get(`note/${id}`, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const clickANoteHandler = async (id) => {
     try {
@@ -173,6 +226,7 @@ function NoteContainer() {
         content: noteItem?.content,
       });
       ref.current?.setMarkdown(noteItem.content);
+      return noteItem;
     } catch (error) {
       console.log(error);
     }
@@ -180,8 +234,13 @@ function NoteContainer() {
   return (
     <Notes
       ref={ref}
-      notes={notes}
-      handler={{ clickANoteHandler, deleteNote, createNote, updateNote }}
+      handler={{
+        clickANoteHandler,
+        deleteNote,
+        createNote,
+        updateNote,
+        getANote,
+      }}
       isLoading={isLoading}
     />
   );

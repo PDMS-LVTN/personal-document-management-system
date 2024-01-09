@@ -12,21 +12,20 @@ import { ALL_PLUGINS } from "../../editor/_boilerplate";
 import { MDXEditor, MDXEditorMethods } from "@mdxeditor/editor";
 import ToolsIcon from "../../assets/tools-icon.svg";
 import PlusIcon from "../../assets/plus-icon.svg";
-import DownCaret from "../../assets/down-caret.svg";
-import BlackPlusIcon from "../../assets/black-plus-icon.svg";
-import BlackOptionsIcon from "../../assets/black-options-icon.svg";
-import BlackDotIcon from "../../assets/black-dot-icon.svg";
+
 import TrashCanIcon from "../../assets/trashcan-icon.svg";
-import PinIcon from "../../assets/pin-icon.svg";
-import { Suspense, forwardRef } from "react";
+import SaveIcon from "../../assets/save-icon.svg";
+import { Suspense, forwardRef, useState } from "react";
 import { useApp } from "../../store/useApp";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
+import ConfirmModal from "../../components/ConfirmModal";
+import { TreeView } from "../../components/TreeView";
 
 type Props = {
-  notes: any[];
   handler: {
-    createNote: (id) => void;
-    clickANoteHandler: (id) => void;
+    createNote: (id) => any;
+    clickANoteHandler: (id) => any;
+    getANote: (id) => any;
     deleteNote: () => void;
     updateNote: () => void;
   };
@@ -35,9 +34,22 @@ type Props = {
 type Ref = MDXEditorMethods;
 
 const Notes = forwardRef<Ref, Props>((props, ref) => {
-  const { notes, handler, isLoading } = props;
+  const { handler, isLoading } = props;
   const currentNote = useApp((state) => state.currentNote);
   const { onClose } = useDisclosure();
+  const [confirmDeleteNote, setConfirmDelete] = useState(false);
+
+  const treeItems = useApp((state) => state.treeItems);
+
+  const onCloseConfirm = () => {
+    setConfirmDelete(false);
+  };
+
+  const actions = {
+    getNote: handler.getANote,
+    createNote: handler.createNote,
+    clickNote: handler.clickANoteHandler
+  };
 
   return (
     <>
@@ -62,6 +74,7 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
         bg="#FAF9FE"
         pos="relative"
         pt="1em"
+        overflowY="auto"
       >
         <Flex justify="space-between" mb="1em" pl="2em" pr="2em">
           <Text fontSize="2xl" fontWeight="600">
@@ -96,68 +109,10 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
             </Tooltip>
           </div>
         </Flex>
-        {notes.length > 0 ? (
-          notes.map((noteItem) => {
-            return (
-              <Suspense key={noteItem?.id} fallback={<Skeleton />}>
-                <Flex
-                  justify="space-between"
-                  bgColor={currentNote?.id === noteItem?.id ? "brand.50" : ""}
-                  className="note"
-                  pl="2em"
-                  pr="2em"
-                >
-                  <Flex alignItems="center">
-                    <Button
-                      variant="ghost"
-                      mr="0.5em"
-                      style={{
-                        height: "40px",
-                        width: "40px",
-                        padding: "7px",
-                        borderRadius: "50%",
-                      }}
-                    >
-                      <img src={DownCaret} alt="down-caret" />
-                    </Button>
-                    <Button
-                      ml="-1em"
-                      variant="ghost"
-                      onClick={() => handler.clickANoteHandler(noteItem?.id)}
-                    >
-                      {noteItem?.title}
-                    </Button>
-                  </Flex>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      mr="0.5em"
-                      style={{
-                        height: "40px",
-                        width: "40px",
-                        padding: "7px",
-                        borderRadius: "50%",
-                      }}
-                    >
-                      <img src={BlackOptionsIcon} alt="options" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      style={{
-                        height: "40px",
-                        width: "40px",
-                        padding: "7px",
-                        borderRadius: "50%",
-                      }}
-                      onClick={() => handler.createNote(noteItem?.id)}
-                    >
-                      <img src={BlackPlusIcon} alt="plus icon" />
-                    </Button>
-                  </div>
-                </Flex>
-              </Suspense>
-            );
-          })
+        {treeItems.length > 0 ? (
+          <Suspense fallback={<Skeleton />}>
+            <TreeView data={treeItems} actions={actions} />
+          </Suspense>
         ) : (
           <Text pl="2em" pr="2em" color="text.inactive">
             Click <strong>Add</strong> to create a new note
@@ -171,6 +126,13 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
         bg="white"
         sx={{ overflowY: "scroll" }}
       >
+        <ConfirmModal
+          modalTitle="Delete note"
+          config={currentNote?.title}
+          isOpen={confirmDeleteNote}
+          confirmDelete={handler.deleteNote}
+          close={onCloseConfirm}
+        />
         <Flex justifyContent="right">
           <Tooltip label="Delete note">
             <Button
@@ -182,7 +144,9 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
                 padding: "7px",
                 borderRadius: "50%",
               }}
-              onClick={handler.deleteNote}
+              onClick={() => {
+                setConfirmDelete(true);
+              }}
             >
               <img src={TrashCanIcon} alt="delete-note" />
             </Button>
@@ -199,13 +163,13 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
               }}
               onClick={handler.updateNote}
             >
-              <img src={PinIcon} alt="save-note" />
+              <img src={SaveIcon} alt="save-note" />
             </Button>
           </Tooltip>
         </Flex>
         {/* There is only one editor instance.       */}
         {/* This editor is shared between all notes. */}
-        {currentNote ? (
+        {currentNote && currentNote.content ? (
           <Suspense fallback={<Skeleton />}>
             <MDXEditor
               ref={ref}

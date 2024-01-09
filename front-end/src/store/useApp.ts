@@ -7,6 +7,17 @@ export interface Note {
     content: string;
 }
 
+export interface TreeData {
+    title: string;
+    childNotes?: TreeData[];
+    id: string;
+};
+
+interface Tree {
+    notes: any[]
+    setNote: (obj) => void
+}
+
 interface AppStore {
     expired: boolean
     setExpired: (isExpired: boolean) => void
@@ -18,7 +29,14 @@ interface AppStore {
     dirtyNotes: string[]
     addDirtyNote: (noteId: string) => void
     removeDirtyNote: (noteId: string) => void
-    clean: () => void
+    clean: () => void,
+    treeItems: TreeData[],
+    setTree: (data) => void,
+    currentTree: Tree,
+    setCurrentTree: (notes, func) => void,
+    clearCurrentTree: () => void,
+    topLevel: Tree,
+    setTopLevel: (notes, func) => void
 }
 
 export const useApp = create<AppStore>()(devtools(persist((set) => ({
@@ -35,6 +53,13 @@ export const useApp = create<AppStore>()(devtools(persist((set) => ({
         dirtyNotes:
             state.dirtyNotes.filter((id) => id !== noteId)
     })),
-    clean: () => set({ expired: false, currentNote: undefined, dirtyNotes: [] })
+    clean: () => set({ expired: false, currentNote: undefined, dirtyNotes: [], currentTree: null }),
+    treeItems: [],
+    setTree: (data) => set((state) => ({ ...state, treeItems: data })),
+    currentTree: null,
+    setCurrentTree: (notes, func) => set((state) => ({ ...state, currentTree: { notes: notes, setNote: func } })),
+    clearCurrentTree: () => set((state) => ({...state, currentTree: null})),
+    topLevel: null,
+    setTopLevel: (notes, func) => set((state) => ({ ...state, topLevel: { notes: notes, setNote: func } }))
 
 }), { name: "app store" })))
