@@ -32,7 +32,7 @@ function HomeLayout() {
   const clean = useApp((state) => state.clean);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const ref = useRef<MDXEditorMethods>();
+  const ref = useRef<MDXEditorMethods>(null);
 
   return (
     <Grid

@@ -7,7 +7,7 @@ import { ContextType } from "../layouts/TreeAndEditorContainer";
 import { useFavorite } from "../hooks/useFavorite";
 
 function Favorite() {
-  const ref = useOutletContext<ContextType>();
+  const { ref } = useOutletContext<ContextType>();
   const { getFavoriteNotes } = useFavorite();
   const treeItems = useApp((state) => state.treeItems);
 

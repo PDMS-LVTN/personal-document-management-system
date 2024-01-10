@@ -5,7 +5,7 @@ import { useOutletContext } from "react-router-dom";
 import { ContextType } from "../../layouts/TreeAndEditorContainer";
 
 function NoteContainer() {
-  const ref = useOutletContext<ContextType>();
+  const { ref } = useOutletContext<ContextType>();
   const { actions } = useNotes(ref);
 
   useEffect(() => {
@@ -18,11 +18,7 @@ function NoteContainer() {
     };
   }, []);
 
-  return (
-    <Notes
-      editorRef={ref}
-    />
-  );
+  return <Notes editorRef={ref} />;
 }
 
 export default NoteContainer;

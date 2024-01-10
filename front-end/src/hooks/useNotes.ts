@@ -81,13 +81,15 @@ const useNotes = (ref) => {
         tempState.waitingImage.forEach((file) => {
             formData.append("files[]", file);
         });
-        formData.append(
-            "data",
-            JSON.stringify({
-                content: processedMarkdown,
-                title: currentNote?.title,
-            })
-        );
+        // formData.append(
+        //     "data",
+        //     JSON.stringify({
+        //         content: processedMarkdown,
+        //         title: currentNote?.title,
+        //     })
+        // );
+        formData.append("content", processedMarkdown)
+        formData.append("title", currentNote?.title)
         try {
             const response = await axiosJWT.patch(
                 `note/${currentNote.id}`,
@@ -219,6 +221,7 @@ const useNotes = (ref) => {
 
     const clickANoteHandler = async (id) => {
         const noteItem = await getANote(id)
+        console.log(noteItem)
         setCurrentNote({
             title: noteItem?.title,
             id: noteItem?.id,

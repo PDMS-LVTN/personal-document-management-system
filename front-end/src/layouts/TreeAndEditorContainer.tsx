@@ -1,11 +1,11 @@
 import { GridItem } from "@chakra-ui/react";
-import { Fragment, useRef } from "react";
-import { Outlet } from "react-router-dom";
+import { Fragment } from "react";
+import { Outlet, useOutletContext } from "react-router-dom";
 import EditorContainer from "../editor/EditorContainer";
 import { MDXEditorMethods } from "@mdxeditor/editor";
 export type ContextType = { ref: MDXEditorMethods | null };
 function TreeAndEditorContainer() {
-  const ref = useRef<MDXEditorMethods>();
+  const {ref} = useOutletContext<ContextType>();
 
   return (
     <Fragment>
