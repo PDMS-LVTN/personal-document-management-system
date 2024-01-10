@@ -43,12 +43,13 @@ export class NoteService {
           id: true,
           title: true,
         },
-        parentNote: { id: true }
+        parent_id: true,
+        // parentNote: { id: true }
       },
       where: { user: { id: Equal(req.user_id) }, parentNote: IsNull() },
       relations: {
-        parentNote: true,
-        childNotes: true
+        // user: true,
+        childNotes: true,
       },
     });
     // return this.noteRepository.find(); //Display without relations
@@ -64,11 +65,12 @@ export class NoteService {
           id: true,
           title: true
         },
-        parentNote: { id: true }
+        parent_id: true,
+        is_favorited: true,
+        is_pinned: true
       },
       where: { id: Equal(id) },
       relations: {
-        parentNote: true,
         childNotes: true,
         headlinks: true,
         backlinks: true,
@@ -77,11 +79,32 @@ export class NoteService {
     // return this.noteRepository.findOneBy({ id }); //Display without relations
   }
 
+  async findFavoritedNote(req: { user_id: string }) {
+    return await this.noteRepository.find({
+      select: {
+        id: true,
+        title: true,
+      },
+      where: { user_id: Equal(req.user_id), is_favorited: true },
+    });
+  }
+
+  async findPinnedNote(req: { user_id: string }) {
+    return await this.noteRepository.find({
+      select: {
+        id: true,
+        title: true,
+      },
+      where: { user_id: Equal(req.user_id), is_pinned: true },
+    });
+  }
+
   async searchNote(req) {
+    const _ = require('lodash');
     const searchQuery = req.body.keyword;
     const notes_matching_content = await this.noteRepository
       .createQueryBuilder('note')
-      .select(['id AS note_ID', 'title'])
+      .select(['id', 'title'])
       .where('note.user_id = :id', { id: req.body.user_id })
       .andWhere(
         `MATCH(note.content) AGAINST ('${searchQuery}' WITH QUERY EXPANSION)`,
@@ -89,7 +112,11 @@ export class NoteService {
       .getRawMany();
     const notes_matching_image_content =
       await this.imageContentService.searchImageContent(req);
-    return notes_matching_content.concat(notes_matching_image_content);
+    return _.unionBy(
+      notes_matching_content,
+      notes_matching_image_content,
+      'id',
+    );
   }
 
   async updateNote(id, files, req) {
@@ -100,24 +127,26 @@ export class NoteService {
     // Method 2:
 
     // Upload images to upload folder and save in image_content table
+    const data = JSON.parse(req.body.data);
     if (files.length > 0) {
-      try { await this.imageContentService.uploadImage(files, req); }
+      try { await this.imageContentService.uploadImage(files, req, id); }
       catch (err) {
         console.log(err)
         throw err
       }
+
       // Retrieve note's content and edit image's url (replace blob by localhost)
-      req.body.content = req.body.content.replaceAll(
-        'blob\\' + ':' + 'http://localhost:5173',
-        process.env.IMAGE_SERVER_PATH,
-      );
+      if (data.content) {
+        data.content = data.content.replaceAll(
+          'blob\\' + ':' + 'http://localhost:5173',
+          process.env.IMAGE_SERVER_PATH,
+        );
+      }
     }
 
     // Update a note with title and content
-    const updateNoteDto: UpdateNoteDto = {
-      title: req.body.title,
-      content: req.body.content,
-    };
+    console.log(data);
+    const updateNoteDto: UpdateNoteDto = data;
     return this.noteRepository.update(id, updateNoteDto);
   }
 

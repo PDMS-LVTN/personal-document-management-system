@@ -22,7 +22,7 @@ export class ImageContentService {
     private readonly httpService: HttpService,
   ) {}
 
-  async uploadImage(files, req) {
+  async uploadImage(files, req, note_ID) {
     const response = [];
     files.map((file: any) => {
       const fileName = file.originalname;
@@ -71,7 +71,7 @@ export class ImageContentService {
         path: '',
         content: '',
       };
-      relFile.note_ID = req.body.note_ID.toString();
+      relFile.note_ID = note_ID.toString();
       relFile.path = entry[0];
       relFile.content = entry[1] as string;
       rel.push(relFile);
@@ -105,7 +105,7 @@ export class ImageContentService {
       .innerJoinAndSelect('image_content.note', 'note', 'note.user_id = :id', {
         id: req.body.user_id,
       })
-      .select(['note_ID', 'note.title AS title'])
+      .select(['note_ID as id', 'note.title AS title'])
       .where(
         `MATCH(image_content.content) AGAINST ('${searchQuery}' WITH QUERY EXPANSION)`,
       )

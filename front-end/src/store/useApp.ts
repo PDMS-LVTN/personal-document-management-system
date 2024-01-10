@@ -6,12 +6,15 @@ export interface Note {
     title: string;
     content: string;
     parent?: string
+    is_favorited?: boolean;
+    is_pinned?: boolean;
 }
 
 export interface TreeData {
     title: string;
     childNotes?: TreeData[];
     id: string;
+    parent?: string
 };
 
 interface Tree {
@@ -58,5 +61,4 @@ export const useApp = create<AppStore>()(devtools(persist((set) => ({
     currentTree: null,
     setCurrentTree: (notes, func) => set((state) => ({ ...state, currentTree: { notes: notes, setNote: func } })),
     clearCurrentTree: () => set((state) => ({ ...state, currentTree: null })),
-
 }), { name: "app store" })))

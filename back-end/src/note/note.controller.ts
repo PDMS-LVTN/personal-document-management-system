@@ -21,7 +21,7 @@ import path = require('path');
 @ApiTags('note')
 @Controller('api/note/')
 export class NoteController {
-  constructor(private readonly noteService: NoteService) { }
+  constructor(private readonly noteService: NoteService) {}
 
   @Post('add_note')
   async createNote(@Body() createNoteDto: CreateNoteDto) {
@@ -38,6 +38,16 @@ export class NoteController {
   @Get(':id')
   findOneNote(@Param('id') id: string) {
     return this.noteService.findOneNote(id);
+  }
+
+  @Post('favorited_note')
+  findFavoritedNote(@Body() req: { user_id: string }) {
+    return this.noteService.findFavoritedNote(req);
+  }
+
+  @Post('pinned_note')
+  findPinnedNote(@Body() req: { user_id: string }) {
+    return this.noteService.findPinnedNote(req);
   }
 
   @Post('search')

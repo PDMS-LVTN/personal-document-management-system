@@ -18,16 +18,18 @@ import SaveIcon from "../../assets/save-icon.svg";
 import { Suspense, forwardRef, useState } from "react";
 import { useApp } from "../../store/useApp";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
+import { FaRegStar, FaStar } from "react-icons/fa";
 import ConfirmModal from "../../components/ConfirmModal";
 import { TreeView } from "../../components/TreeView";
 
 type Props = {
   handler: {
+    deleteNote: (id) => void;
     createNote: (id) => any;
     clickANoteHandler: (id) => any;
     getANote: (id) => any;
-    deleteNote: () => void;
     updateNote: () => void;
+    updateFavorite: () => void;
   };
   isLoading: boolean;
 };
@@ -48,7 +50,8 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
   const actions = {
     getNote: handler.getANote,
     createNote: handler.createNote,
-    clickNote: handler.clickANoteHandler
+    clickNote: handler.clickANoteHandler,
+    deleteNote: handler.deleteNote,
   };
 
   return (
@@ -109,7 +112,7 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
             </Tooltip>
           </div>
         </Flex>
-        {treeItems.length > 0 ? (
+        {treeItems && treeItems.length > 0 ? (
           <Suspense fallback={<Skeleton />}>
             <TreeView data={treeItems} actions={actions} />
           </Suspense>
@@ -130,7 +133,7 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
           modalTitle="Delete note"
           config={currentNote?.title}
           isOpen={confirmDeleteNote}
-          confirmDelete={handler.deleteNote}
+          confirmDelete={() => handler.deleteNote(currentNote.id)}
           close={onCloseConfirm}
         />
         <Flex justifyContent="right">
@@ -164,6 +167,25 @@ const Notes = forwardRef<Ref, Props>((props, ref) => {
               onClick={handler.updateNote}
             >
               <img src={SaveIcon} alt="save-note" />
+            </Button>
+          </Tooltip>
+          <Tooltip label="Favorite">
+            <Button
+              isDisabled={currentNote === undefined}
+              variant="ghost"
+              style={{
+                height: "40px",
+                width: "40px",
+                padding: "1px",
+                borderRadius: "50%",
+              }}
+              onClick={handler.updateFavorite}
+            >
+              {currentNote?.is_favorited ? (
+                <FaStar size={20} color="#7540EE" />
+              ) : (
+                <FaRegStar size={20} color="#7540EE" />
+              )}
             </Button>
           </Tooltip>
         </Flex>

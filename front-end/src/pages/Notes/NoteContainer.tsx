@@ -57,7 +57,6 @@ function NoteContainer() {
       // );
 
       if (!id) {
-        console.log("hello");
         setTree([
           ...treeItems,
           {
@@ -72,6 +71,10 @@ function NoteContainer() {
         id: response.data.id,
         title: response.data.title,
         content: response.data.content,
+        parent: response.data.parentNote.id,
+        is_favorited: false,
+        is_pinned: false,
+        // ...response.data,
       };
       setCurrentNote(currentNote);
       ref.current?.setMarkdown(markdown);
@@ -90,13 +93,17 @@ function NoteContainer() {
     console.log(tempState.waitingImage);
     const processedMarkdown: string = ref.current?.getMarkdown().trim();
     const formData = new FormData();
-    formData.append("note_ID", currentNote.id);
     // Append each of the files
     tempState.waitingImage.forEach((file) => {
       formData.append("files[]", file);
     });
-    formData.append("content", processedMarkdown);
-    formData.append("title", currentNote?.title);
+    formData.append(
+      "data",
+      JSON.stringify({
+        content: processedMarkdown,
+        title: currentNote?.title,
+      })
+    );
 
     try {
       const response = await axiosJWT.patch(
@@ -148,26 +155,67 @@ function NoteContainer() {
     setLoading(false);
   };
 
-  const deleteNote = async () => {
+  const updateFavorite = async () => {
+    const formData = new FormData();
+
+    formData.append(
+      "data",
+      JSON.stringify({
+        is_favorited: !currentNote?.is_favorited,
+      })
+    );
+
     try {
-      const response = await axiosJWT.delete(`note/${currentNote.id}`, {
+      const response = await axiosJWT.patch(
+        `note/${currentNote.id}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      setCurrentNote({
+        ...currentNote,
+        is_favorited: !currentNote.is_favorited,
+      });
+      console.log(response);
+      toast({
+        title: `Your note has been updated. 🙂`,
+        status: "success",
+        isClosable: true,
+      });
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: `Some error happened! 😢`,
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
+
+  const deleteNote = async (id) => {
+    try {
+      const response = await axiosJWT.delete(`note/${id}`, {
         headers: { "Content-Type": "application/json" },
       });
 
-      console.log(currentNote.parent);
-      if (!currentNote.parent) {
-        let index = treeItems.findIndex((x) => x.id === currentNote.id);
-        setTree([...treeItems.slice(0, index), ...treeItems.slice(index + 1)]);
-      } else {
-        let index = currentTree.notes.findIndex((x) => x.id === currentNote.id);
-        currentTree.setNote([
-          ...currentTree.notes.slice(0, index),
-          ...currentTree.notes.slice(index + 1),
-        ]);
+      if (currentNote && currentNote?.id == id) {
+        if (!currentNote.parent) {
+          let index = treeItems.findIndex((x) => x.id === id);
+          setTree([
+            ...treeItems.slice(0, index),
+            ...treeItems.slice(index + 1),
+          ]);
+        } else {
+          let index = currentTree.notes.findIndex((x) => x.id === id);
+          currentTree.setNote([
+            ...currentTree.notes.slice(0, index),
+            ...currentTree.notes.slice(index + 1),
+          ]);
+        }
+        setCurrentNote(undefined);
+        clearCurrentTree();
       }
-
-      setCurrentNote(undefined);
-      clearCurrentTree();
       toast({
         title: `Your note has been deleted.`,
         status: "success",
@@ -234,7 +282,9 @@ function NoteContainer() {
         title: noteItem?.title,
         id: noteItem?.id,
         content: noteItem?.content,
-        parent: noteItem?.parentNote,
+        parent: noteItem?.parent_id,
+        is_favorited: noteItem.is_favorited,
+        is_pinned: noteItem.is_pinned,
       });
       ref.current?.setMarkdown(noteItem.content);
       return noteItem;
@@ -251,6 +301,7 @@ function NoteContainer() {
         createNote,
         updateNote,
         getANote,
+        updateFavorite,
       }}
       isLoading={isLoading}
     />
