@@ -20,14 +20,14 @@ export class ImageContent {
   @Column({ type: 'longtext' })
   content: string;
 
-  @Column('uuid')
-  note_ID: string;
+  // @Column('uuid')
+  // note_ID: string;
 
   @OneToOne(() => Note, (note) => note.id, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     nullable: false,
   })
-  @JoinColumn({ name: 'note_ID', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'note_ID'})
   note: Note;
 }

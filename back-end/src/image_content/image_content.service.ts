@@ -61,7 +61,6 @@ export class ImageContentService {
     );
 
     const results = ocr_res.data;
-    // console.log(results);
 
     // Map results to rel (array of dto) and pass to uploadImage service
     const rel: CreateImageContentDto[] = [];

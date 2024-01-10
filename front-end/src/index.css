@@ -47,3 +47,8 @@
   z-index: 1;
   border-right: 2px solid transparent;
 }
+
+.chakra-accordion__panel {
+  -webkit-padding-end: 0 !important;
+  padding-inline-end: 0 !important;
+}

@@ -5,8 +5,21 @@ export interface Note {
     id: string;
     title: string;
     content: string;
-    is_favorited: boolean;
-    is_pinned: boolean;
+    parent?: string
+    is_favorited?: boolean;
+    is_pinned?: boolean;
+}
+
+export interface TreeData {
+    title: string;
+    childNotes?: TreeData[];
+    id: string;
+    parent?: string
+};
+
+interface Tree {
+    notes: any[]
+    setNote: (obj) => void
 }
 
 interface AppStore {
@@ -20,7 +33,12 @@ interface AppStore {
     dirtyNotes: string[]
     addDirtyNote: (noteId: string) => void
     removeDirtyNote: (noteId: string) => void
-    clean: () => void
+    clean: () => void,
+    treeItems: TreeData[],
+    setTree: (data) => void,
+    currentTree: Tree,
+    setCurrentTree: (notes, func) => void,
+    clearCurrentTree: () => void,
 }
 
 export const useApp = create<AppStore>()(devtools(persist((set) => ({
@@ -37,6 +55,10 @@ export const useApp = create<AppStore>()(devtools(persist((set) => ({
         dirtyNotes:
             state.dirtyNotes.filter((id) => id !== noteId)
     })),
-    clean: () => set({ expired: false, currentNote: undefined, dirtyNotes: [] })
-
+    clean: () => set({ expired: false, currentNote: undefined, dirtyNotes: [], currentTree: undefined, treeItems: undefined }),
+    treeItems: [],
+    setTree: (data) => set((state) => ({ ...state, treeItems: data })),
+    currentTree: null,
+    setCurrentTree: (notes, func) => set((state) => ({ ...state, currentTree: { notes: notes, setNote: func } })),
+    clearCurrentTree: () => set((state) => ({ ...state, currentTree: null })),
 }), { name: "app store" })))

@@ -78,8 +78,8 @@ export class NoteController {
       },
     }),
   )
-  updateNote(@Param('id') id: string, @UploadedFiles() files, @Req() req) {
-    return this.noteService.updateNote(id, files, req);
+  async updateNote(@Param('id') id: string, @UploadedFiles() files, @Req() req) {
+    return await this.noteService.updateNote(id, files, req).catch(err => { throw err });
   }
 
   @Delete(':id')

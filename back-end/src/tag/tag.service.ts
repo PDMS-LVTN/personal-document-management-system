@@ -19,11 +19,11 @@ export class TagService {
 
   findAllTag(req: { user_id: string }) {
     return this.tagRepository.find({
-      where: {
-        notes: {
-          user_id: Equal(req.user_id),
-        },
-      },
+      // where: {
+      //   notes: {
+      //     user_id: Equal(req.user_id),
+      //   },
+      // },
       relations: {
         notes: true,
       },
