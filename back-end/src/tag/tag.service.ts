@@ -4,6 +4,7 @@ import { UpdateTagDto } from './dto/update-tag.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, Repository } from 'typeorm';
 import { Tag } from './entities/tag.entity';
+import { Note } from '../note/entities/note.entity';
 
 @Injectable()
 export class TagService {
@@ -12,25 +13,27 @@ export class TagService {
     private readonly tagRepository: Repository<Tag>,
   ) {}
 
-  createTag(createTagDto: CreateTagDto) {
-    const newTag = this.tagRepository.create(createTagDto);
+  async createTag(createTagDto: CreateTagDto) {
+    const tag = new Tag();
+    if (createTagDto.notes.length > 0) {
+      tag.notes = createTagDto.notes.map((id) => ({ id })) as Note[];
+    }
+    tag.description = createTagDto.description;
+    const newTag = this.tagRepository.create(tag);
     return this.tagRepository.save(newTag);
   }
 
-  findAllTag(req: { user_id: string }) {
+  async findAllTag(req: { user_id: string }) {
     return this.tagRepository.find({
-      // where: {
-      //   notes: {
-      //     user_id: Equal(req.user_id),
-      //   },
-      // },
-      relations: {
-        notes: true,
+      where: {
+        notes: {
+          user_id: Equal(req.user_id),
+        },
       },
     });
   }
 
-  findOneTag(id: string) {
+  async findOneTag(id: string) {
     return this.tagRepository.findOne({
       where: { id: Equal(id) },
       relations: {
@@ -39,11 +42,7 @@ export class TagService {
     });
   }
 
-  updateTag(id: string, updateTagDto: UpdateTagDto) {
-    return this.tagRepository.update(id, updateTagDto);
-  }
-
-  removeTag(id: string) {
-    return this.tagRepository.delete(id);
+  async removeTag(id: string) {
+    return await this.tagRepository.delete(id);
   }
 }

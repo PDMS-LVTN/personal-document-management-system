@@ -9,12 +9,15 @@ import { ImageContentService } from '../image_content/image_content.service';
 import { ImageContentModule } from '../image_content/image_content.module';
 import { ImageContentController } from '../image_content/image_content.controller';
 import { HttpModule } from '@nestjs/axios';
+import { Tag } from '../tag/entities/tag.entity';
+import { TagModule } from '../tag/tag.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Note, User, ImageContent]),
+    TypeOrmModule.forFeature([Note, User, ImageContent, Tag]),
     ImageContentModule,
     HttpModule,
+    TagModule,
   ],
   controllers: [NoteController, ImageContentController],
   providers: [NoteService, ImageContentService],

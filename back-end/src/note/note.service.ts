@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
-import { Equal, IsNull, Repository } from 'typeorm';
+import { Between, Equal, In, IsNull, Repository } from 'typeorm';
 import { Note } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImageContent } from '../image_content/entities/image_content.entity';
 import { ImageContentService } from '../image_content/image_content.service';
 import { User } from '../user/entities/user.entity';
+import { Tag } from '../tag/entities/tag.entity';
 
 require('dotenv').config();
 
@@ -18,9 +19,9 @@ export class NoteService {
     @InjectRepository(ImageContent)
     private readonly imageContentRepository: Repository<ImageContent>,
     private readonly imageContentService: ImageContentService,
-    // @InjectRepository(User)
-    // private readonly userRepository: Repository<User>
-  ) { }
+    @InjectRepository(Tag)
+    private readonly tagRepository: Repository<Tag>,
+  ) {}
 
   async createNote(createNoteDto: CreateNoteDto) {
     const user = new User({ id: createNoteDto.user_id })
@@ -74,6 +75,7 @@ export class NoteService {
         childNotes: true,
         headlinks: true,
         backlinks: true,
+        tags: true,
       },
     });
     // return this.noteRepository.findOneBy({ id }); //Display without relations
@@ -96,6 +98,44 @@ export class NoteService {
         title: true,
       },
       where: { user_id: Equal(req.user_id), is_pinned: true },
+    });
+  }
+
+  async filterNote(req) {
+    const tagIdList = req.tags;
+    const sort_key = Object.keys(req.sort_by)[0];
+    const sort_value = Object.values(req.sort_by)[0];
+
+    return await this.noteRepository.find({
+      select: {
+        id: true,
+        title: true,
+        childNotes: {
+          id: true,
+          title: true,
+        },
+        parent_id: true,
+        // parentNote: { id: true }
+      },
+      where: {
+        user: { id: Equal(req.user_id) },
+        parentNote: IsNull(),
+        updated_at:
+          req.date_from && req.date_to
+            ? Between(req.date_from, req.date_to)
+            : undefined,
+        tags: {
+          id: tagIdList?.length > 0 ? In(tagIdList) : undefined,
+        },
+      },
+      order: {
+        created_at: sort_key === 'created_at' ? sort_value : undefined,
+        updated_at: sort_key === 'updated_at' ? sort_value : undefined,
+      },
+      relations: {
+        // parentNote: true,
+        childNotes: true,
+      },
     });
   }
 
