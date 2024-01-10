@@ -33,7 +33,7 @@ function HomeLayout() {
       gap="2px"
       bg="#E9E9E9"
     >
-      <GridItem rowSpan={1} colSpan={1} bg="white">
+      <GridItem rowSpan={1} colSpan={1} bg="white" id="logo-grid-item">
         <Logo type="dark" />
       </GridItem>
       <GridItem
@@ -44,6 +44,7 @@ function HomeLayout() {
         alignItems="center"
         pl="2em"
         pr="2em"
+        id="search-box-grid-item"
       >
         <InputGroup>
           <Input variant="flushed" placeholder="What are you looking for?" />
@@ -62,11 +63,11 @@ function HomeLayout() {
         pr="2em"
         pl="2em"
         gap="1em"
+        id="info-grid-item"
       >
         <Flex justifyContent="left" alignItems="center" gap="1em">
           <Suspense fallback={<Skeleton />}>
             <Input
-              // w="5em"
               variant="unstyled"
               value={currentNote ? currentNote.title : ""}
               onChange={(e) => {
@@ -94,7 +95,7 @@ function HomeLayout() {
           </Button>
         </Flex>
       </GridItem>
-      <GridItem rowSpan={1} colSpan={1} bg="white">
+      <GridItem rowSpan={1} colSpan={1} bg="white" id="sidebar-grid-item">
         <SideBar />
       </GridItem>
       <Outlet />

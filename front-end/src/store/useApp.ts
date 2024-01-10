@@ -46,7 +46,7 @@ export const useApp = create<AppStore>()(devtools(persist((set) => ({
     setExpired: (isExpired) => set((state) => ({ ...state, expired: isExpired })),
     currentTab: "note",
     setCurrentTab: (tab) => set((state) => ({ ...state, currentTab: tab })),
-    currentNote: undefined,
+    currentNote: null,
     setCurrentNote: (note) => set((state) => ({ ...state, currentNote: note })),
     dirtyNotes: [],
     addDirtyNote: (noteId) => set((state) => ({ ...state, dirtyNotes: [...state.dirtyNotes, noteId] })),
@@ -55,7 +55,7 @@ export const useApp = create<AppStore>()(devtools(persist((set) => ({
         dirtyNotes:
             state.dirtyNotes.filter((id) => id !== noteId)
     })),
-    clean: () => set({ expired: false, currentNote: undefined, dirtyNotes: [], currentTree: undefined, treeItems: undefined }),
+    clean: () => set({ expired: false, currentNote: null, dirtyNotes: [], currentTree: null, treeItems: null}),
     treeItems: [],
     setTree: (data) => set((state) => ({ ...state, treeItems: data })),
     currentTree: null,

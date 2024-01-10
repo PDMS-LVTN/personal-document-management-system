@@ -187,7 +187,7 @@ export class NoteService {
     // Update a note with title and content
     console.log(data);
     const updateNoteDto: UpdateNoteDto = data;
-    return this.noteRepository.update(id, updateNoteDto);
+    return await this.noteRepository.update(id, updateNoteDto);
   }
 
   async removeNote(id: string) {
