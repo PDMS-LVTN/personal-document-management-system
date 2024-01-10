@@ -15,7 +15,6 @@ function Favorite() {
     let isMounted = true;
     const controller = new AbortController();
     getFavoriteNotes(controller, isMounted);
-
     return () => {
       isMounted = false;
       controller.abort();
@@ -26,7 +25,7 @@ function Favorite() {
     <>
       <Flex justify="space-between" mb="1em" pl="2em" pr="2em" id="notes">
         <Text fontSize="2xl" fontWeight="600">
-          Favorite
+          Favorites
         </Text>
       </Flex>
       {treeItems && treeItems.length > 0 ? (

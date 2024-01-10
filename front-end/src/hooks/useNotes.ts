@@ -73,6 +73,7 @@ const useNotes = (ref) => {
 
     const updateNote = async () => {
         setLoading(true);
+        console.log("update")
         console.log(tempState.waitingImage);
         const processedMarkdown: string = ref.current?.getMarkdown().trim();
         const formData = new FormData();
@@ -128,6 +129,7 @@ const useNotes = (ref) => {
                     ]);
                 }
             }
+            setLoading(false);
         } catch (error) {
             console.log(error);
             toast({
@@ -135,8 +137,8 @@ const useNotes = (ref) => {
                 status: "error",
                 isClosable: true,
             });
+            setLoading(false);
         }
-        setLoading(false);
     }
 
     const deleteNote = async (id) => {
@@ -181,6 +183,7 @@ const useNotes = (ref) => {
     };
 
     const getAllNotes = async (controller, isMounted) => {
+        setLoading(true);
         try {
             const response = await axiosJWT.post(
                 APIEndPoints.ALL_NOTE,
@@ -192,11 +195,13 @@ const useNotes = (ref) => {
             );
             console.log(response.data);
             isMounted && setTree(response.data);
+            setLoading(false)
         } catch (error) {
             if (error.response?.status === 403 || error.response?.status === 401) {
                 setAuth(undefined);
                 clean();
             }
+            setLoading(false)
         }
     }
 
@@ -213,28 +218,42 @@ const useNotes = (ref) => {
     }
 
     const clickANoteHandler = async (id) => {
-        try {
-            const response = await axiosJWT.get(`note/${id}`, {
-                headers: { "Content-Type": "application/json" },
-            });
-            console.log(response.data);
-            const noteItem = response.data;
-            setCurrentNote({
-                title: noteItem?.title,
-                id: noteItem?.id,
-                content: noteItem?.content,
-                parent: noteItem?.parent_id,
-                is_favorited: noteItem.is_favorited,
-                is_pinned: noteItem.is_pinned,
-            });
-            ref.current?.setMarkdown(noteItem.content);
-            return noteItem;
-        } catch (error) {
-            console.log(error);
-        }
+        const noteItem = await getANote(id)
+        setCurrentNote({
+            title: noteItem?.title,
+            id: noteItem?.id,
+            content: noteItem?.content,
+            parent: noteItem?.parent_id,
+            is_favorited: noteItem.is_favorited,
+            is_pinned: noteItem.is_pinned,
+        });
+        ref.current?.setMarkdown(noteItem.content);
+        return noteItem;
     }
 
-    return { isLoading, actions: { createNote, updateNote, deleteNote, getAllNotes, getANote, clickANoteHandler } }
+    const handleSearch = async (keyword) => {
+        setLoading(true)
+        try {
+            const response = await axiosJWT.post(
+                APIEndPoints.SEARCH,
+                JSON.stringify({ user_id: auth.id, keyword: keyword }),
+                {
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+            console.log(response.data);
+            setLoading(false)
+            return response.data
+        } catch (error) {
+            if (error.response?.status === 403 || error.response?.status === 401) {
+                setAuth(undefined);
+                clean();
+            }
+            setLoading(false)
+        }
+    };
+
+    return { isLoading, actions: { createNote, updateNote, deleteNote, getAllNotes, getANote, clickANoteHandler, handleSearch } }
 }
 
 export default useNotes;

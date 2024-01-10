@@ -24,6 +24,7 @@ const Notes = ({ editorRef }) => {
 
   return (
     <>
+    {/*BUG: where is the spinner?*/}
       <Modal isOpen={isLoading} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

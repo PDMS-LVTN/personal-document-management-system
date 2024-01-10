@@ -11,12 +11,11 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
-  Spinner,
   Text,
   Tooltip,
   useAccordionItemState,
 } from "@chakra-ui/react";
-import { Fragment, Suspense, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import BlackPlusIcon from "../assets/black-plus-icon.svg";
 import BlackOptionsIcon from "../assets/black-options-icon.svg";
 import { useApp } from "../store/useApp";
@@ -35,7 +34,7 @@ const TreeItem = ({
   const setCurrentTree = useApp((state) => state.setCurrentTree);
   const setTree = useApp((state) => state.setTree);
   const treeItems = useApp((state) => state.treeItems);
-  const {actions} = useNotes(editorRef);
+  const { actions } = useNotes(editorRef);
 
   // const setCurrentNote = useApp((state) => state.setCurrentNote);
   return (
@@ -126,7 +125,7 @@ const TreeItem = ({
               onClick={async () => {
                 const response = await actions.getANote(noteItem.id);
                 const newNote = await actions.createNote(noteItem.id);
-                console.log("in menu")
+                console.log("in menu");
                 console.log(response);
                 setLocalTreeItems([
                   ...localTreeItems.slice(0, index),
@@ -149,10 +148,7 @@ const TreeItem = ({
   );
 };
 
-export const TreeView = ({
-  data,
-  editorRef
-}) => {
+export const TreeView = ({ data, editorRef }) => {
   const [treeItems, setTreeItems] = useState(data);
   useEffect(() => {
     setTreeItems(data);

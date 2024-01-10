@@ -183,9 +183,7 @@ export class NoteService {
         );
       }
     }
-
     // Update a note with title and content
-    console.log(data);
     const updateNoteDto: UpdateNoteDto = data;
     return await this.noteRepository.update(id, updateNoteDto);
   }

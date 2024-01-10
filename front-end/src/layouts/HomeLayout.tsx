@@ -2,20 +2,26 @@ import { Outlet } from "react-router-dom";
 import {
   Grid,
   GridItem,
-  InputGroup,
-  InputRightElement,
   Input,
   Button,
   Flex,
   Skeleton,
+  Text,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  useDisclosure,
 } from "@chakra-ui/react";
 import Logo from "../components/Logo";
-import SearchIcon from "../assets/search-icon.svg";
+import { IoIosSearch } from "react-icons/io";
 import SignOutIcon from "../assets/sign-out-icon.svg";
 import SideBar from "../components/SideBar";
 import { useAuthentication } from "../store/useAuth";
 import { useApp } from "../store/useApp";
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
+import SearchModal from "../components/SearchModal";
+import { MDXEditorMethods } from "@mdxeditor/editor";
 
 function HomeLayout() {
   const auth = useAuthentication((state) => state.auth);
@@ -24,6 +30,9 @@ function HomeLayout() {
   const currentNote = useApp((state) => state.currentNote);
   const setCurrentNote = useApp((state) => state.setCurrentNote);
   const clean = useApp((state) => state.clean);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const ref = useRef<MDXEditorMethods>();
 
   return (
     <Grid
@@ -42,16 +51,30 @@ function HomeLayout() {
         bg="#FAF9FE"
         display="flex"
         alignItems="center"
-        pl="2em"
-        pr="2em"
+        pl="1em"
+        pr="1em"
         id="search-box-grid-item"
       >
-        <InputGroup>
-          <Input variant="flushed" placeholder="What are you looking for?" />
-          <InputRightElement>
-            <img src={SearchIcon} alt="search-icon" />
-          </InputRightElement>
-        </InputGroup>
+        <Modal isOpen={isOpen} onClose={onClose} size="3xl">
+          <ModalOverlay />
+          <ModalContent maxHeight="2xl">
+            <ModalBody>
+              <SearchModal editorRef={ref} close={onClose}/>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+        <Button
+          variant="ghost"
+          w="100%"
+          display="flex"
+          justifyContent="space-between"
+          onClick={onOpen}
+        >
+          <Text fontWeight="normal" color="text.inactive">
+            What are you looking for?
+          </Text>
+          <IoIosSearch size={25} color="var(--brand400)" />
+        </Button>
       </GridItem>
       <GridItem
         rowSpan={1}
@@ -98,7 +121,7 @@ function HomeLayout() {
       <GridItem rowSpan={1} colSpan={1} bg="white" id="sidebar-grid-item">
         <SideBar />
       </GridItem>
-      <Outlet />
+      <Outlet context={{ ref }} />
     </Grid>
   );
 }
