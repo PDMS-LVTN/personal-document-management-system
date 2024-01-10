@@ -32,11 +32,6 @@ export class TagController {
     return this.tagService.findOneTag(id);
   }
 
-  @Patch(':id')
-  updateTag(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
-    return this.tagService.updateTag(id, updateTagDto);
-  }
-
   @Delete(':id')
   removeTag(@Param('id') id: string) {
     return this.tagService.removeTag(id);

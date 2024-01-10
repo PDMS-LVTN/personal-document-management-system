@@ -5,7 +5,7 @@ export class CreateDb1700932210177 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE \`tag\` (\`id\` varchar(36) NOT NULL, \`description\` varchar(255) NOT NULL, \`note_ID\` varchar(36) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`tag\` (\`id\` varchar(36) NOT NULL, \`description\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`user\` (\`id\` varchar(36) NOT NULL, \`email\` varchar(255) NOT NULL, \`password\` varchar(255) NOT NULL, \`refresh_token\` text NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,

@@ -50,6 +50,20 @@ export class NoteController {
     return this.noteService.findPinnedNote(req);
   }
 
+  @Post('filter')
+  filterNote(
+    @Body()
+    req: {
+      user_id: string;
+      sort_by?: Object;
+      tags?: Array<string>;
+      date_from?: Date;
+      date_to?: Date;
+    },
+  ) {
+    return this.noteService.filterNote(req);
+  }
+
   @Post('search')
   searchNote(@Req() req: { user_id: string; keyword: string }) {
     return this.noteService.searchNote(req);
