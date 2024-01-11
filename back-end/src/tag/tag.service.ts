@@ -19,22 +19,21 @@ export class TagService {
       tag.notes = createTagDto.notes.map((id) => ({ id })) as Note[];
     }
     tag.description = createTagDto.description;
+    tag.user_id = createTagDto.user_id;
     const newTag = this.tagRepository.create(tag);
-    return this.tagRepository.save(newTag);
+    return await this.tagRepository.save(newTag);
   }
 
   async findAllTag(req: { user_id: string }) {
-    return this.tagRepository.find({
+    return await this.tagRepository.find({
       where: {
-        notes: {
-          user_id: Equal(req.user_id),
-        },
+        user_id: Equal(req.user_id),
       },
     });
   }
 
   async findOneTag(id: string) {
-    return this.tagRepository.findOne({
+    return await this.tagRepository.findOne({
       where: { id: Equal(id) },
       relations: {
         notes: true,
@@ -42,7 +41,23 @@ export class TagService {
     });
   }
 
-  async removeTag(id: string) {
-    return await this.tagRepository.delete(id);
+  async removeTag(id: string, req) {
+    if (req.note_id === '') {
+      return await this.tagRepository.delete(id);
+    }
+    const tag = await this.tagRepository.findOne({
+      relations: {
+        notes: true,
+      },
+      where: { id: Equal(id) },
+    });
+    tag.notes = tag.notes.filter((note) => {
+      return note.id !== req.note_id;
+    });
+    try {
+      await this.tagRepository.save(tag);
+    } catch (e) {
+      return 'Error when remove a tag from note';
+    }
   }
 }

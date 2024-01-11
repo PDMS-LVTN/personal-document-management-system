@@ -20,8 +20,8 @@ export class Tag {
   // @Column({ type: 'varchar', width: 36 })
   // note_ID: string;
 
-  // @Column({ type: 'varchar', width: 36 })
-  // user_ID: string;
+  @Column({ type: 'varchar', width: 36 })
+  user_id: string;
 
   @ManyToMany(() => Note, (note) => note.tags, {
     onDelete: 'CASCADE',

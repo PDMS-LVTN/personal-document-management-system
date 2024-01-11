@@ -22,7 +22,7 @@ export class TagController {
     return this.tagService.createTag(createTagDto);
   }
 
-  @Get('all_tag')
+  @Post('all_tag')
   findAllTag(@Body() req: { user_id: string }) {
     return this.tagService.findAllTag(req);
   }
@@ -33,7 +33,7 @@ export class TagController {
   }
 
   @Delete(':id')
-  removeTag(@Param('id') id: string) {
-    return this.tagService.removeTag(id);
+  removeTag(@Param('id') id: string, @Body() req: { note_id: string }) {
+    return this.tagService.removeTag(id, req);
   }
 }
