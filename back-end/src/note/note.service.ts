@@ -21,17 +21,17 @@ export class NoteService {
     private readonly imageContentService: ImageContentService,
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
-  ) { }
+  ) {}
 
   async createNote(createNoteDto: CreateNoteDto) {
-    const user = new User({ id: createNoteDto.user_id })
-    const parent_note = new Note()
-    parent_note.id = createNoteDto.parent_id
+    const user = new User({ id: createNoteDto.user_id });
+    const parent_note = new Note();
+    parent_note.id = createNoteDto.parent_id;
     const newNote = this.noteRepository.create(createNoteDto);
     // user.notes=[newNote]
     // await this.userRepository.save(user);
-    newNote.parentNote = parent_note
-    newNote.user = user
+    newNote.parentNote = parent_note;
+    newNote.user = user;
     return await this.noteRepository.save(newNote);
   }
 
@@ -64,11 +64,11 @@ export class NoteService {
         content: true,
         childNotes: {
           id: true,
-          title: true
+          title: true,
         },
         parent_id: true,
         is_favorited: true,
-        is_pinned: true
+        is_pinned: true,
       },
       where: { id: Equal(id) },
       relations: {
@@ -165,25 +165,28 @@ export class NoteService {
     // Object.assign(note, updateNoteDto);
     // return await this.noteRepository.save(note);
     // Method 2:
+    const data = JSON.parse(req.body.data);
+    req.body = data;
 
     // Upload images to upload folder and save in image_content table
     if (files.length > 0) {
-      try { await this.imageContentService.uploadImage(files, req, id); }
-      catch (err) {
-        console.log(err)
-        throw err
+      try {
+        await this.imageContentService.uploadImage(files, req, id);
+      } catch (err) {
+        console.log(err);
+        throw err;
       }
     }
     // Retrieve note's content and edit image's url (replace blob by localhost)
-    const data = req.body
-    if (data.content) {
-      data.content = data.content.replaceAll(
+    if (req.body.content) {
+      req.body.content = req.body.content.replaceAll(
         'blob\\' + ':' + 'http://localhost:5173',
         process.env.IMAGE_SERVER_PATH,
       );
     }
+    console.log(req.body);
     // Update a note with title and content
-    const updateNoteDto: UpdateNoteDto = data;
+    const updateNoteDto: UpdateNoteDto = req.body;
     return await this.noteRepository.update(id, updateNoteDto);
   }
 

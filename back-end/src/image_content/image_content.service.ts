@@ -30,12 +30,14 @@ export class ImageContentService {
         return of(error, 'File type must be png, jpg, jpeg');
       }
       response.push(fileName);
-      console.log(req.body)
       // Find matching file name between content and response array. Add right extension at the end of all urls
-      req.body.content = req.body.content.replace(
-        fileName.substring(0, fileName.indexOf('.')),
-        fileName,
-      );
+      req.body = {
+        ...req.body,
+        content: req.body.content.replace(
+          fileName.substring(0, fileName.indexOf('.')),
+          fileName,
+        ),
+      };
     });
 
     // Call api OCR extract text. Only images that OCR extracts text will be returned. Pass array of image's name
