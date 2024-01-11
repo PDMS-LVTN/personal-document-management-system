@@ -57,9 +57,9 @@ function HomeLayout() {
       >
         <Modal isOpen={isOpen} onClose={onClose} size="3xl">
           <ModalOverlay />
-          <ModalContent maxHeight="2xl">
+          <ModalContent>
             <ModalBody>
-              <SearchModal editorRef={ref} close={onClose}/>
+              <SearchModal editorRef={ref} close={onClose} />
             </ModalBody>
           </ModalContent>
         </Modal>

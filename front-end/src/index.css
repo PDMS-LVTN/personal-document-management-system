@@ -35,6 +35,8 @@
 
 .inside-editor {
   padding-left: 3em;
+  height: calc(100vh - 120px);
+  overflow-y: auto;
 }
 
 .resize-handle {

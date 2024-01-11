@@ -93,7 +93,7 @@ const SearchModal = ({ editorRef, close }) => {
     debouncedHandleSearch(value);
   };
   return (
-    <Box mb={5} pos="relative">
+    <Box mb={5}>
       <InputGroup>
         <Input
           value={keyword}
@@ -107,7 +107,7 @@ const SearchModal = ({ editorRef, close }) => {
       </InputGroup>
       <Divider orientation="horizontal" mt={3} mb={3} />
       {/* BUG: recentNotes not rendered */}
-      <Box overflowY="auto">
+      <Box overflowY="auto" maxHeight="xl">
         {isLoading ? (
           <Spinner />
         ) : results && results.length ? (
