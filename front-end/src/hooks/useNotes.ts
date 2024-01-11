@@ -24,6 +24,12 @@ const useNotes = (ref) => {
     const treeItems = useApp((state) => state.treeItems);
     const currentNote = useApp((state) => state.currentNote);
 
+    const currentTags = useApp((state) => state.currentTags);
+    const setCurrentTags = useApp((state) => state.setCurrentTags);
+
+    const allTags = useApp((state) => state.allTags);
+    const setAllTags = useApp((state) => state.setAllTags);
+
     const createNote = async (id) => {
         try {
             const response = await axiosJWT.post(
@@ -195,6 +201,23 @@ const useNotes = (ref) => {
             );
             console.log(response.data);
             isMounted && setTree(response.data);
+        
+            const responseTags = await axiosJWT.post(
+                "tag/all_tag",
+                JSON.stringify({ user_id: auth.id }),
+                {
+                  headers: { "Content-Type": "application/json" },
+                  signal: controller.signal,
+                }
+            );
+            console.log(response.data);
+            console.log(responseTags.data);
+            const tags = responseTags.data.map((tag) => {
+                return { value: tag.description, label: tag.description , id: tag.id};
+            })
+            console.log('tag', tags);
+            setAllTags(tags);
+
             setLoading(false)
         } catch (error) {
             if (error.response?.status === 403 || error.response?.status === 401) {
@@ -211,6 +234,11 @@ const useNotes = (ref) => {
                 headers: { "Content-Type": "application/json" },
             });
             console.log(response.data);
+            const tags = response.data.tags.map((tag) => {
+                return { value: tag.description, label: tag.description , id: tag.id};
+            })
+            console.log('current_tag', tags);
+            setCurrentTags(tags);
             return response.data;
         } catch (error) {
             console.log(error);

@@ -52,3 +52,8 @@
   -webkit-padding-end: 0 !important;
   padding-inline-end: 0 !important;
 }
+
+
+#input-tags {
+  z-index: 5;
+}

@@ -1,6 +1,7 @@
 import {
   Button,
   Flex,
+  GridItem,
   Skeleton,
   Spinner,
   Text,
@@ -15,7 +16,6 @@ import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
 import { TreeView } from "../../components/TreeView";
 import useNotes from "../../hooks/useNotes";
 
-// const Notes = forwardRef<Ref, Props>((props, ref) => {
 const Notes = ({ editorRef }) => {
   const { onClose } = useDisclosure();
 

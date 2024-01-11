@@ -22,6 +22,11 @@ interface Tree {
     setNote: (obj) => void
 }
 
+interface tag {
+    value: string
+    label: string
+    id: string
+}
 interface AppStore {
     expired: boolean
     setExpired: (isExpired: boolean) => void
@@ -39,6 +44,10 @@ interface AppStore {
     currentTree: Tree,
     setCurrentTree: (notes, func) => void,
     clearCurrentTree: () => void,
+    allTags: tag[]
+    setAllTags: (tags) => void
+    currentTags: tag[]
+    setCurrentTags: (tags) => void
 }
 
 export const useApp = create<AppStore>()(devtools(persist((set) => ({
@@ -61,4 +70,8 @@ export const useApp = create<AppStore>()(devtools(persist((set) => ({
     currentTree: null,
     setCurrentTree: (notes, func) => set((state) => ({ ...state, currentTree: { notes: notes, setNote: func } })),
     clearCurrentTree: () => set((state) => ({ ...state, currentTree: null })),
+    allTags: [],
+    setAllTags: (tags) => set((state) => ({ ...state, allTags: tags })),
+    currentTags: [],
+    setCurrentTags: (tags) => set((state) => ({ ...state, currentTags: tags }))
 }), { name: "app store" })))
