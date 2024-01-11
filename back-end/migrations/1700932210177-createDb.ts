@@ -5,7 +5,7 @@ export class CreateDb1700932210177 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE \`tag\` (\`id\` varchar(36) NOT NULL, \`description\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`tag\` (\`id\` varchar(36) NOT NULL, \`description\` varchar(255) NOT NULL, \`user_id\` varchar(36) NOT NULL , PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`user\` (\`id\` varchar(36) NOT NULL, \`email\` varchar(255) NOT NULL, \`password\` varchar(255) NOT NULL, \`refresh_token\` text NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
@@ -29,7 +29,7 @@ export class CreateDb1700932210177 implements MigrationInterface {
       `CREATE TABLE \`links\` (\`headlink_id\` varchar(36) NOT NULL, \`backlink_id\` varchar(36) NOT NULL, INDEX \`IDX_67e2024ba04e174e16c82ae707\` (\`headlink_id\`), INDEX \`IDX_14324d7ad015f81511236aeae8\` (\`backlink_id\`), PRIMARY KEY (\`headlink_id\`, \`backlink_id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `ALTER TABLE \`tag\` ADD CONSTRAINT \`FK_23021eeb5033c0432d79373d41b\` FOREIGN KEY (\`note_ID\`) REFERENCES \`note\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE`,
+      `ALTER TABLE \`tag\` ADD CONSTRAINT \`FK_23021eeb5033c0432d79373d41b\` FOREIGN KEY (\`user_id\`) REFERENCES \`user\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE`,
     );
     await queryRunner.query(
       `ALTER TABLE \`note\` ADD CONSTRAINT \`FK_9dc0e44ffc970250c1b0057ef90\` FOREIGN KEY (\`parent_id\`) REFERENCES \`note\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE`,

@@ -48,6 +48,9 @@ export class NoteService {
         // parentNote: { id: true }
       },
       where: { user: { id: Equal(req.user_id) }, parentNote: IsNull() },
+      order: {
+        created_at: 'ASC',
+      },
       relations: {
         // user: true,
         childNotes: true,

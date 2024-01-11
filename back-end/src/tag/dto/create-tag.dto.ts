@@ -6,4 +6,7 @@ export class CreateTagDto {
 
   @ApiProperty()
   notes?: Array<string>;
+
+  @ApiProperty()
+  user_id: string;
 }
