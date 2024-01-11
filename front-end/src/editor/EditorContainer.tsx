@@ -6,7 +6,6 @@ import {
   Flex,
   Tooltip,
   FormControl,
-  FormLabel,
 } from "@chakra-ui/react";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { useApp } from "../store/useApp";
@@ -16,6 +15,7 @@ import useNotes from "../hooks/useNotes";
 import { useFavorite } from "../hooks/useFavorite";
 import { useTags } from "../hooks/useTags";
 import { CreatableSelect } from "chakra-react-select";
+import { IoMdPricetag } from "react-icons/io";
 
 function EditorContainer({ editorRef }) {
   const currentNote = useApp((state) => state.currentNote);
@@ -30,21 +30,18 @@ function EditorContainer({ editorRef }) {
   const { createTag, deleteTagInNote } = useTags();
 
   const currentTags = useApp((state) => state.currentTags);
-  const setCurrentTags = useApp((state) => state.setCurrentTags);
 
   const allTags = useApp((state) => state.allTags);
-  const setAllTags = useApp((state) => state.setAllTags);
 
   const handerChange = (e) => {
     if (e.length > currentTags.length) {
       const newTag = e[e.length - 1].value;
       createTag(newTag, currentNote.id, true);
-    }
-    else {
-      const deletedTag = currentTags.filter(tag => !e.includes(tag));
+    } else {
+      const deletedTag = currentTags.filter((tag) => !e.includes(tag));
       deleteTagInNote(deletedTag[0].id, currentNote.id);
     }
-  }
+  };
 
   return (
     <Fragment>
@@ -108,27 +105,30 @@ function EditorContainer({ editorRef }) {
           </Button>
         </Tooltip>
       </Flex>
-      <Flex>
-      <FormControl p={4}>
-        {/* <FormLabel>Select with creatable options</FormLabel> */}
-        <CreatableSelect
-          id="input-tags"
-          isMulti
-          name="colors"
-          options={allTags}
-          placeholder="Select some tags..."
-          value={currentTags}
-          closeMenuOnSelect={false}
-          onCreateOption={(newTag) => createTag(newTag, currentNote.id, false)}
-          onChange={(options) => handerChange(options)}
-        />
-      </FormControl>
+      <Flex pos="absolute" bottom={3} zIndex={3} left={2} right={2}>
+        <IoMdPricetag size={40} color="#7540EE" />
+        <FormControl ml={3}>
+          {/* <FormLabel>Select with creatable options</FormLabel> */}
+          <CreatableSelect
+            id="input-tags"
+            isMulti
+            name="colors"
+            options={allTags}
+            menuPlacement="top"
+            placeholder="Select some tags..."
+            value={currentTags}
+            isClearable={false}
+            onCreateOption={(newTag) =>
+              createTag(newTag, currentNote.id, false)
+            }
+            onChange={(options) => handerChange(options)}
+          />
+        </FormControl>
       </Flex>
-      
+
       <Editor editorRef={editorRef} />
     </Fragment>
   );
 }
 
 export default EditorContainer;
-

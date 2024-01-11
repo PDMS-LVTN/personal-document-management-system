@@ -26,6 +26,7 @@ function TreeAndEditorContainer() {
         colSpan={6}
         bg="white"
         overflow="hidden"
+        pos="relative"
       >
         <EditorContainer editorRef={ref} />
       </GridItem>
