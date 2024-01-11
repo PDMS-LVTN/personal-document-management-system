@@ -6,6 +6,7 @@ import { useAuthentication } from "../store/useAuth";
 import { APIEndPoints } from "../api/endpoint";
 import { tempState } from "../editor/_boilerplate";
 import markdown from "../assets/default-content.md?raw";
+import { useTags } from "./useTags";
 
 const useNotes = (ref) => {
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -23,12 +24,9 @@ const useNotes = (ref) => {
     const clearCurrentTree = useApp((state) => state.clearCurrentTree);
     const treeItems = useApp((state) => state.treeItems);
     const currentNote = useApp((state) => state.currentNote);
-
-    const currentTags = useApp((state) => state.currentTags);
     const setCurrentTags = useApp((state) => state.setCurrentTags);
 
-    const allTags = useApp((state) => state.allTags);
-    const setAllTags = useApp((state) => state.setAllTags);
+    const {getAllTags} = useTags()
 
     const createNote = async (id) => {
         try {
@@ -79,7 +77,6 @@ const useNotes = (ref) => {
 
     const updateNote = async () => {
         setLoading(true);
-        console.log("update")
         console.log(tempState.waitingImage);
         const processedMarkdown: string = ref.current?.getMarkdown().trim();
         const formData = new FormData();
@@ -201,23 +198,7 @@ const useNotes = (ref) => {
             );
             console.log(response.data);
             isMounted && setTree(response.data);
-        
-            const responseTags = await axiosJWT.post(
-                "tag/all_tag",
-                JSON.stringify({ user_id: auth.id }),
-                {
-                  headers: { "Content-Type": "application/json" },
-                  signal: controller.signal,
-                }
-            );
-            console.log(response.data);
-            console.log(responseTags.data);
-            const tags = responseTags.data.map((tag) => {
-                return { value: tag.description, label: tag.description , id: tag.id};
-            })
-            console.log('tag', tags);
-            setAllTags(tags);
-
+            getAllTags(controller, isMounted)
             setLoading(false)
         } catch (error) {
             if (error.response?.status === 403 || error.response?.status === 401) {

@@ -13,7 +13,7 @@ export const Search = () => {
 
   useEffect(() => {
     setSearchResults(location.state.data);
-  }, []);
+  }, [location.state.data]);
 
   return (
     <>

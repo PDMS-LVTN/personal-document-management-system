@@ -17,6 +17,8 @@ export const useTags = () => {
     const allTags = useApp((state) => state.allTags);
     const setAllTags = useApp((state) => state.setAllTags);
 
+    // isSelectedTag: false => create a new tag
+    // isSelectedTag: true => choose from available tags
     const createTag = async (newTag, note_id, isSelectedTag) => {
         console.log(newTag, note_id);
         try {
@@ -25,14 +27,14 @@ export const useTags = () => {
                 JSON.stringify({
                     user_id: auth.id,
                     description: newTag,
-                    notes: [note_id],
+                    notes: note_id ? [note_id] : [],
                 }),
                 {
                     headers: { "Content-Type": "application/json" },
                 }
             );
             console.log(response.data);
-            const newOption = { value: newTag, label: newTag , id: response.data.id}
+            const newOption = { value: newTag, label: newTag, id: response.data.id }
             setCurrentTags([...currentTags, newOption]);
             if (!isSelectedTag) {
                 setAllTags([...allTags, newOption]);
@@ -50,13 +52,13 @@ export const useTags = () => {
     const deleteTagInNote = async (deleteTagId, note_id) => {
         console.log(deleteTagId, note_id);
         try {
-            const response = await axiosJWT.delete(`tag/${deleteTagId}`, 
-            {   
-                data: {
-                    note_id: note_id
-                },
-                headers: { "Content-Type": "application/json" },
-            });
+            const response = await axiosJWT.delete(`tag/${deleteTagId}`,
+                {
+                    data: {
+                        note_id: note_id
+                    },
+                    headers: { "Content-Type": "application/json" },
+                });
             console.log(response.data);
             setCurrentTags(currentTags.filter((tag) => tag.id !== deleteTagId));
         } catch (error) {
@@ -67,6 +69,44 @@ export const useTags = () => {
         }
     };
 
-return { createTag, deleteTagInNote }; 
+    const getAllTags = async (controller, isMounted) => {
+        const responseTags = await axiosJWT.post(
+            "tag/all_tag",
+            JSON.stringify({ user_id: auth.id }),
+            {
+                headers: { "Content-Type": "application/json" },
+                signal: controller.signal,
+            }
+        );
+        console.log(responseTags.data);
+        const tags = responseTags.data.map((tag) => {
+            return { value: tag.description, label: tag.description, id: tag.id };
+        })
+        console.log('tag', tags);
+        isMounted && setAllTags(tags);
+    }
+
+    const getNotesInTag = async (tagId) => {
+        try {
+            const response = await axiosJWT.get(
+                `tag/${tagId}`,
+                {
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+            console.log(response.data)
+            return response.data.notes
+        }
+        catch (error) {
+            console.log(error)
+            if (error.response?.status === 403 || error.response?.status === 401) {
+                setAuth(undefined);
+                clean();
+            }
+        }
+
+    }
+
+    return { createTag, deleteTagInNote, getAllTags, getNotesInTag };
 
 }
