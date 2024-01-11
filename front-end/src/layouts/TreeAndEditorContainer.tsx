@@ -5,7 +5,7 @@ import EditorContainer from "../editor/EditorContainer";
 import { MDXEditorMethods } from "@mdxeditor/editor";
 export type ContextType = { ref: MDXEditorMethods | null };
 function TreeAndEditorContainer() {
-  const {ref} = useOutletContext<ContextType>();
+  const { ref } = useOutletContext<ContextType>();
 
   return (
     <Fragment>
@@ -25,7 +25,7 @@ function TreeAndEditorContainer() {
         rowSpan={1}
         colSpan={6}
         bg="white"
-        sx={{ overflowY: "scroll" }}
+        overflow="hidden"
       >
         <EditorContainer editorRef={ref} />
       </GridItem>

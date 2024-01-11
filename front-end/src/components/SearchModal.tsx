@@ -16,6 +16,7 @@ import { APIEndPoints } from "../api/endpoint";
 import { useAuthentication } from "../store/useAuth";
 import { useApp } from "../store/useApp";
 import useNotes from "../hooks/useNotes";
+import { useNavigate } from "react-router";
 
 const SearchModal = ({ editorRef, close }) => {
   const [keyword, setKeyword] = useState("");
@@ -26,6 +27,7 @@ const SearchModal = ({ editorRef, close }) => {
   const setAuth = useAuthentication((state) => state.setAuth);
   const clean = useApp((state) => state.clean);
   const { isLoading, actions } = useNotes(editorRef);
+  const navigate = useNavigate();
 
   const renderResults = (notes) => {
     return notes.map((item, idx) => {
@@ -86,20 +88,29 @@ const SearchModal = ({ editorRef, close }) => {
     }, 500),
     []
   );
+
   const handleInputOnchange = (e) => {
     const { value } = e.target;
     console.log(value == "");
     setKeyword(value.target);
     debouncedHandleSearch(value);
   };
+
+  const handleKeyInput = (e) => {
+    if(e.key == "Enter") {
+      close()
+      navigate("/search", { state: { data: results }} )
+    }
+  }
   return (
-    <Box mb={5} pos="relative">
+    <Box mb={5}>
       <InputGroup>
         <Input
           value={keyword}
           variant="flushed"
           placeholder="What are you looking for?"
           onChange={handleInputOnchange}
+          onKeyUp={handleKeyInput}
         />
         <InputRightElement pos="absolute" top={0}>
           <IoIosSearch size={25} color="var(--brand400)" />
@@ -107,7 +118,7 @@ const SearchModal = ({ editorRef, close }) => {
       </InputGroup>
       <Divider orientation="horizontal" mt={3} mb={3} />
       {/* BUG: recentNotes not rendered */}
-      <Box overflowY="auto">
+      <Box overflowY="auto" maxHeight="xl">
         {isLoading ? (
           <Spinner />
         ) : results && results.length ? (
