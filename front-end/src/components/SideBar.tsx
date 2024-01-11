@@ -3,13 +3,16 @@ import BookmarkIcon from "../assets/bookmark-icon.svg";
 import HelpIcon from "../assets/help-icon.svg";
 import NoteIcon from "../assets/note-icon.svg";
 import StarIcon from "../assets/star-icon.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const SideBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedItem, setSelectedItem] = useState(location.pathname);
+  useEffect(() => {
+    setSelectedItem(location.pathname);
+  }, [location.pathname]);
   const sideBarList = [
     {
       text: "Notes",
@@ -81,7 +84,7 @@ const SideBar = () => {
             justifyContent="flex-start"
             borderRadius={0}
             onClick={() => {
-              setSelectedItem(e.path);
+              // setSelectedItem(e.path);
               navigate(e.path);
             }}
             bgColor={selectedItem === e.path ? "brand.50" : ""}

@@ -14,6 +14,9 @@ import NoteContainer from "../pages/Notes/NoteContainer.tsx";
 import Favorite from "../pages/Favorite.tsx";
 import TreeAndEditorContainer from "../layouts/TreeAndEditorContainer.tsx";
 import RootLayout from "../layouts/RootLayout.tsx";
+import { Search } from "../pages/Search.tsx";
+import { Tags } from "../pages/Tags.tsx";
+import { Help } from "../pages/Help.tsx";
 
 export const router = () => {
   return createBrowserRouter(
@@ -29,6 +32,9 @@ export const router = () => {
             <Route element={<TreeAndEditorContainer />}>
               <Route path="/notes" element={<NoteContainer />} />
               <Route path="/favorite" element={<Favorite />} />
+              <Route path="/tags" element={<Tags />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/help" element={<Help />} />
             </Route>
           </Route>
         </Route>
