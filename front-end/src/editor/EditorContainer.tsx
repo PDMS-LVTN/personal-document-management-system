@@ -1,13 +1,21 @@
 import { Fragment, useState } from "react";
 import Editor from "./Editor";
 import ConfirmModal from "../components/ConfirmModal";
-import { Button, Flex, Tooltip } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Tooltip,
+  FormControl,
+  FormLabel,
+} from "@chakra-ui/react";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { useApp } from "../store/useApp";
 import TrashCanIcon from "../assets/trashcan-icon.svg";
 import SaveIcon from "../assets/save-icon.svg";
 import useNotes from "../hooks/useNotes";
 import { useFavorite } from "../hooks/useFavorite";
+import { useTags } from "../hooks/useTags";
+import { CreatableSelect } from "chakra-react-select";
 
 function EditorContainer({ editorRef }) {
   const currentNote = useApp((state) => state.currentNote);
@@ -19,6 +27,24 @@ function EditorContainer({ editorRef }) {
 
   const { actions } = useNotes(editorRef);
   const { updateFavorite } = useFavorite();
+  const { createTag, deleteTagInNote } = useTags();
+
+  const currentTags = useApp((state) => state.currentTags);
+  const setCurrentTags = useApp((state) => state.setCurrentTags);
+
+  const allTags = useApp((state) => state.allTags);
+  const setAllTags = useApp((state) => state.setAllTags);
+
+  const handerChange = (e) => {
+    if (e.length > currentTags.length) {
+      const newTag = e[e.length - 1].value;
+      createTag(newTag, currentNote.id, true);
+    }
+    else {
+      const deletedTag = currentTags.filter(tag => !e.includes(tag));
+      deleteTagInNote(deletedTag[0].id, currentNote.id);
+    }
+  }
 
   return (
     <Fragment>
@@ -82,9 +108,27 @@ function EditorContainer({ editorRef }) {
           </Button>
         </Tooltip>
       </Flex>
+      <Flex>
+      <FormControl p={4}>
+        {/* <FormLabel>Select with creatable options</FormLabel> */}
+        <CreatableSelect
+          id="input-tags"
+          isMulti
+          name="colors"
+          options={allTags}
+          placeholder="Select some tags..."
+          value={currentTags}
+          closeMenuOnSelect={false}
+          onCreateOption={(newTag) => createTag(newTag, currentNote.id, false)}
+          onChange={(options) => handerChange(options)}
+        />
+      </FormControl>
+      </Flex>
+      
       <Editor editorRef={editorRef} />
     </Fragment>
   );
 }
 
 export default EditorContainer;
+
