@@ -11,32 +11,22 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
-  Spinner,
   Text,
   Tooltip,
   useAccordionItemState,
 } from "@chakra-ui/react";
-import { Fragment, Suspense, useEffect, useState } from "react";
-
-import DownCaret from "../assets/down-caret.svg";
+import { Fragment, useEffect, useState } from "react";
 import BlackPlusIcon from "../assets/black-plus-icon.svg";
 import BlackOptionsIcon from "../assets/black-options-icon.svg";
-import BlackDotIcon from "../assets/black-dot-icon.svg";
-import { TreeData, useApp } from "../store/useApp";
-
-type TreeItemActions = {
-  getNote: (id) => any;
-  createNote: (id) => any;
-  clickNote: (id) => any;
-  deleteNote: (id) => any;
-};
+import { useApp } from "../store/useApp";
+import useNotes from "../hooks/useNotes";
 
 const TreeItem = ({
   noteItem,
   localTreeItems,
   setLocalTreeItems,
   isExpanded,
-  actions,
+  editorRef,
   index,
 }) => {
   const { onOpen } = useAccordionItemState();
@@ -44,6 +34,7 @@ const TreeItem = ({
   const setCurrentTree = useApp((state) => state.setCurrentTree);
   const setTree = useApp((state) => state.setTree);
   const treeItems = useApp((state) => state.treeItems);
+  const { actions } = useNotes(editorRef);
 
   // const setCurrentNote = useApp((state) => state.setCurrentNote);
   return (
@@ -56,11 +47,10 @@ const TreeItem = ({
         onClick={async () => {
           // expose the current tree's state
           setCurrentTree(localTreeItems, setLocalTreeItems);
-          const children = await actions.clickNote(noteItem.id);
+          const children = await actions.clickANoteHandler(noteItem.id);
           if (isExpanded) {
             return;
           }
-
           // update child notes on client side
           console.log(children);
           let updatedTreeItems = [
@@ -88,8 +78,6 @@ const TreeItem = ({
             padding="7px"
             transition="all 0.2s"
             borderRadius="50%"
-            // borderRadius='md'
-            // borderWidth='1px'
             _hover={{ bg: "gray.100" }}
             _expanded={{ bg: "blue.100" }}
             // _focus={{ boxShadow: 'outline' }}
@@ -135,8 +123,9 @@ const TreeItem = ({
               src={BlackPlusIcon}
               alt="plus icon"
               onClick={async () => {
-                const response = await actions.getNote(noteItem.id);
+                const response = await actions.getANote(noteItem.id);
                 const newNote = await actions.createNote(noteItem.id);
+                console.log("in menu");
                 console.log(response);
                 setLocalTreeItems([
                   ...localTreeItems.slice(0, index),
@@ -159,13 +148,7 @@ const TreeItem = ({
   );
 };
 
-export const TreeView = ({
-  data,
-  actions,
-}: {
-  data: TreeData[];
-  actions: TreeItemActions;
-}) => {
+export const TreeView = ({ data, editorRef }) => {
   const [treeItems, setTreeItems] = useState(data);
   useEffect(() => {
     setTreeItems(data);
@@ -184,7 +167,7 @@ export const TreeView = ({
                       localTreeItems={treeItems}
                       setLocalTreeItems={setTreeItems}
                       isExpanded={isExpanded}
-                      actions={actions}
+                      editorRef={editorRef}
                       index={index}
                     />
                     <AccordionPanel>
@@ -192,7 +175,7 @@ export const TreeView = ({
                         // <Suspense fallback={<Spinner />}>
                         <TreeView
                           data={noteItem.childNotes}
-                          actions={actions}
+                          editorRef={editorRef}
                         />
                       ) : (
                         // </Suspense>

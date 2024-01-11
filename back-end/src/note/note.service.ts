@@ -21,7 +21,7 @@ export class NoteService {
     private readonly imageContentService: ImageContentService,
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
-  ) {}
+  ) { }
 
   async createNote(createNoteDto: CreateNoteDto) {
     const user = new User({ id: createNoteDto.user_id })
@@ -167,27 +167,24 @@ export class NoteService {
     // Method 2:
 
     // Upload images to upload folder and save in image_content table
-    const data = JSON.parse(req.body.data);
     if (files.length > 0) {
       try { await this.imageContentService.uploadImage(files, req, id); }
       catch (err) {
         console.log(err)
         throw err
       }
-
-      // Retrieve note's content and edit image's url (replace blob by localhost)
-      if (data.content) {
-        data.content = data.content.replaceAll(
-          'blob\\' + ':' + 'http://localhost:5173',
-          process.env.IMAGE_SERVER_PATH,
-        );
-      }
     }
-
+    // Retrieve note's content and edit image's url (replace blob by localhost)
+    const data = req.body
+    if (data.content) {
+      data.content = data.content.replaceAll(
+        'blob\\' + ':' + 'http://localhost:5173',
+        process.env.IMAGE_SERVER_PATH,
+      );
+    }
     // Update a note with title and content
-    console.log(data);
     const updateNoteDto: UpdateNoteDto = data;
-    return this.noteRepository.update(id, updateNoteDto);
+    return await this.noteRepository.update(id, updateNoteDto);
   }
 
   async removeNote(id: string) {

@@ -1,41 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  createRoutesFromElements,
-  Route,
-} from "react-router-dom";
-import RootLayout from "./layouts/RootLayout.tsx";
+import { RouterProvider } from "react-router-dom";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import SignUp from "./pages/SignUp.tsx";
-import Login from "./pages/Login.tsx";
-import { Password } from "./pages/PassWord.tsx";
-import HomeLayout from "./layouts/HomeLayout.tsx";
-// import { AuthProvider } from "./context/AuthProvider.tsx";
-import RequireAuth from "./components/RequireAuth.tsx";
 
 import "./tailwind.css";
 import "@mdxeditor/editor/style.css";
 import "./index.css";
-import NoteContainer from "./pages/Notes/NoteContainer.tsx";
+import { router } from "./navigation/routerConfig.tsx";
 
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <>
-      <Route path="/" element={<RootLayout />}>
-        <Route index element={<SignUp />} />
-        <Route path="login" element={<Login />} />
-        <Route path="password" element={<Password />} />
-      </Route>
-      <Route element={<RequireAuth />}>
-        <Route element={<HomeLayout />}>
-          <Route path="/notes" element={<NoteContainer />} />
-        </Route>
-      </Route>
-    </>
-  )
-);
+const routerConfig = router()
 
 const theme = extendTheme({
   fonts: {
@@ -66,7 +39,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       {/* <AuthProvider> */}
-      <RouterProvider router={router} />
+      <RouterProvider router={routerConfig} />
       {/* </AuthProvider> */}
     </ChakraProvider>
   </React.StrictMode>
