@@ -4,8 +4,5 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateTagDto {
   @ApiProperty()
-  description?: string;
-
-  @ApiProperty()
-  notes?: Array<string>;
+  note_id?: string;
 }

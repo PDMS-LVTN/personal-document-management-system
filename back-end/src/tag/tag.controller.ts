@@ -22,6 +22,11 @@ export class TagController {
     return this.tagService.createTag(createTagDto);
   }
 
+  @Post('apply_tag/:id')
+  applyTag(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
+    return this.tagService.applyTag(id, updateTagDto);
+  }
+
   @Post('all_tag')
   findAllTag(@Body() req: { user_id: string }) {
     return this.tagService.findAllTag(req);

@@ -5,8 +5,8 @@ export class CreateTagDto {
   description: string;
 
   @ApiProperty()
-  notes?: Array<string>;
+  note_id?: string;
 
   @ApiProperty()
-  user_id: string;
+  user_id?: string;
 }
