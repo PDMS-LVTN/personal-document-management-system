@@ -8,7 +8,7 @@ import "@mdxeditor/editor/style.css";
 import "./index.css";
 import { router } from "./navigation/routerConfig.tsx";
 
-const routerConfig = router()
+const routerConfig = router();
 
 const theme = extendTheme({
   fonts: {
@@ -36,11 +36,11 @@ const theme = extendTheme({
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <ChakraProvider theme={theme}>
-      {/* <AuthProvider> */}
-      <RouterProvider router={routerConfig} />
-      {/* </AuthProvider> */}
-    </ChakraProvider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <ChakraProvider theme={theme}>
+    {/* <AuthProvider> */}
+    <RouterProvider router={routerConfig} />
+    {/* </AuthProvider> */}
+  </ChakraProvider>
+  // </React.StrictMode>
 );

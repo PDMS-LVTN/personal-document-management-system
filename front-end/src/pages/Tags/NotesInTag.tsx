@@ -27,16 +27,17 @@ const NotesInTag = () => {
 
   const fetchData = async () => {
     const { responseData } = await getNotesInTag(tagId);
-    console.log("notes in tag", responseData);
     setData(responseData);
   };
 
   useEffect(() => {
+    console.log("here 1");
     fetchData();
   }, [tagId, currentTags]);
 
   // delete note
   useEffect(() => {
+    console.log("here 2");
     if (!currentNote) {
       fetchData();
     }
@@ -87,14 +88,6 @@ const NotesInTag = () => {
               gap={2}
               onClick={() => {
                 actions.clickANoteHandler(item.id);
-                //   setNotes([
-                //     ...notes.slice(0, idx),
-                //     {
-                //       ...notes[idx],
-                //       title: currentNote?.title,
-                //     },
-                //     ...notes.slice(idx + 1),
-                //   ]);
               }}
             >
               <Text fontWeight="normal">

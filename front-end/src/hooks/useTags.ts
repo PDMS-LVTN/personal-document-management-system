@@ -37,19 +37,18 @@ export const useTags = () => {
         return await callApi(`tag/${deleteTagId}`, options)
     }
 
-    const getAllTags = async (controller, isMounted) => {
+    const getAllTags = async (controller) => {
         const options: AxiosRequestConfig = {
             method: "POST",
             data: { user_id: auth.id },
-            signal: controller?.signal
+            signal: controller.signal
         }
         const { responseData, responseError } = await callApi(APIEndPoints.ALL_TAG, options)
         if (responseData) {
             const tags = responseData.map((tag) => {
                 return { value: tag.description, label: tag.description, id: tag.id };
             })
-            isMounted && setAllTags(tags)
-            return tags
+            return { tags, responseError }
         }
         return { responseData, responseError }
     }

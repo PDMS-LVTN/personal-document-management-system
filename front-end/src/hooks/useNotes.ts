@@ -29,7 +29,7 @@ const useNotes = (ref) => {
 
     const callApi = useApi()
 
-    const { getAllTags } = useTags()
+    // const { getAllTags } = useTags()
 
     const createNote = async (id) => {
         try {
@@ -67,7 +67,7 @@ const useNotes = (ref) => {
                 is_pinned: false,
             };
             setCurrentNote(currentNote);
-            ref.current?.setMarkdown(markdown);
+            ref?.current?.setMarkdown(markdown);
             return currentNote;
         } catch (error) {
             console.log(error);
@@ -81,7 +81,7 @@ const useNotes = (ref) => {
     const updateNote = async () => {
         setLoading(true);
         console.log(tempState.waitingImage);
-        const processedMarkdown: string = ref.current?.getMarkdown().trim();
+        const processedMarkdown: string = ref?.current?.getMarkdown().trim();
         const formData = new FormData();
         // Append each of the files
         tempState.waitingImage.forEach((file) => {
@@ -188,7 +188,7 @@ const useNotes = (ref) => {
         }
     };
 
-    const getAllNotes = async (controller, isMounted) => {
+    const getAllNotes = async (controller) => {
         setLoading(true);
         try {
             const response = await axiosJWT.post(
@@ -200,9 +200,8 @@ const useNotes = (ref) => {
                 }
             );
             console.log(response.data);
-            getAllTags(controller, isMounted)
-            isMounted && setTree(response.data)
             setLoading(false)
+            return response.data
         } catch (error) {
             if (error.response?.status === 403 || error.response?.status === 401) {
                 setAuth(undefined);
@@ -240,7 +239,7 @@ const useNotes = (ref) => {
         })
         console.log('current_tag', tags);
         setCurrentTags(tags);
-        ref.current?.setMarkdown(noteItem.content);
+        ref?.current?.setMarkdown(noteItem.content);
         return noteItem;
     }
 

@@ -20,7 +20,6 @@ const TagContainer = () => {
   const { ref } = useOutletContext<ContextType>();
   const { deleteTag } = useTags();
   const location = useLocation();
-  //   const currentNote = useApp((state) => state.currentNote)
   const setCurrentTags = useApp((state) => state.setCurrentTags);
   const currentTags = useApp((state) => state.currentTags);
   const allTags = useApp((state) => state.allTags);
@@ -50,11 +49,15 @@ const TagContainer = () => {
     console.log("tag container mounts");
     let isMounted = true;
     const controller = new AbortController();
-    getAllTags(controller, isMounted);
+    const loadData = async () => {
+      const { tags } = await getAllTags(controller);
+      isMounted && setAllTags(tags);
+    };
+    loadData();
 
     return () => {
       isMounted = false;
-      controller.abort();
+      isMounted && controller.abort();
     };
   }, []);
 
@@ -106,7 +109,7 @@ const TagContainer = () => {
     });
   };
 
-  if (isShowNotes) return <Outlet context={ref} />;
+  if (isShowNotes) return <Outlet context={{ ref }} />;
   return <Tags renderResults={renderResults} />;
 };
 

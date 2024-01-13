@@ -7,9 +7,7 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
-// import { useTags } from "../../hooks/useTags";
 import { FaPlus } from "react-icons/fa";
-// import { useApp } from "../../store/useApp";
 import SearchTag from "./SearchTag";
 import CreateTagModal from "../../components/CreateTagModal";
 
