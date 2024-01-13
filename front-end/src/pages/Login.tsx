@@ -14,7 +14,7 @@ import {
 import { ControlledInput } from "../components/ControlledInput";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useRef, useState, useEffect, useContext } from "react";
-import AuthContext from "../context/AuthProvider";
+// import AuthContext from "../context/AuthProvider";
 import axios from "../api/axios";
 import { jwtDecode } from "jwt-decode";
 import { useAuthentication } from "../store/useAuth";
@@ -35,7 +35,7 @@ const Login = () => {
 
   // const { auth, setAuth } = useContext(AuthContext);
   const setAuth = useAuthentication((state) => state.setAuth);
-  const auth = useAuthentication((state) => state.auth);
+  // const auth = useAuthentication((state) => state.auth);
   const userRef = useRef<HTMLDivElement>(null);
   const errRef = useRef<HTMLDivElement>(null);
 

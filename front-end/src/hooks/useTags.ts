@@ -1,112 +1,75 @@
 import { useApp } from "../store/useApp";
-import useAxiosJWT from "./useAxiosJWT";
 import { useAuthentication } from "../store/useAuth";
 import { APIEndPoints } from "../api/endpoint";
+import { useApi } from "./useApi";
+import { AxiosRequestConfig } from "axios";
 
 export const useTags = () => {
-
-    const clean = useApp((state) => state.clean);
-    const axiosJWT = useAxiosJWT();
-
     const auth = useAuthentication((state) => state.auth);
-    const setAuth = useAuthentication((state) => state.setAuth);
-
-    const currentTags = useApp((state) => state.currentTags);
-    const setCurrentTags = useApp((state) => state.setCurrentTags);
-
-    const allTags = useApp((state) => state.allTags);
+    // const currentTags = useApp((state) => state.currentTags);
+    // const setCurrentTags = useApp((state) => state.setCurrentTags);
+    // const allTags = useApp((state) => state.allTags);
     const setAllTags = useApp((state) => state.setAllTags);
 
-    // isSelectedTag: false => create a new tag
-    // isSelectedTag: true => choose from available tags
-    const createTag = async (newTag, note_id, isSelectedTag) => {
-        console.log(newTag, note_id);
-        try {
-            const response = await axiosJWT.post(
-                APIEndPoints.CREATE_TAG,
-                JSON.stringify({
-                    user_id: auth.id,
-                    description: newTag,
-                    notes: note_id ? [note_id] : [],
-                }),
-                {
-                    headers: { "Content-Type": "application/json" },
-                }
-            );
-            console.log(response.data);
-            const newOption = { value: newTag, label: newTag, id: response.data.id }
-            setCurrentTags([...currentTags, newOption]);
-            if (!isSelectedTag) {
-                setAllTags([...allTags, newOption]);
-            }
+    const callApi = useApi()
 
-        } catch (error) {
-            console.log(error);
-            if (error.response?.status === 403 || error.response?.status === 401) {
-                setAuth(undefined);
-                clean();
-            }
+    const createTag = async (newTag: string, note_id: string) => {
+        console.log(newTag, note_id);
+        const options: AxiosRequestConfig = {
+            method: "POST",
+            data: JSON.stringify({
+                user_id: auth.id,
+                description: newTag,
+                notes: note_id ? [note_id] : [],
+            })
         }
+        return await callApi(APIEndPoints.CREATE_TAG, options)
     }
 
     const deleteTagInNote = async (deleteTagId, note_id) => {
         console.log(deleteTagId, note_id);
-        try {
-            const response = await axiosJWT.delete(`tag/${deleteTagId}`,
-                {
-                    data: {
-                        note_id: note_id
-                    },
-                    headers: { "Content-Type": "application/json" },
-                });
-            console.log(response.data);
-            setCurrentTags(currentTags.filter((tag) => tag.id !== deleteTagId));
-        } catch (error) {
-            if (error.response?.status === 403 || error.response?.status === 401) {
-                setAuth(undefined);
-                clean();
+        const options: AxiosRequestConfig = {
+            method: "DELETE",
+            data: {
+                note_id: note_id
             }
         }
-    };
+        return await callApi(`tag/${deleteTagId}`, options)
+    }
 
     const getAllTags = async (controller, isMounted) => {
-        const responseTags = await axiosJWT.post(
-            "tag/all_tag",
-            JSON.stringify({ user_id: auth.id }),
-            {
-                headers: { "Content-Type": "application/json" },
-                signal: controller.signal,
-            }
-        );
-        console.log(responseTags.data);
-        const tags = responseTags.data.map((tag) => {
-            return { value: tag.description, label: tag.description, id: tag.id };
-        })
-        console.log('tag', tags);
-        isMounted && setAllTags(tags);
+        const options: AxiosRequestConfig = {
+            method: "POST",
+            data: { user_id: auth.id },
+            signal: controller?.signal
+        }
+        const { responseData, responseError } = await callApi(APIEndPoints.ALL_TAG, options)
+        if (responseData) {
+            const tags = responseData.map((tag) => {
+                return { value: tag.description, label: tag.description, id: tag.id };
+            })
+            isMounted && setAllTags(tags)
+            return tags
+        }
+        return { responseData, responseError }
     }
 
     const getNotesInTag = async (tagId) => {
-        try {
-            const response = await axiosJWT.get(
-                `tag/${tagId}`,
-                {
-                    headers: { "Content-Type": "application/json" },
-                }
-            );
-            console.log(response.data)
-            return response.data.notes
+        console.log(tagId);
+        const options: AxiosRequestConfig = {
+            method: "GET",
         }
-        catch (error) {
-            console.log(error)
-            if (error.response?.status === 403 || error.response?.status === 401) {
-                setAuth(undefined);
-                clean();
-            }
-        }
-
+        return await callApi(`tag/${tagId}`, options)
     }
 
-    return { createTag, deleteTagInNote, getAllTags, getNotesInTag };
+    const deleteTag = async (tagId: string) => {
+        console.log(tagId);
+        const options: AxiosRequestConfig = {
+            method: "DELETE",
+        }
+        return await callApi(`tag/${tagId}`, options)
+    }
+
+    return { createTag, deleteTagInNote, getAllTags, getNotesInTag, deleteTag };
 
 }

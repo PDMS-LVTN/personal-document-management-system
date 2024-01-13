@@ -11,7 +11,7 @@ export class TagService {
   constructor(
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
-  ) {}
+  ) { }
 
   async createTag(createTagDto: CreateTagDto) {
     const tag = new Tag();
@@ -42,7 +42,7 @@ export class TagService {
   }
 
   async removeTag(id: string, req) {
-    if (req.note_id === '') {
+    if (!req.note_id) {
       return await this.tagRepository.delete(id);
     }
     const tag = await this.tagRepository.findOne({

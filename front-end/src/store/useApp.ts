@@ -9,7 +9,6 @@ export interface Note {
     is_favorited?: boolean;
     is_pinned?: boolean;
 }
-
 export interface TreeData {
     title: string;
     childNotes?: TreeData[];
@@ -22,7 +21,7 @@ interface Tree {
     setNote: (obj) => void
 }
 
-interface tag {
+interface Tag {
     value: string
     label: string
     id: string
@@ -44,9 +43,9 @@ interface AppStore {
     currentTree: Tree,
     setCurrentTree: (notes, func) => void,
     clearCurrentTree: () => void,
-    allTags: tag[]
+    allTags: Tag[]
     setAllTags: (tags) => void
-    currentTags: tag[]
+    currentTags: Tag[]
     setCurrentTags: (tags) => void
 }
 
@@ -64,7 +63,8 @@ export const useApp = create<AppStore>()(devtools(persist((set) => ({
         dirtyNotes:
             state.dirtyNotes.filter((id) => id !== noteId)
     })),
-    clean: () => set({ expired: false, currentNote: null, dirtyNotes: [], currentTree: null, treeItems: null}),
+    // this method need to reset every state when user is logged out
+    clean: () => set({ expired: false, currentNote: null, dirtyNotes: null, currentTree: null, treeItems: null, allTags: null, currentTags: null }),
     treeItems: [],
     setTree: (data) => set((state) => ({ ...state, treeItems: data })),
     currentTree: null,

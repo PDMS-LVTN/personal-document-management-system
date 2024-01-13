@@ -67,7 +67,11 @@ const TreeItem = ({
       >
         <Flex alignItems="center">
           <AccordionIcon mr={3} />
-          <Text>{noteItem?.title}</Text>
+          <Text>
+            {currentNote?.id === noteItem?.id
+              ? currentNote.title
+              : noteItem?.title}
+          </Text>
         </Flex>
       </AccordionButton>
       <Flex alignItems="center" mr={3}>
