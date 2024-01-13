@@ -41,7 +41,7 @@ export const useFavorite = () => {
         }
     }
 
-    // BUG: Multiple instance of the same note in the tree are not updated/deleted/ at the same time 
+    // BUG: Multiple instances of the same note in the tree are not updated/deleted at the same time 
     const updateFavorite = async () => {
         const formData = new FormData();
         formData.append(

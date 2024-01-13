@@ -75,15 +75,19 @@ const SideBar = () => {
         return (
           <Button
             key={idx}
-            leftIcon={selectedItem === e.path ? e.leftIconColor : e.leftIcon}
-            color={selectedItem === e.path ? "brand.600" : "text.inactive"}
+            leftIcon={
+              selectedItem.includes(e.path) ? e.leftIconColor : e.leftIcon
+            }
+            color={
+              selectedItem.includes(e.path) ? "brand.600" : "text.inactive"
+            }
             variant="ghost"
             justifyContent="flex-start"
             borderRadius={0}
             onClick={() => {
-              navigate(e.path, { state: { mode: "tags" } });
+              navigate(e.path);
             }}
-            bgColor={selectedItem === e.path ? "brand.50" : ""}
+            bgColor={selectedItem.includes(e.path) ? "brand.50" : ""}
           >
             {e.text}
           </Button>
