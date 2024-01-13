@@ -1,44 +1,24 @@
 import {
   Button,
   Flex,
-  GridItem,
   Skeleton,
-  Spinner,
   Text,
   Tooltip,
-  useDisclosure,
 } from "@chakra-ui/react";
 import ToolsIcon from "../../assets/tools-icon.svg";
 import PlusIcon from "../../assets/plus-icon.svg";
 import { Suspense, forwardRef } from "react";
 import { useApp } from "../../store/useApp";
-import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
 import { TreeView } from "../../components/TreeView";
 import useNotes from "../../hooks/useNotes";
 
 const Notes = ({ editorRef }) => {
-  const { onClose } = useDisclosure();
 
   const treeItems = useApp((state) => state.treeItems);
-  const { isLoading, actions } = useNotes(editorRef);
+  const { actions } = useNotes(editorRef);
 
   return (
     <>
-    {/*BUG: where is the spinner?*/}
-      <Modal isOpen={isLoading} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalBody display="flex" justifyContent="center">
-            <Spinner
-              thickness="4px"
-              speed="0.65s"
-              emptyColor="gray.200"
-              color="blue.500"
-              size="xl"
-            />
-          </ModalBody>
-        </ModalContent>
-      </Modal>
       <Flex justify="space-between" mb="1em" pl="2em" pr="2em" id="notes">
         <Text fontSize="2xl" fontWeight="600">
           Notes

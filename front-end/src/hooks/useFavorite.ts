@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { APIEndPoints } from "../api/endpoint";
 import { useApp } from "../store/useApp";
 import useAxiosJWT from "./useAxiosJWT";
@@ -21,7 +20,7 @@ export const useFavorite = () => {
 
     const location = useLocation()
 
-    const getFavoriteNotes = async (controller, isMounted) => {
+    const getFavoriteNotes = async (controller) => {
         try {
             const response = await axiosJWT.post(
                 APIEndPoints.FAVORITE_NOTE,
@@ -32,7 +31,7 @@ export const useFavorite = () => {
                 }
             );
             console.log(response.data);
-            isMounted && setTree(response.data);
+            return response.data
         } catch (error) {
             if (error.response?.status === 403 || error.response?.status === 401) {
                 setAuth(undefined);
@@ -41,7 +40,7 @@ export const useFavorite = () => {
         }
     }
 
-    // BUG: Multiple instance of the same note in the tree are not updated/deleted/ at the same time 
+    // BUG: Multiple instances of the same note in the tree are not updated/deleted at the same time 
     const updateFavorite = async () => {
         const formData = new FormData();
         formData.append(

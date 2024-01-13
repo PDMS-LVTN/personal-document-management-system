@@ -35,7 +35,7 @@
 
 .inside-editor {
   padding-left: 3em;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 120px - 65px - 60px);
   overflow-y: auto;
 }
 

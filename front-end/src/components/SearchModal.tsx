@@ -11,10 +11,6 @@ import {
 import { debounce } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
-import useAxiosJWT from "../hooks/useAxiosJWT";
-import { APIEndPoints } from "../api/endpoint";
-import { useAuthentication } from "../store/useAuth";
-import { useApp } from "../store/useApp";
 import useNotes from "../hooks/useNotes";
 import { useNavigate } from "react-router";
 
@@ -22,10 +18,6 @@ const SearchModal = ({ editorRef, close }) => {
   const [keyword, setKeyword] = useState("");
   const [results, setResults] = useState([]);
   const [recentNotes, setRecentNotes] = useState([]);
-  const axiosJWT = useAxiosJWT();
-  const auth = useAuthentication((state) => state.auth);
-  const setAuth = useAuthentication((state) => state.setAuth);
-  const clean = useApp((state) => state.clean);
   const { isLoading, actions } = useNotes(editorRef);
   const navigate = useNavigate();
 
@@ -60,26 +52,19 @@ const SearchModal = ({ editorRef, close }) => {
   };
 
   // TODO: get recent notes
-  const getRecentNote = async () => {
-    try {
-      const response = await axiosJWT.post(
-        APIEndPoints.ALL_NOTE,
-        JSON.stringify({ user_id: auth.id }),
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      console.log(response.data);
-      setRecentNotes(response.data);
-    } catch (error) {
-      if (error.response?.status === 403 || error.response?.status === 401) {
-        setAuth(undefined);
-        clean();
-      }
-    }
-  };
   useEffect(() => {
-    getRecentNote();
+    let isMounted = true;
+    const controller = new AbortController();
+    const loadData = async () => {
+      const notes = await actions.getAllNotes(controller);
+      isMounted && setRecentNotes(notes);
+    };
+    loadData();
+
+    return () => {
+      isMounted = false;
+      isMounted && controller.abort();
+    };
   }, []);
   const debouncedHandleSearch = useCallback(
     debounce(async (keyword) => {
@@ -97,11 +82,11 @@ const SearchModal = ({ editorRef, close }) => {
   };
 
   const handleKeyInput = (e) => {
-    if(e.key == "Enter") {
-      close()
-      navigate("/search", { state: { data: results }} )
+    if (e.key == "Enter") {
+      close();
+      navigate("/search", { state: { data: results } });
     }
-  }
+  };
   return (
     <Box mb={5}>
       <InputGroup>

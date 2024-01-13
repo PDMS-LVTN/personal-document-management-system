@@ -1,10 +1,10 @@
 import { Stack, Button } from "@chakra-ui/react";
-import BookmarkIcon from "../assets/bookmark-icon.svg";
 import HelpIcon from "../assets/help-icon.svg";
 import NoteIcon from "../assets/note-icon.svg";
 import StarIcon from "../assets/star-icon.svg";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { IoPricetagOutline } from "react-icons/io5";
 
 const SideBar = () => {
   const navigate = useNavigate();
@@ -45,16 +45,13 @@ const SideBar = () => {
     {
       text: "Tags",
       path: "/tags",
-      leftIcon: <img src={BookmarkIcon} />,
-      leftIconColor: (
-        <img
-          src={BookmarkIcon}
-          style={{
-            filter:
-              "brightness(0) saturate(100%) invert(14%) sepia(74%) saturate(5369%) hue-rotate(259deg) brightness(67%) contrast(111%)",
-          }}
+      leftIcon: (
+        <IoPricetagOutline
+          color="var(--chakra-colors-text-inactive)"
+          size={25}
         />
       ),
+      leftIconColor: <IoPricetagOutline color="var(--brand600)" size={25} />,
     },
     {
       text: "Help",
@@ -78,16 +75,19 @@ const SideBar = () => {
         return (
           <Button
             key={idx}
-            leftIcon={selectedItem === e.path ? e.leftIconColor : e.leftIcon}
-            color={selectedItem === e.path ? "brand.600" : "text.inactive"}
+            leftIcon={
+              selectedItem.includes(e.path) ? e.leftIconColor : e.leftIcon
+            }
+            color={
+              selectedItem.includes(e.path) ? "brand.600" : "text.inactive"
+            }
             variant="ghost"
             justifyContent="flex-start"
             borderRadius={0}
             onClick={() => {
-              // setSelectedItem(e.path);
               navigate(e.path);
             }}
-            bgColor={selectedItem === e.path ? "brand.50" : ""}
+            bgColor={selectedItem.includes(e.path) ? "brand.50" : ""}
           >
             {e.text}
           </Button>

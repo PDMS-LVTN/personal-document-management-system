@@ -15,7 +15,7 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('tag')
 @Controller('api/tag/')
 export class TagController {
-  constructor(private readonly tagService: TagService) {}
+  constructor(private readonly tagService: TagService) { }
 
   @Post('create_tag')
   createTag(@Body() createTagDto: CreateTagDto) {

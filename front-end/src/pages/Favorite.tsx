@@ -10,14 +10,20 @@ function Favorite() {
   const { ref } = useOutletContext<ContextType>();
   const { getFavoriteNotes } = useFavorite();
   const treeItems = useApp((state) => state.treeItems);
+  const setTree = useApp((state) => state.setTree);
 
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
-    getFavoriteNotes(controller, isMounted);
+    const loadData = async () => {
+      const notes = await getFavoriteNotes(controller);
+      isMounted && setTree(notes);
+    };
+    loadData();
+
     return () => {
       isMounted = false;
-      controller.abort();
+      isMounted && controller.abort();
     };
   }, []);
 
