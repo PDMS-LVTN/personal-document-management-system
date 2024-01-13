@@ -78,7 +78,7 @@ export class TagService {
     try {
       await this.tagRepository.save(tag);
     } catch (e) {
-      return 'Error when remove a tag from note';
+      return 'Error when removing a tag from note';
     }
   }
 }
