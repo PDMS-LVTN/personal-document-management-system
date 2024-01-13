@@ -43,7 +43,7 @@ const SearchTag = ({ renderResults }) => {
         <Text color="text.inactive" ml={10}>
           No tags found
         </Text>
-      ) : allTags.length ? (
+      ) : allTags && allTags.length ? (
         renderResults(allTags)
       ) : (
         <Text color="text.inactive" ml={10}>

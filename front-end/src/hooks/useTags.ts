@@ -9,7 +9,7 @@ export const useTags = () => {
     // const currentTags = useApp((state) => state.currentTags);
     // const setCurrentTags = useApp((state) => state.setCurrentTags);
     // const allTags = useApp((state) => state.allTags);
-    const setAllTags = useApp((state) => state.setAllTags);
+    // const setAllTags = useApp((state) => state.setAllTags);
 
     const callApi = useApi()
 
@@ -20,7 +20,7 @@ export const useTags = () => {
             data: JSON.stringify({
                 user_id: auth.id,
                 description: newTag,
-                notes: note_id ? [note_id] : [],
+                note_id: note_id,
             })
         }
         return await callApi(APIEndPoints.CREATE_TAG, options)
@@ -69,6 +69,15 @@ export const useTags = () => {
         return await callApi(`tag/${tagId}`, options)
     }
 
-    return { createTag, deleteTagInNote, getAllTags, getNotesInTag, deleteTag };
+    const applyTag = async (tagId: string, noteId: string) => {
+        console.log(tagId, noteId);
+        const options: AxiosRequestConfig = {
+            method: "POST",
+            data: { note_id: noteId }
+        }
+        return await callApi(`tag/apply_tag/${tagId}`, options)
+    }
+
+    return { createTag, deleteTagInNote, getAllTags, getNotesInTag, deleteTag, applyTag };
 
 }

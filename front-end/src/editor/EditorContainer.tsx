@@ -31,7 +31,7 @@ function EditorContainer({ editorRef }) {
 
   const { isLoading, actions } = useNotes(editorRef);
   const { updateFavorite } = useFavorite();
-  const { createTag, deleteTagInNote } = useTags();
+  const { createTag, deleteTagInNote, applyTag } = useTags();
 
   const currentTags = useApp((state) => state.currentTags);
   const setCurrentTags = useApp((state) => state.setCurrentTags);
@@ -41,7 +41,7 @@ function EditorContainer({ editorRef }) {
   const handleChange = (selected) => {
     if (selected.length > currentTags.length) {
       const newTag = selected[selected.length - 1];
-      createTag(newTag.value, currentNote.id);
+      applyTag(newTag.id, currentNote.id);
       setCurrentTags([...currentTags, newTag]);
     } else {
       const deletedTag = currentTags.filter(
