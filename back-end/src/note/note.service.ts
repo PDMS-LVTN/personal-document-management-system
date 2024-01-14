@@ -45,6 +45,8 @@ export class NoteService {
           title: true,
         },
         parent_id: true,
+        created_at: true,
+        updated_at: true,
         // parentNote: { id: true }
       },
       where: { user: { id: Equal(req.user_id) }, parentNote: IsNull() },
@@ -147,14 +149,17 @@ export class NoteService {
     const searchQuery = req.body.keyword;
     const notes_matching_content = await this.noteRepository
       .createQueryBuilder('note')
-      .select(['id', 'title'])
+      .select(['id', 'title', 'created_at', 'updated_at'])
       .where('note.user_id = :id', { id: req.body.user_id })
       .andWhere(
-        `MATCH(note.content) AGAINST ('${searchQuery}' WITH QUERY EXPANSION)`,
+        `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
       )
       .getRawMany();
     const notes_matching_image_content =
       await this.imageContentService.searchImageContent(req);
+    console.log(searchQuery);
+    console.log(notes_matching_content);
+    console.log(notes_matching_image_content);
     return _.unionBy(
       notes_matching_content,
       notes_matching_image_content,
@@ -183,7 +188,7 @@ export class NoteService {
     // Retrieve note's content and edit image's url (replace blob by localhost)
     if (req.body.content) {
       req.body.content = req.body.content.replaceAll(
-        'blob\\' + ':' + 'http://localhost:5173',
+        ('blob\\' || 'blob') + ':' + 'http://localhost:5173',
         process.env.IMAGE_SERVER_PATH,
       );
     }

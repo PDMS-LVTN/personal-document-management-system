@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import useNotes from "../hooks/useNotes";
 import { ContextType } from "../layouts/TreeAndEditorContainer";
 import { useLocation, useOutletContext } from "react-router";
+import moment from 'moment';
 
 export const Search = () => {
   const { ref } = useOutletContext<ContextType>();
@@ -48,9 +49,9 @@ export const Search = () => {
               <Text fontWeight="bold" fontSize="lg" mb={2}>
                 {item.title}
               </Text>
-              <Text fontWeight="normal">path</Text>
-              <Text fontWeight="normal">Created </Text>
-              <Text fontWeight="normal">Edited</Text>
+              {/* <Text fontWeight="normal">path</Text> */}
+              <Text fontWeight="normal">Created: {moment(item.created_at).format("L")} </Text>
+              <Text fontWeight="normal">Edited: {moment(item.updated_at).format("L")}</Text>
             </Button>
           );
         })

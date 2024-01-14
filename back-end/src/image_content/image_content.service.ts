@@ -108,9 +108,14 @@ export class ImageContentService {
       .innerJoinAndSelect('image_content.note', 'note', 'note.user_id = :id', {
         id: req.body.user_id,
       })
-      .select(['note_ID as id', 'note.title AS title'])
+      .select([
+        'note_ID as id',
+        'note.title AS title',
+        'note.created_at AS created_at',
+        'note.updated_at AS updated_at',
+      ])
       .where(
-        `MATCH(image_content.content) AGAINST ('${searchQuery}' WITH QUERY EXPANSION)`,
+        `MATCH(image_content.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
       )
       .getRawMany();
   }
