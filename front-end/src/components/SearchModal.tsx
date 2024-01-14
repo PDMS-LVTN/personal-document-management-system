@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import useNotes from "../hooks/useNotes";
 import { useNavigate } from "react-router";
+import moment from 'moment';
 
 const SearchModal = ({ editorRef, close }) => {
   const [keyword, setKeyword] = useState("");
@@ -43,9 +44,13 @@ const SearchModal = ({ editorRef, close }) => {
           <Text fontWeight="bold" fontSize="lg" mb={2}>
             {item.title}
           </Text>
-          <Text fontWeight="normal">path</Text>
-          <Text fontWeight="normal">Created </Text>
-          <Text fontWeight="normal">Edited</Text>
+          {/* <Text fontWeight="normal">path</Text> */}
+          <Text fontWeight="normal">
+            Created: {moment(item.created_at).format("YYYY-MM-DD HH:mm:ss")}
+          </Text>
+          <Text fontWeight="normal">
+            Edited: {moment(item.updated_at).format("YYYY-MM-DD HH:mm:ss")}
+          </Text>
         </Button>
       );
     });
