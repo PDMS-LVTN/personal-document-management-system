@@ -8,8 +8,6 @@ import { Note } from 'src/note/entities/note.entity';
 import { catchError, lastValueFrom, of } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { error } from 'console';
-// import { SearchService } from '../search/search.service';
-// /search/search.service';
 
 require('dotenv').config();
 const fs = require('fs');
@@ -26,7 +24,11 @@ export class ImageContentService {
     const response = [];
     files.map((file: any) => {
       const fileName = file.originalname;
-      if (!fileName) {
+      // if (!fileName) {
+      //   return of(error, 'File type must be png, jpg, jpeg');
+      // }
+      const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+      if (!allowedMimeTypes.includes(file.mimetype)) {
         return of(error, 'File type must be png, jpg, jpeg');
       }
       response.push(fileName);
@@ -137,7 +139,7 @@ export class ImageContentService {
 
   async removeImageContent(path: string) {
     // Remove image file from destination folder
-    fs.unlinkSync(`${process.env.UPLOAD_PATH}/${path}`);
+    fs.unlinkSync(`${process.env.IMAGE_UPLOAD_PATH}/${path}`);
 
     // Remove image_content item from database
     const image_content = await this.imageContentRepository.findOneBy({ path });

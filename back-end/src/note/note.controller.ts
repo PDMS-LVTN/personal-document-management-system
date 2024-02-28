@@ -73,7 +73,7 @@ export class NoteController {
   @UseInterceptors(
     FilesInterceptor('files[]', 20, {
       storage: diskStorage({
-        destination: process.env.UPLOAD_PATH,
+        destination: process.env.IMAGE_UPLOAD_PATH,
         filename: (req, file, cb) => {
           const fileName: string = path
             .parse(file.originalname)
@@ -84,12 +84,12 @@ export class NoteController {
           cb(null, `${fileName}${extension}`);
         },
       }),
-      fileFilter: (req, file, cb) => {
-        const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
-        allowedMimeTypes.includes(file.mimetype)
-          ? cb(null, true)
-          : cb(null, false);
-      },
+      // fileFilter: (req, file, cb) => {
+      //   const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+      //   allowedMimeTypes.includes(file.mimetype)
+      //     ? cb(null, true)
+      //     : cb(null, false);
+      // },
     }),
   )
   async updateNote(
