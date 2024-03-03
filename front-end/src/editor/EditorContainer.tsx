@@ -34,6 +34,7 @@ function EditorContainer({ editorRef }) {
   const { createTag, deleteTagInNote, applyTag } = useTags();
 
   const currentTags = useApp((state) => state.currentTags);
+  // console.log("currenttag", currentTags);
   const setCurrentTags = useApp((state) => state.setCurrentTags);
   const allTags = useApp((state) => state.allTags);
   const setAllTags = useApp((state) => state.setAllTags);
@@ -149,6 +150,7 @@ function EditorContainer({ editorRef }) {
             <CreatableSelect
               id="input-tags"
               isMulti
+              // name="tags"
               options={allTags}
               menuPlacement="top"
               placeholder="Select some tags..."

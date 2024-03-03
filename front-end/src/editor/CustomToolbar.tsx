@@ -18,6 +18,7 @@ import {
   InsertThematicBreak,
   EditorInFocus,
 } from "@mdxeditor/editor";
+import { InsertFile } from "./toolbar/components/InsertFile";
 
 function whenInAdmonition(editorInFocus: EditorInFocus | null) {
   const node = editorInFocus?.rootNode;
@@ -64,6 +65,7 @@ export const CustomToolbar: React.FC = () => {
 
                 <CreateLink />
                 <InsertImage />
+                <InsertFile />
 
                 <Separator />
 

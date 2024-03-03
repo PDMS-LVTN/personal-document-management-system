@@ -18,18 +18,18 @@ import {
 } from "@mdxeditor/editor";
 import { CustomToolbar } from "./CustomToolbar";
 
-export const tempState = {waitingImage: []}
+export const tempState = { waitingImage: [] };
 
 const simpleImageUploadHandler = (image: File) => {
   // console.log(image);
-  const ext = image.name.substring(image.name.indexOf('.'))
-  const url = URL.createObjectURL(image)
-  const pos = url.lastIndexOf('/');
+  const ext = image.name.substring(image.name.indexOf("."));
+  const url = URL.createObjectURL(image);
+  const pos = url.lastIndexOf("/");
   const fileName = url.substring(pos + 1);
 
-  const newFile = new File([image], fileName + ext, {type: image.type});
+  const newFile = new File([image], fileName + ext, { type: image.type });
   // console.log(newFile)
-  tempState.waitingImage.push(newFile)
+  tempState.waitingImage.push(newFile);
   return Promise.resolve(url);
 };
 
