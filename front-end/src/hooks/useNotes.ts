@@ -5,7 +5,7 @@ import { useToast } from "@chakra-ui/react";
 import { useAuthentication } from "../store/useAuth";
 import { APIEndPoints } from "../api/endpoint";
 import { tempState } from "../editor/_boilerplate";
-import markdown from "../assets/default-content.md?raw";
+// import markdown from "../assets/default-content.md?raw";
 import { useTags } from "./useTags";
 import { useApi } from "./useApi";
 
@@ -31,7 +31,8 @@ const useNotes = (ref) => {
 
     // const { getAllTags } = useTags()
 
-    const createNote = async (id) => {
+    const createNote = async (id, markdown) => {
+        console.log(markdown);
         try {
             const response = await axiosJWT.post(
                 APIEndPoints.CREATE_NOTE,

@@ -24,11 +24,12 @@ const simpleImageUploadHandler = (image: File) => {
   // console.log(image);
   const ext = image.name.substring(image.name.indexOf('.'))
   const url = URL.createObjectURL(image)
+  console.log(url)
   const pos = url.lastIndexOf('/');
   const fileName = url.substring(pos + 1);
 
   const newFile = new File([image], fileName + ext, {type: image.type});
-  // console.log(newFile)
+  console.log(newFile)
   tempState.waitingImage.push(newFile)
   return Promise.resolve(url);
 };
