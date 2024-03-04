@@ -1,12 +1,12 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useApp } from "../store/useApp";
 import useAxiosJWT from "./useAxiosJWT";
 import { useToast } from "@chakra-ui/react";
 import { useAuthentication } from "../store/useAuth";
 import { APIEndPoints } from "../api/endpoint";
-import { tempState } from "../editor/_boilerplate";
+// import { tempState } from "../editor/_boilerplate";
 import markdown from "../assets/default-content.md?raw";
-import { useTags } from "./useTags";
+// import { useTags } from "./useTags";
 import { useApi } from "./useApi";
 
 const useNotes = (ref) => {
@@ -80,13 +80,13 @@ const useNotes = (ref) => {
 
     const updateNote = async () => {
         setLoading(true);
-        console.log(tempState.waitingImage);
+        // console.log(tempState.waitingImage);
         const processedMarkdown: string = ref?.current?.getMarkdown().trim();
         const formData = new FormData();
         // Append each of the files
-        tempState.waitingImage.forEach((file) => {
-            formData.append("files[]", file);
-        });
+        // tempState.waitingImage.forEach((file) => {
+        //     formData.append("files[]", file);
+        // });
         formData.append(
             "data",
             JSON.stringify({
@@ -108,7 +108,7 @@ const useNotes = (ref) => {
                 status: "success",
                 isClosable: true,
             });
-            tempState.waitingImage = [];
+            // tempState.waitingImage = [];
             console.log(currentNote.parent);
             if (!currentNote.parent) {
                 let index = treeItems.findIndex((x) => x.id === currentNote.id);

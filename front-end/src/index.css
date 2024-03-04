@@ -34,9 +34,10 @@
 }
 
 .inside-editor {
-  padding-left: 3em;
+  /* padding-left: 3em; */
   height: calc(100vh - 120px - 65px - 60px);
   overflow-y: auto;
+  /* position: relative; */
 }
 
 .resize-handle {
@@ -55,7 +56,11 @@
   padding-inline-end: 0 !important;
 }
 
-
 #input-tags {
   z-index: 5;
 }
+
+/* #structure-grid-item {
+  resize: horizontal;
+  background: #ffd166;
+} */
