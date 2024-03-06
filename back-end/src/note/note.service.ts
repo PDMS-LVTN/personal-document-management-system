@@ -205,4 +205,16 @@ export class NoteService {
     // Method 2:
     return await this.noteRepository.delete(id);
   }
+
+  async importNote(files, req) {
+    const newNote: CreateNoteDto = {
+      title: 'Untitled',
+      user_id: '58c8b7a4-31cf-4cc3-ae92-62d9888f3370',
+      size: 0,
+    };
+    const note = await this.createNote(newNote);
+    await this.updateNote(note.id, files, req).catch((err) => {
+      throw err;
+    });
+  }
 }
