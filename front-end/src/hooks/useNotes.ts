@@ -4,10 +4,11 @@ import useAxiosJWT from "./useAxiosJWT";
 import { useToast } from "@chakra-ui/react";
 import { useAuthentication } from "../store/useAuth";
 import { APIEndPoints } from "../api/endpoint";
-// import { tempState } from "../editor/_boilerplate";
-import markdown from "../assets/default-content.md?raw";
+import { tempState } from '@/editor/lib/api';
+// import markdown from "../assets/default-content.md?raw";
 // import { useTags } from "./useTags";
 import { useApi } from "./useApi";
+// import { initialContent } from "@/editor/lib/data/initialContent";
 
 const useNotes = (ref) => {
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -32,13 +33,14 @@ const useNotes = (ref) => {
     // const { getAllTags } = useTags()
 
     const createNote = async (id) => {
+        const initialContent = '<p> Hello world </p>'
         try {
             const response = await axiosJWT.post(
                 APIEndPoints.CREATE_NOTE,
                 JSON.stringify({
                     user_id: auth.id,
                     title: "Untitled",
-                    content: markdown,
+                    content: initialContent,
                     read_only: false,
                     size: 0,
                     parent_id: id,
@@ -47,7 +49,6 @@ const useNotes = (ref) => {
                     headers: { "Content-Type": "application/json" },
                 }
             );
-            console.log(response.data);
             if (!id) {
                 setTree([
                     ...treeItems,
@@ -67,7 +68,9 @@ const useNotes = (ref) => {
                 is_pinned: false,
             };
             setCurrentNote(currentNote);
-            ref?.current?.setMarkdown(markdown);
+            // ref?.current?.setMarkdown(markdown);
+            console.log(response.data.content)
+            window.editor.commands.setContent(initialContent)
             return currentNote;
         } catch (error) {
             console.log(error);
@@ -80,17 +83,18 @@ const useNotes = (ref) => {
 
     const updateNote = async () => {
         setLoading(true);
-        // console.log(tempState.waitingImage);
-        const processedMarkdown: string = ref?.current?.getMarkdown().trim();
+        console.log(tempState.waitingImage);
+        // const processedMarkdown: string = ref?.current?.getMarkdown().trim();
+        const editorContent = window.editor.getHTML()
         const formData = new FormData();
         // Append each of the files
-        // tempState.waitingImage.forEach((file) => {
-        //     formData.append("files[]", file);
-        // });
+        tempState.waitingImage.forEach((file) => {
+            formData.append("files[]", file);
+        });
         formData.append(
             "data",
             JSON.stringify({
-                content: processedMarkdown,
+                content: editorContent,
                 title: currentNote?.title,
             })
         );
@@ -108,7 +112,7 @@ const useNotes = (ref) => {
                 status: "success",
                 isClosable: true,
             });
-            // tempState.waitingImage = [];
+            tempState.waitingImage = [];
             console.log(currentNote.parent);
             if (!currentNote.parent) {
                 let index = treeItems.findIndex((x) => x.id === currentNote.id);
@@ -239,7 +243,8 @@ const useNotes = (ref) => {
         })
         console.log('current_tag', tags);
         setCurrentTags(tags);
-        ref?.current?.setMarkdown(noteItem.content);
+        // ref?.current?.setMarkdown(noteItem.content);
+        window.editor.commands.setContent(noteItem.content)
         return noteItem;
     }
 

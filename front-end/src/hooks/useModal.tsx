@@ -19,7 +19,9 @@ import {
 import { useCallback, useMemo, useState } from "react";
 // import Modal from '../ui/Modal';
 
-export default function useModal(): [
+export default function useModal(
+  size?: string
+): [
   JSX.Element | null,
   (title: string, showModal: (onClose: () => void) => JSX.Element) => void
 ] {
@@ -49,6 +51,8 @@ export default function useModal(): [
         isOpen={true}
         onClose={onClose}
         closeOnOverlayClick={closeOnClickOutside}
+        size={size}
+        scrollBehavior="inside"
       >
         <ModalOverlay />
         <ModalContent>

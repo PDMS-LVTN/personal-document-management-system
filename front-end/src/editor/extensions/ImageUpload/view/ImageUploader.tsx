@@ -4,6 +4,8 @@ import { Button } from "@/editor/components/ui/Button";
 import { Icon } from "@/editor/components/ui/Icon";
 import { cn } from "@/editor/lib/utils";
 import { ChangeEvent, useCallback } from "react";
+import useModal from "@/hooks/useModal";
+import { UnsplashDialog } from "../../../components/ui/Dialogs";
 
 export const ImageUploader = ({
   onUpload,
@@ -15,12 +17,21 @@ export const ImageUploader = ({
   const { draggedInside, onDrop, onDragEnter, onDragLeave } = useDropZone({
     uploader: uploadFile,
   });
+  const [modal, showModal] = useModal("xl");
 
   const onFileChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) =>
       e.target.files ? uploadFile(e.target.files[0]) : null,
     [uploadFile]
   );
+
+  const handleUnsplash = () => {
+    showModal("Unsplash Image", (onClose) => (
+      <UnsplashDialog onUpload={onUpload} />
+    ));
+  };
+
+  const handleGoogleImage = () => {};
 
   if (loading) {
     return (
@@ -51,15 +62,32 @@ export const ImageUploader = ({
         <div className="text-sm font-medium text-center text-neutral-400 dark:text-neutral-500">
           {draggedInside ? "Drop image here" : "Drag and drop or"}
         </div>
-        <div>
+        <div className="flex flex-col justify-center gap-2">
           <Button
             disabled={draggedInside}
             onClick={handleUploadClick}
             variant="primary"
             buttonSize="small"
+            style={{ width: "100%" }}
           >
             <Icon name="Upload" />
             Upload an image
+          </Button>
+          <Button
+            disabled={draggedInside}
+            onClick={handleUnsplash}
+            variant="primary"
+            buttonSize="small"
+          >
+            Unsplash
+          </Button>
+          <Button
+            disabled={draggedInside}
+            onClick={handleGoogleImage}
+            variant="primary"
+            buttonSize="small"
+          >
+            Google Image
           </Button>
         </div>
       </div>
@@ -70,6 +98,7 @@ export const ImageUploader = ({
         accept=".jpg,.jpeg,.png,.webp,.gif"
         onChange={onFileChange}
       />
+      {modal}
     </div>
   );
 };

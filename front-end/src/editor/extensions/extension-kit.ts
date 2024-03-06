@@ -49,6 +49,8 @@ import { ImageUpload } from './ImageUpload'
 // import { lowlight } from 'lowlight/lib/core';
 // https://stackoverflow.com/questions/77573628/how-do-you-highlight-codeblock-with-tiptap
 import { common, createLowlight } from 'lowlight';
+import { FileBlock } from './FileBlock';
+import { FileUpload } from './FileUpload';
 
 // interface ExtensionKitProps {
 //   provider?: HocuspocusProvider | null
@@ -110,6 +112,8 @@ export const ExtensionKit = () => [
   // }),
   ImageUpload,
   ImageBlock,
+  FileBlock,
+  FileUpload,
   // FileHandler.configure({
   //   allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
   //   onDrop: (currentEditor, files, pos) => {

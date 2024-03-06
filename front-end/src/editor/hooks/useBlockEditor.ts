@@ -13,7 +13,8 @@ import { ExtensionKit } from '@/editor/extensions/extension-kit'
 // import { randomElement } from '../lib/utils'
 // import { EditorUser } from '../components/BlockEditor/types'
 import { useSidebar } from './useSidebar'
-import { initialContent } from '@/editor/lib/data/initialContent'
+// import { initialContent } from '@/editor/lib/data/initialContent'
+import { useApp } from '@/store/useApp'
 
 // const TIPTAP_AI_APP_ID = process.env.NEXT_PUBLIC_TIPTAP_AI_APP_ID
 // const TIPTAP_AI_BASE_URL = process.env.NEXT_PUBLIC_TIPTAP_AI_BASE_URL || 'https://api.tiptap.dev/v1/ai'
@@ -35,6 +36,7 @@ declare global {
 // }) => {
 export const useBlockEditor = () => {
     const leftSidebar = useSidebar()
+    const currentNote = useApp((state) => state.currentNote);
     //   const [collabState, setCollabState] = useState<WebSocketStatus>(WebSocketStatus.Connecting)
     //   const { setIsAiLoading, setAiError } = useContext(EditorContext)
 
@@ -48,7 +50,7 @@ export const useBlockEditor = () => {
                 //     }
                 // })
                 if (editor.isEmpty) {
-                    editor.commands.setContent(initialContent)
+                    editor.commands.setContent(currentNote?.content || '<p> Hello world </p>')
                 }
             },
             extensions: [

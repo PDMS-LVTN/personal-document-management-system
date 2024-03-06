@@ -64,6 +64,12 @@ export const BlockEditor = ({ editorRef }) => {
           isSidebarOpen={leftSidebar.isOpen}
           toggleSidebar={leftSidebar.toggle}
         />
+        <LinkMenu editor={editor} appendTo={menuContainerRef} />
+        <TextMenu editor={editor} />
+        <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
+        <TableRowMenu editor={editor} appendTo={menuContainerRef} />
+        <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
+        <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
         <EditorContent
           editor={editor}
           ref={editorRef}
@@ -71,12 +77,6 @@ export const BlockEditor = ({ editorRef }) => {
           className="inside-editor"
         />
         {/* <ContentItemMenu editor={editor} /> */}
-        <LinkMenu editor={editor} appendTo={menuContainerRef} />
-        <TextMenu editor={editor} />
-        <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
-        <TableRowMenu editor={editor} appendTo={menuContainerRef} />
-        <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
-        <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
       </div>
     </div>
     //  {aiState.isAiLoading && aiLoaderPortal}

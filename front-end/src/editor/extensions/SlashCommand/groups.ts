@@ -133,6 +133,15 @@ export const GROUPS: Group[] = [
         },
       },
       {
+        name: 'file',
+        label: 'File',
+        iconName: 'Paperclip',
+        description: 'Upload file',
+        action: editor => {
+          editor.chain().focus().setFileUpload().run()
+        },
+      },
+      {
         name: 'columns',
         label: 'Columns',
         iconName: 'Columns2',
