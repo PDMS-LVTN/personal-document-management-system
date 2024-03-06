@@ -15,6 +15,7 @@ export class FileUploadService {
   ) {}
 
   async uploadFile(files, req, note_ID) {
+    files.map((e) => console.log(e));
     files.map((file: any) => {
       const fileName = file.originalname;
       // Find matching file name between content and response array. Add right extension at the end of all urls
@@ -50,7 +51,7 @@ export class FileUploadService {
 
   async removeFileUpload(path: string) {
     // Remove image file from destination folder
-    fs.unlinkSync(`${process.env.FILE_UPLOAD_PATH}/${path}`);
+    fs.unlinkSync(`${process.env.UPLOAD_PATH}/${path}`);
 
     // Remove image_content item from database
     const file_upload = await this.fileUploadRepository.findOneBy({ path });

@@ -152,7 +152,8 @@ export class NoteService {
       .select(['id', 'title', 'created_at', 'updated_at'])
       .where('note.user_id = :id', { id: req.body.user_id })
       .andWhere(
-        `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
+        // `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
+        `note.content REGEXP '>([^<]*)size([^>]*)<'`,
       )
       .getRawMany();
     const notes_matching_image_content =
@@ -176,10 +177,22 @@ export class NoteService {
     const data = JSON.parse(req.body.data);
     req.body = data;
 
-    // Upload images to upload folder and save in image_content table
+    // Upload images to upload folder and save in image_content table. Similar to other file uploads
     if (files.length > 0) {
       try {
-        await this.imageContentService.uploadImage(files, req, id);
+        const image_files = [];
+        const other_files = [];
+        files.map((e) => {
+          if (e.mimetype.includes('image')) {
+            image_files.push(e);
+            console.log(e);
+          } else {
+            console.log(e);
+            other_files.push(e);
+          }
+        });
+        await this.imageContentService.uploadImage(image_files, req, id);
+        await this.imageContentService.uploadImage(other_files, req, id);
       } catch (err) {
         console.log(err);
         throw err;

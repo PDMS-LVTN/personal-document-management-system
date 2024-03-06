@@ -27,7 +27,7 @@ export class FileUploadController {
   @UseInterceptors(
     FilesInterceptor('files[]', 20, {
       storage: diskStorage({
-        destination: process.env.FILE_UPLOAD_PATH,
+        destination: process.env.UPLOAD_PATH,
         filename: (req, file, cb) => {
           const fileName: string = path
             .parse(file.originalname)

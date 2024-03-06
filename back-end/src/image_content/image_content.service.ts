@@ -117,7 +117,8 @@ export class ImageContentService {
         'note.updated_at AS updated_at',
       ])
       .where(
-        `MATCH(image_content.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
+        // `MATCH(image_content.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
+        `image_content.content REGEXP '>([^<]*)size([^>]*)<'`,
       )
       .getRawMany();
   }
@@ -139,7 +140,7 @@ export class ImageContentService {
 
   async removeImageContent(path: string) {
     // Remove image file from destination folder
-    fs.unlinkSync(`${process.env.IMAGE_UPLOAD_PATH}/${path}`);
+    fs.unlinkSync(`${process.env.UPLOAD_PATH}/${path}`);
 
     // Remove image_content item from database
     const image_content = await this.imageContentRepository.findOneBy({ path });
