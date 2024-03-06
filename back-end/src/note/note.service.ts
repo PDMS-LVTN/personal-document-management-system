@@ -21,7 +21,7 @@ export class NoteService {
     private readonly imageContentService: ImageContentService,
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
-  ) {}
+  ) { }
 
   async createNote(createNoteDto: CreateNoteDto) {
     const user = new User({ id: createNoteDto.user_id });
