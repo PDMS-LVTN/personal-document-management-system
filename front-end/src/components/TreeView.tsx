@@ -36,6 +36,26 @@ const TreeItem = ({
   const treeItems = useApp((state) => state.treeItems);
   const { actions } = useNotes(editorRef);
 
+  const handleInputChange = async(e) => {
+    console.log("in menu");
+      const response = await actions.getANote(noteItem.id);
+      const newNote = await actions.importNote(noteItem.id, e.target.files[0]);
+      console.log("in menu");
+      console.log(response);
+      setLocalTreeItems([
+        ...localTreeItems.slice(0, index),
+        {
+          ...localTreeItems[index],
+          childNotes: [
+            ...response.childNotes,
+            { id: newNote.id, title: newNote.title },
+          ],
+        },
+        ...localTreeItems.slice(index + 1),
+      ]);
+      if (!isExpanded) onOpen();
+  };
+
   // const setCurrentNote = useApp((state) => state.setCurrentNote);
   return (
     <Flex
@@ -112,41 +132,59 @@ const TreeItem = ({
             </MenuItem>
           </MenuList>
         </Menu>
-        <Tooltip label="Quickly add a note inside">
-          <Button
-            variant="ghost"
-            style={{
-              height: "40px",
-              width: "40px",
-              padding: "7px",
-              borderRadius: "50%",
-              marginLeft: "0.5em",
-            }}
-          >
-            <img
-              src={BlackPlusIcon}
-              alt="plus icon"
-              onClick={async () => {
-                const response = await actions.getANote(noteItem.id);
-                const newNote = await actions.createNote(noteItem.id);
-                console.log("in menu");
-                console.log(response);
-                setLocalTreeItems([
-                  ...localTreeItems.slice(0, index),
-                  {
-                    ...localTreeItems[index],
-                    childNotes: [
-                      ...response.childNotes,
-                      { id: newNote.id, title: newNote.title },
-                    ],
-                  },
-                  ...localTreeItems.slice(index + 1),
-                ]);
-                if (!isExpanded) onOpen();
-              }}
-            />
-          </Button>
-        </Tooltip>
+        <Menu>
+            <MenuButton
+              height="40px"
+              width="40px"
+              padding= "7px"
+              borderRadius= "50%"
+              marginLeft= "0.5em"
+            >
+              <img src={BlackPlusIcon} alt="plus icon" />
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                position={"relative"}
+                onClick={async () => {
+                  const response = await actions.getANote(noteItem.id);
+                  const newNote = await actions.createNote(noteItem.id);
+                  console.log("in menu");
+                  console.log(response);
+                  setLocalTreeItems([
+                    ...localTreeItems.slice(0, index),
+                    {
+                      ...localTreeItems[index],
+                      childNotes: [
+                        ...response.childNotes,
+                        { id: newNote.id, title: newNote.title },
+                      ],
+                    },
+                    ...localTreeItems.slice(index + 1),
+                  ]);
+                  if (!isExpanded) onOpen();
+                }}
+              >
+                Create new note
+              </MenuItem>
+              <MenuItem>
+                <span>Import file</span>
+                <input
+                  style={{
+                    opacity: 0,
+                    zIndex: 5,
+                    position: "absolute",
+                    maxWidth: "200px",
+                    cursor: "pointer",
+                  }}
+                  accept=".docx, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  type="file"
+                  className="upload-file"
+                  name="upload_file"
+                  onChange={handleInputChange}
+                />
+              </MenuItem>
+            </MenuList>
+          </Menu>
       </Flex>
     </Flex>
   );
