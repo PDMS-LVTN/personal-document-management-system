@@ -209,7 +209,7 @@ export class NoteService {
   async importNote(files, req) {
     const newNote: CreateNoteDto = {
       title: 'Untitled',
-      user_id: '58c8b7a4-31cf-4cc3-ae92-62d9888f3370',
+      user_id: req.user.id,
       size: 0,
     };
     const note = await this.createNote(newNote);
