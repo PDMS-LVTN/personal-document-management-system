@@ -64,7 +64,7 @@ export const useApp = create<AppStore>()(devtools(persist((set) => ({
             state.dirtyNotes.filter((id) => id !== noteId)
     })),
     // this method need to reset every state when user is logged out
-    clean: () => set({ expired: false, currentNote: null, dirtyNotes: null, currentTree: null, treeItems: null, allTags: null, currentTags: null }),
+    clean: () => set({ expired: false, currentNote: null, dirtyNotes: [], currentTree: null, treeItems: null, allTags: [], currentTags: [] }),
     treeItems: [],
     setTree: (data) => set((state) => ({ ...state, treeItems: data })),
     currentTree: null,

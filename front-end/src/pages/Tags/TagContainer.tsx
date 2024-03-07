@@ -51,6 +51,7 @@ const TagContainer = () => {
     const controller = new AbortController();
     const loadData = async () => {
       const { tags } = await getAllTags(controller);
+      // console.log("tags", tags);
       isMounted && setAllTags(tags);
     };
     loadData();

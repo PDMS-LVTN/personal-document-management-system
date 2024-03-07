@@ -1,10 +1,9 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
-import "./tailwind.css";
-import "@mdxeditor/editor/style.css";
+import "./globals.css";
+// import "@mdxeditor/editor/style.css";
 import "./index.css";
 import { router } from "./navigation/routerConfig.tsx";
 
