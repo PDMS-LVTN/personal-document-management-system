@@ -21,7 +21,7 @@ import path = require('path');
 @ApiTags('note')
 @Controller('api/note/')
 export class NoteController {
-  constructor(private readonly noteService: NoteService) { }
+  constructor(private readonly noteService: NoteService) {}
 
   @Post('add_note')
   async createNote(@Body() createNoteDto: CreateNoteDto) {
@@ -105,5 +105,26 @@ export class NoteController {
   @Delete(':id')
   async removeNote(@Param('id') id: string) {
     return await this.noteService.removeNote(id);
+  }
+
+  @Post('import')
+  @UseInterceptors(
+    FilesInterceptor('files[]', 20, {
+      storage: diskStorage({
+        destination: process.env.UPLOAD_PATH,
+        filename: (req, file, cb) => {
+          const fileName: string = path
+            .parse(file.originalname)
+            .name.replace(/\s/g, '');
+          // const pos = req.body.urls[idx].lastIndexOf('/');
+          // const fileName = req.body.urls[idx].substring(pos + 1) + extension;
+          const extension: string = path.parse(file.originalname).ext;
+          cb(null, `${fileName}${extension}`);
+        },
+      }),
+    }),
+  )
+  async importNote(@UploadedFiles() files, @Req() req) {
+    return await this.noteService.importNote(files, req);
   }
 }
