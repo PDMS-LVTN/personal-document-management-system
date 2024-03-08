@@ -5,10 +5,7 @@ import { useToast } from "@chakra-ui/react";
 import { useAuthentication } from "../store/useAuth";
 import { APIEndPoints } from "../api/endpoint";
 import { tempState } from "@/editor/lib/api";
-// import markdown from "../assets/default-content.md?raw";
-// import { useTags } from "./useTags";
 import { useApi } from "./useApi";
-// import { initialContent } from "@/editor/lib/data/initialContent";
 import { convertToHtml } from "mammoth";
 
 const useNotes = (ref) => {
@@ -262,6 +259,7 @@ const useNotes = (ref) => {
 
   const importNote = async (parentId, file) => {
     setLoading(true);
+    let title = file.name.substring(0, file.name.indexOf('.'))
     const tempState = { waitingImages: [], content: "" };
     await convertToHtml({ arrayBuffer: file })
       .then(async function (result) {
@@ -293,8 +291,8 @@ const useNotes = (ref) => {
         if (urls.length > 0) {
           let currentIndex = 0;
           tempState.content = tempState.content.replace(
-            /<p>(<img[^>]+>)<\/p>/g,
-            (match, imgTag) => {
+            /<p\b[^>]*>(<strong>|<i>|<em>|<u>)*(<img\b[^>]*>)(<\/strong>|<\/i>|<\/em>|<\/u>)*<\/p>/g,
+            (match, a, imgTag) => {
               const newUrl = urls[currentIndex];
               currentIndex++;
               return imgTag.replace(/src="([^"]+)"/, `src="${newUrl}"`);
@@ -314,7 +312,7 @@ const useNotes = (ref) => {
       "data",
       JSON.stringify({
         user_id: auth.id,
-        title: "Untitled",
+        title: title,
         content: tempState.content,
         read_only: false,
         size: 0,
@@ -329,7 +327,7 @@ const useNotes = (ref) => {
         setTree([
           ...treeItems,
           {
-            title: response.data.title,
+            title: title,
             id: response.data.id,
             childNotes: [],
           },
@@ -337,7 +335,7 @@ const useNotes = (ref) => {
       }
       const currentNote = {
         id: response.data.id,
-        title: response.data.title,
+        title: title,
         content: response.data.content,
         parent: response.data.parent_id,
         is_favorited: false,
@@ -345,8 +343,10 @@ const useNotes = (ref) => {
       };
       setCurrentNote(currentNote);
       window.editor.commands.setContent(tempState.content);
+      setLoading(false);
       return currentNote;
     } catch (error) {
+      setLoading(false);
       if (error.response?.status === 403 || error.response?.status === 401) {
         setAuth(undefined);
         clean();
