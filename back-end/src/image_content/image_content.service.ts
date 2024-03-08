@@ -8,8 +8,6 @@ import { Note } from 'src/note/entities/note.entity';
 import { catchError, lastValueFrom, of } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { error } from 'console';
-// import { SearchService } from '../search/search.service';
-// /search/search.service';
 
 require('dotenv').config();
 const fs = require('fs');
@@ -20,15 +18,19 @@ export class ImageContentService {
     private readonly imageContentRepository: Repository<ImageContent>,
     // private readonly searchService: SearchService,
     private readonly httpService: HttpService,
-  ) {}
+  ) { }
 
   async uploadImage(files, req, note_ID) {
     const response = [];
     files.map((file: any) => {
-      const fileName = file.originalname;
-      if (!fileName) {
-        return of(error, 'File type must be png, jpg, jpeg');
-      }
+      const fileName: string = file.originalname;
+      // // if (!fileName) {
+      // //   return of(error, 'File type must be png, jpg, jpeg');
+      // // }
+      // const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+      // if (!allowedMimeTypes.includes(file.mimetype)) {
+      //   return of(error, 'File type must be png, jpg, jpeg');
+      // }
       response.push(fileName);
       // Find matching file name between content and response array. Add right extension at the end of all urls
       req.body = {
@@ -116,6 +118,7 @@ export class ImageContentService {
       ])
       .where(
         `MATCH(image_content.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
+        // `image_content.content REGEXP '>([^<]*)size([^>]*)<'`,
       )
       .getRawMany();
   }

@@ -49,7 +49,7 @@ export const BlockEditor = ({ editorRef }) => {
 
   return (
     // <EditorContext.Provider value={providerValue}>
-    <div className="flex h-full" ref={menuContainerRef}>
+    <div className="flex" ref={menuContainerRef}>
       <Sidebar
         isOpen={leftSidebar.isOpen}
         onClose={leftSidebar.close}

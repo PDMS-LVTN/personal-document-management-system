@@ -13,6 +13,7 @@ import { ImageContentModule } from './image_content/image_content.module';
 // import { SearchModule } from './search/search.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { FileUploadModule } from './file_upload/file_upload.module';
 
 @Module({
   imports: [
@@ -23,10 +24,12 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     NoteModule,
     AuthModule,
     ImageContentModule,
+    FileUploadModule,
     // SearchModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads/image_content'),
     }),
+    FileUploadModule,
   ],
   controllers: [AppController],
   providers: [

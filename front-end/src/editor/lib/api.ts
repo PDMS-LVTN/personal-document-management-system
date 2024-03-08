@@ -1,9 +1,9 @@
+import { v4 as uuidv4 } from 'uuid'
+
 export const tempState = { waitingImage: [], waitingFile: [] };
 
 export class API {
   public static uploadImage = async (file: File) => {
-    // await new Promise(r => setTimeout(r, 500))
-    // return '/placeholder-image.jpg'
     console.log(file)
     const ext = file.name.substring(file.name.indexOf("."));
     const url = URL.createObjectURL(file);
@@ -17,24 +17,28 @@ export class API {
   }
 
   public static uploadFile = (file: File) => {
-    tempState.waitingImage.push(file);
+    const ext = file.name.substring(file.name.indexOf("."));
+    const id = uuidv4()
+    const newFile = new File([file], id + ext, { type: file.type });
+    tempState.waitingImage.push(newFile);
+    return Promise.resolve(id + ext);
 
     // Always return a Promise
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      // Wait till complete
-      reader.onloadend = function (e: any) {
-        const fileContent = e.target.result;
-        // Do something with the file content
-        console.log(fileContent);
-        resolve(file.name);
-      };
-      // Make sure to handle error states
-      reader.onerror = function (e: any) {
-        reject(e);
-      };
-      reader.readAsDataURL(file);
-    });
+    // return new Promise<string>((resolve, reject) => {
+    //   const reader = new FileReader();
+    //   // Wait till complete
+    //   reader.onloadend = function (e: any) {
+    //     const fileContent = e.target.result;
+    //     // Do something with the file content
+    //     console.log(fileContent);
+    //     resolve(file.name);
+    //   };
+    //   // Make sure to handle error states
+    //   reader.onerror = function (e: any) {
+    //     reject(e);
+    //   };
+    //   reader.readAsDataURL(file);
+    // });
   }
 }
 
