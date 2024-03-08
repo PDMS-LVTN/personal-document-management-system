@@ -4,22 +4,23 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Button,
   Flex,
   Menu,
   MenuButton,
   MenuDivider,
   MenuItem,
   MenuList,
+  Spinner,
   Text,
-  Tooltip,
   useAccordionItemState,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { Fragment, useEffect, useState } from "react";
 import BlackPlusIcon from "../assets/black-plus-icon.svg";
 import BlackOptionsIcon from "../assets/black-options-icon.svg";
 import { useApp } from "../store/useApp";
 import useNotes from "../hooks/useNotes";
+import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
 
 const TreeItem = ({
   noteItem,
@@ -34,7 +35,28 @@ const TreeItem = ({
   const setCurrentTree = useApp((state) => state.setCurrentTree);
   const setTree = useApp((state) => state.setTree);
   const treeItems = useApp((state) => state.treeItems);
-  const { actions } = useNotes(editorRef);
+  const { isLoading, actions } = useNotes(editorRef);
+  const { onClose } = useDisclosure();
+
+  const handleInputChange = async (e) => {
+    console.log("in menu");
+    const response = await actions.getANote(noteItem.id);
+    const newNote = await actions.importNote(noteItem.id, e.target.files[0]);
+    console.log("in menu");
+    console.log(response);
+    setLocalTreeItems([
+      ...localTreeItems.slice(0, index),
+      {
+        ...localTreeItems[index],
+        childNotes: [
+          ...response.childNotes,
+          { id: newNote.id, title: newNote.title },
+        ],
+      },
+      ...localTreeItems.slice(index + 1),
+    ]);
+    if (!isExpanded) onOpen();
+  };
 
   // const setCurrentNote = useApp((state) => state.setCurrentNote);
   return (
@@ -43,6 +65,28 @@ const TreeItem = ({
       w="100%"
       bgColor={currentNote?.id === noteItem?.id ? "brand.50" : ""}
     >
+      <Modal isOpen={isLoading} onClose={onClose} size="sm">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalBody
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            gap={4}
+          >
+            <Text fontSize="xl" fontWeight="50" color="brand.300">
+              Importing...
+            </Text>
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="brand.300"
+              size="md"
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
       <AccordionButton
         onClick={async () => {
           // expose the current tree's state
@@ -112,20 +156,19 @@ const TreeItem = ({
             </MenuItem>
           </MenuList>
         </Menu>
-        <Tooltip label="Quickly add a note inside">
-          <Button
-            variant="ghost"
-            style={{
-              height: "40px",
-              width: "40px",
-              padding: "7px",
-              borderRadius: "50%",
-              marginLeft: "0.5em",
-            }}
+        <Menu>
+          <MenuButton
+            height="40px"
+            width="40px"
+            padding="7px"
+            borderRadius="50%"
+            marginLeft="0.5em"
           >
-            <img
-              src={BlackPlusIcon}
-              alt="plus icon"
+            <img src={BlackPlusIcon} alt="plus icon" />
+          </MenuButton>
+          <MenuList>
+            <MenuItem
+              position={"relative"}
               onClick={async () => {
                 const response = await actions.getANote(noteItem.id);
                 const newNote = await actions.createNote(noteItem.id);
@@ -144,9 +187,28 @@ const TreeItem = ({
                 ]);
                 if (!isExpanded) onOpen();
               }}
-            />
-          </Button>
-        </Tooltip>
+            >
+              Create new note
+            </MenuItem>
+            <MenuItem>
+              <span>Import file</span>
+              <input
+                style={{
+                  opacity: 0,
+                  zIndex: 5,
+                  position: "absolute",
+                  maxWidth: "200px",
+                  cursor: "pointer",
+                }}
+                accept=".docx, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                type="file"
+                className="upload-file"
+                name="upload_file"
+                onChange={handleInputChange}
+              />
+            </MenuItem>
+          </MenuList>
+        </Menu>
       </Flex>
     </Flex>
   );

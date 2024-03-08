@@ -236,10 +236,12 @@ export class NoteService {
       title: 'Untitled',
       user_id: req.user.id,
       size: 0,
+      parent_id: req.body.parent_id,
     };
     const note = await this.createNote(newNote);
     await this.updateNote(note.id, files, req).catch((err) => {
       throw err;
     });
+    return await this.findOneNote(note.id);
   }
 }
