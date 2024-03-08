@@ -23,6 +23,7 @@ export const FileBlockView = (props: FileBlockViewProps) => {
 
   const onClick = useCallback(() => {
     editor.commands.setNodeSelection(getPos());
+    document.getElementById("file-node").click();
   }, [getPos, editor.commands]);
 
   function formatFileSize(bytes) {
@@ -31,6 +32,8 @@ export const FileBlockView = (props: FileBlockViewProps) => {
     else if (bytes < 1073741824) return (bytes / 1048576).toFixed(2) + " MB";
     else return (bytes / 1073741824).toFixed(2) + " GB";
   }
+
+  const ref = useRef(null);
 
   return (
     <NodeViewWrapper>
@@ -48,6 +51,12 @@ export const FileBlockView = (props: FileBlockViewProps) => {
           <span>{name}</span>
           <span className="text-gray-400">{formatFileSize(size)}</span>
         </div>
+        <a
+          id="file-node"
+          className="w-0 h-0 overflow-hidden opacity-0"
+          href={`${import.meta.env.VITE_SERVER_PATH}${src}`}
+          ref={ref}
+        ></a>
       </div>
     </NodeViewWrapper>
   );

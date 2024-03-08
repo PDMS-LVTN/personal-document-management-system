@@ -5,21 +5,20 @@ import { Note } from './entities/note.entity';
 import { NoteController } from './note.controller';
 import { User } from '../user/entities/user.entity';
 import { ImageContent } from '../image_content/entities/image_content.entity';
-import { ImageContentService } from '../image_content/image_content.service';
 import { ImageContentModule } from '../image_content/image_content.module';
-import { ImageContentController } from '../image_content/image_content.controller';
 import { HttpModule } from '@nestjs/axios';
 import { Tag } from '../tag/entities/tag.entity';
-import { TagModule } from '../tag/tag.module';
+import { FileUploadModule } from '../file_upload/file_upload.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Note, User, ImageContent, Tag]),
     ImageContentModule,
+    FileUploadModule,
     HttpModule,
-    TagModule,
   ],
-  controllers: [NoteController, ImageContentController],
-  providers: [NoteService, ImageContentService],
+  controllers: [NoteController],
+  providers: [NoteService],
+  exports: [NoteService]
 })
-export class NoteModule {}
+export class NoteModule { }

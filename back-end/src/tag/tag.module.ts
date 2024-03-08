@@ -4,21 +4,16 @@ import { TagController } from './tag.controller';
 import { Tag } from './entities/tag.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Note } from '../note/entities/note.entity';
-import { NoteService } from '../note/note.service';
 import { NoteModule } from '../note/note.module';
-import { ImageContent } from '../image_content/entities/image_content.entity';
-import { ImageContentService } from '../image_content/image_content.service';
 import { HttpModule, HttpService } from '@nestjs/axios';
-import { ImageContentModule } from '../image_content/image_content.module';
-import { ImageContentController } from '../image_content/image_content.controller';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Tag, Note, ImageContent]),
+    TypeOrmModule.forFeature([Tag, Note]),
     HttpModule,
-    ImageContentModule,
+    NoteModule
   ],
-  controllers: [TagController, ImageContentController],
-  providers: [TagService, ImageContentService, NoteService],
+  controllers: [TagController],
+  providers: [TagService],
 })
-export class TagModule {}
+export class TagModule { }

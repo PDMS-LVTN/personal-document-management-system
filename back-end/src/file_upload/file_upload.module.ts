@@ -8,5 +8,6 @@ import { FileUpload } from './entities/file_upload.entity';
   imports: [TypeOrmModule.forFeature([FileUpload])],
   controllers: [FileUploadController],
   providers: [FileUploadService],
+  exports: [FileUploadService]
 })
-export class FileUploadModule {}
+export class FileUploadModule { }

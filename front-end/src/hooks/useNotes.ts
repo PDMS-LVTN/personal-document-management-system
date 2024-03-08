@@ -91,6 +91,9 @@ const useNotes = (ref) => {
         tempState.waitingImage.forEach((file) => {
             formData.append("files[]", file);
         });
+        // tempState.waitingFile.forEach((file) => {
+        //     formData.append("others", file);
+        // });
         formData.append(
             "data",
             JSON.stringify({
@@ -113,6 +116,7 @@ const useNotes = (ref) => {
                 isClosable: true,
             });
             tempState.waitingImage = [];
+            tempState.waitingFile = [];
             console.log(currentNote.parent);
             if (!currentNote.parent) {
                 let index = treeItems.findIndex((x) => x.id === currentNote.id);

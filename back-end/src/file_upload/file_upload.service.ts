@@ -12,27 +12,16 @@ export class FileUploadService {
   constructor(
     @InjectRepository(FileUpload)
     private readonly fileUploadRepository: Repository<FileUpload>,
-  ) {}
+  ) { }
 
-  async uploadFile(files, req, note_ID) {
-    files.map((e) => console.log(e));
+  async uploadFile(files, req, note_ID: string) {
     files.map((file: any) => {
-      const fileName = file.originalname;
-      // Find matching file name between content and response array. Add right extension at the end of all urls
-      req.body = {
-        ...req.body,
-        content: req.body.content.replace(
-          fileName.substring(0, fileName.indexOf('.')),
-          fileName,
-        ),
-      };
-
       const relFile: CreateFileUploadDto = {
         note_ID: '',
         path: '',
       };
-      relFile.note_ID = note_ID.toString();
-      relFile.path = fileName;
+      relFile.note_ID = note_ID;
+      relFile.path = process.env.FILE_PATH + file.filename;
 
       // Save file path in database
       const newFileUpload = this.fileUploadRepository.create(relFile);

@@ -15,13 +15,13 @@ import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import path = require('path');
 
 @ApiTags('note')
 @Controller('api/note/')
 export class NoteController {
-  constructor(private readonly noteService: NoteService) {}
+  constructor(private readonly noteService: NoteService) { }
 
   @Post('add_note')
   async createNote(@Body() createNoteDto: CreateNoteDto) {
@@ -83,6 +83,10 @@ export class NoteController {
         },
       }),
     }),
+    // FileFieldsInterceptor([
+    //   { name: 'images', maxCount: 20 },
+    //   { name: 'others', maxCount: 20 },
+    // ],)
   )
   async updateNote(
     @Param('id') id: string,

@@ -9,5 +9,6 @@ import { HttpModule } from '@nestjs/axios';
   imports: [TypeOrmModule.forFeature([ImageContent]), HttpModule],
   controllers: [ImageContentController],
   providers: [ImageContentService],
+  exports: [ImageContentService]
 })
-export class ImageContentModule {}
+export class ImageContentModule { }

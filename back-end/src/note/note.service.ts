@@ -8,6 +8,7 @@ import { ImageContent } from '../image_content/entities/image_content.entity';
 import { ImageContentService } from '../image_content/image_content.service';
 import { User } from '../user/entities/user.entity';
 import { Tag } from '../tag/entities/tag.entity';
+import { FileUploadService } from '../file_upload/file_upload.service';
 
 require('dotenv').config();
 
@@ -19,6 +20,7 @@ export class NoteService {
     @InjectRepository(ImageContent)
     private readonly imageContentRepository: Repository<ImageContent>,
     private readonly imageContentService: ImageContentService,
+    private readonly uploadFileService: FileUploadService,
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
   ) { }
@@ -168,7 +170,7 @@ export class NoteService {
     );
   }
 
-  async updateNote(id, files, req) {
+  async updateNote(id: string, files, req) {
     // Method 1:
     // const note = await this.noteRepository.findOneBy({ id });
     // Object.assign(note, updateNoteDto);
@@ -177,34 +179,44 @@ export class NoteService {
     const data = JSON.parse(req.body.data);
     req.body = data;
 
+    const image_files = [];
+    const other_files = [];
+    files.map((e) => {
+      if (e.mimetype.includes('image')) {
+        image_files.push(e);
+      } else {
+        other_files.push(e);
+      }
+    });
+
     // Upload images to upload folder and save in image_content table. Similar to other file uploads
-    if (files.length > 0) {
+    if (image_files.length > 0) {
       try {
-        const image_files = [];
-        const other_files = [];
-        files.map((e) => {
-          if (e.mimetype.includes('image')) {
-            image_files.push(e);
-            console.log(e);
-          } else {
-            console.log(e);
-            other_files.push(e);
-          }
-        });
         await this.imageContentService.uploadImage(image_files, req, id);
-        await this.imageContentService.uploadImage(other_files, req, id);
+        // await this.imageContentService.uploadImage(other_files, req, id);
+      } catch (err) {
+        console.log(err);
+        throw err;
+      }
+
+      // Retrieve note's content and edit image's url (replace blob by localhost)
+      if (req.body.content) {
+        req.body.content = req.body.content.replaceAll(
+          'blob' + ':' + 'http://localhost:5173',
+          process.env.IMAGE_SERVER_PATH,
+        );
+      }
+    }
+
+    if (other_files.length > 0) {
+      try {
+        await this.uploadFileService.uploadFile(other_files, req, id);
       } catch (err) {
         console.log(err);
         throw err;
       }
     }
-    // Retrieve note's content and edit image's url (replace blob by localhost)
-    if (req.body.content) {
-      req.body.content = req.body.content.replaceAll(
-        ('blob\\' || 'blob') + ':' + 'http://localhost:5173',
-        process.env.IMAGE_SERVER_PATH,
-      );
-    }
+
     console.log(req.body);
     // Update a note with title and content
     const updateNoteDto: UpdateNoteDto = req.body;

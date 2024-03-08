@@ -18,19 +18,19 @@ export class ImageContentService {
     private readonly imageContentRepository: Repository<ImageContent>,
     // private readonly searchService: SearchService,
     private readonly httpService: HttpService,
-  ) {}
+  ) { }
 
   async uploadImage(files, req, note_ID) {
     const response = [];
     files.map((file: any) => {
-      const fileName = file.originalname;
-      // if (!fileName) {
+      const fileName: string = file.originalname;
+      // // if (!fileName) {
+      // //   return of(error, 'File type must be png, jpg, jpeg');
+      // // }
+      // const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+      // if (!allowedMimeTypes.includes(file.mimetype)) {
       //   return of(error, 'File type must be png, jpg, jpeg');
       // }
-      const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
-      if (!allowedMimeTypes.includes(file.mimetype)) {
-        return of(error, 'File type must be png, jpg, jpeg');
-      }
       response.push(fileName);
       // Find matching file name between content and response array. Add right extension at the end of all urls
       req.body = {
@@ -117,8 +117,8 @@ export class ImageContentService {
         'note.updated_at AS updated_at',
       ])
       .where(
-        // `MATCH(image_content.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
-        `image_content.content REGEXP '>([^<]*)size([^>]*)<'`,
+        `MATCH(image_content.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
+        // `image_content.content REGEXP '>([^<]*)size([^>]*)<'`,
       )
       .getRawMany();
   }
