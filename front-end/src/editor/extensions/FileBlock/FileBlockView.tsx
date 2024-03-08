@@ -54,7 +54,7 @@ export const FileBlockView = (props: FileBlockViewProps) => {
         <a
           id="file-node"
           className="w-0 h-0 overflow-hidden opacity-0"
-          href={`${import.meta.env.VITE_SERVER_PATH}${src}`}
+          href={`${src}`}
           ref={ref}
         ></a>
       </div>

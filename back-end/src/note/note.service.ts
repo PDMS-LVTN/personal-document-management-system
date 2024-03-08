@@ -198,14 +198,6 @@ export class NoteService {
         console.log(err);
         throw err;
       }
-
-      // Retrieve note's content and edit image's url (replace blob by localhost)
-      if (req.body.content) {
-        req.body.content = req.body.content.replaceAll(
-          'blob' + ':' + 'http://localhost:5173',
-          process.env.IMAGE_SERVER_PATH,
-        );
-      }
     }
 
     if (other_files.length > 0) {
@@ -215,6 +207,14 @@ export class NoteService {
         console.log(err);
         throw err;
       }
+    }
+
+    // Retrieve note's content and edit image's url (replace blob by localhost)
+    if (req.body.content) {
+      req.body.content = req.body.content.replaceAll(
+        'blob' + ':' + 'http://localhost:5173',
+        process.env.IMAGE_SERVER_PATH,
+      );
     }
 
     console.log(req.body);

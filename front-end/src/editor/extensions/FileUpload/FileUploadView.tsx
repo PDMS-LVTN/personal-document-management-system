@@ -33,7 +33,7 @@ export const FileUploadView = ({
       if (e.target.files) {
         fileName = e.target.files[0].name;
         fileSize = e.target.files[0].size;
-        uploadFile(e.target.files[0], "file");
+        uploadFile(e.target.files[0]);
       }
     },
     [uploadFile]

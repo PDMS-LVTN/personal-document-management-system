@@ -11,10 +11,7 @@ export const useUploader = ({ onUpload }: { onUpload: (url: string) => void }) =
     setLoading(true)
     try {
       let url: string
-      if (mode === 'image')
-        url = await API.uploadImage(file)
-      else if (mode === 'file')
-        url = await API.uploadFile(file)
+      url = await API.uploadImage(file)
 
       onUpload(url)
     } catch (errPayload: any) {
