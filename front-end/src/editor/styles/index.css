@@ -11,7 +11,9 @@
   @apply caret-black dark:caret-white outline-0 pr-8 pl-8 py-16 z-0 lg:pl-8 lg:pr-8;
 
   & > * {
-    @apply mx-auto max-w-3xl;
+    /* @apply mx-auto max-w-3xl; */
+    width: 42rem;
+    padding: 0;
   }
 
   .selection {
@@ -38,8 +40,14 @@
       @apply border-t-black/40 dark:border-t-white/40 w-full -top-[1.5em] max-w-2xl mx-auto left-0 right-0;
     }
   }
+
+  padding: 0;
 }
 
 [data-theme="slash-command"] {
   width: 1000vw;
+}
+
+.inside-editor {
+  padding: 3rem 4rem 0 4rem;
 }

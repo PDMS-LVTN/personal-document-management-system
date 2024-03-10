@@ -45,6 +45,7 @@
     "chakra-react-select": "^4.7.6",
     "clsx": "^2.1.0",
     "framer-motion": "^10.18.0",
+    "jspdf": "^2.5.1",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "lowlight": "^3.1.0",
