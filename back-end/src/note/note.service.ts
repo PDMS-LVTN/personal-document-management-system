@@ -425,4 +425,25 @@ export class NoteService {
     }
     return note;
   }
+
+  async linkNote(headlink_id: string, req) {
+    const headlink_note = await this.findOneNote(headlink_id);
+    const backlink_note = await this.findOneNote(req.backlink_id);
+    headlink_note.backlinks.push(backlink_note);
+    return await this.noteRepository.save(headlink_note);
+  }
+
+  async removeLinkNote(headlink_id: string, req) {
+    const headlink_note = await this.findOneNote(headlink_id);
+    headlink_note.backlinks = headlink_note.backlinks.filter(
+      (backlink_note) => {
+        return backlink_note.id !== req.backlink_id;
+      },
+    );
+    try {
+      return await this.noteRepository.save(headlink_note);
+    } catch (e) {
+      return 'Error when removing a note link from a note';
+    }
+  }
 }
