@@ -16,6 +16,7 @@ import {
   FormControl,
   useDisclosure,
   Spinner,
+  Text,
 } from "@chakra-ui/react";
 import { FaRegStar, FaStar, FaRegSave } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
@@ -39,6 +40,7 @@ function EditorContainer({ editorRef }) {
   };
 
   const { isLoading, actions } = useNotes(editorRef);
+  const [isLoadingExport, setLoadingExport] = useState(false);
   const { updateFavorite } = useFavorite();
   const { createTag, deleteTagInNote, applyTag } = useTags();
 
@@ -81,6 +83,7 @@ function EditorContainer({ editorRef }) {
   ];
 
   const handelExportFile = async () => {
+    setLoadingExport(true);
     const doc = new jsPDF();
 
     async function convertTTFToBase64(file) {
@@ -103,12 +106,12 @@ function EditorContainer({ editorRef }) {
     for (const font of fonts) {
       const response = await fetch(font.path);
       const blob = await response.blob();
-      const file = new File([blob], 'font.ttf', { type: "font/ttf" });
+      const file = new File([blob], "font.ttf", { type: "font/ttf" });
       const base64String = await convertTTFToBase64(file);
-      doc.addFileToVFS('font.ttf', base64String);
-      doc.addFont('font.ttf', font.name, font.size);
+      doc.addFileToVFS("font.ttf", base64String);
+      doc.addFont("font.ttf", font.name, font.size);
     }
-    
+
     const content = editorRef.current.firstChild;
     console.log(doc.getFontList());
 
@@ -119,6 +122,7 @@ function EditorContainer({ editorRef }) {
       margin: [20, 0, 20, 20],
       html2canvas: { scale: 0.25 },
     });
+    setLoadingExport(false);
   };
 
   return (
@@ -135,6 +139,28 @@ function EditorContainer({ editorRef }) {
               emptyColor="gray.200"
               color="blue.500"
               size="xl"
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isLoadingExport} onClose={onClose} size="sm">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalBody
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            gap={4}
+          >
+            <Text fontSize="xl" fontWeight="50" color="brand.300">
+              Exporting...
+            </Text>
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="brand.300"
+              size="md"
             />
           </ModalBody>
         </ModalContent>
