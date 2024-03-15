@@ -4,7 +4,8 @@ import { persist, devtools } from 'zustand/middleware'
 interface User {
     email: string;
     accessToken: string;
-    id: string
+    id: string,
+    avatar?: string
 }
 interface AuthStore {
     auth: User | undefined; // Whatever you need to add here

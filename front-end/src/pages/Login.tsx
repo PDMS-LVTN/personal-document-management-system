@@ -25,6 +25,7 @@ const GGLOGIN_URL = "/auth/loginGoogle";
 interface JwtPayload {
   email: string;
   sub: string;
+  picture: string;
 }
 
 const Login = () => {
@@ -79,6 +80,7 @@ const Login = () => {
         email: user,
         accessToken: response?.data?.access_token,
         id: response?.data?.id,
+        avatar: "/placeholder-image.jpg",
       });
       setUser("");
       setPwd("");
@@ -98,10 +100,12 @@ const Login = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
+      console.log(userObject);
       setAuth({
         email: userObject.email,
         accessToken: response?.data?.access_token,
         id: response?.data?.id,
+        avatar: userObject.picture,
       });
       navigate(from, { replace: true });
     } catch (err) {
@@ -135,9 +139,21 @@ const Login = () => {
             Login
           </Text>
 
-          <Text color="text.inactive" textAlign="left">
-            Welcome back! Please login to your account.
-          </Text>
+          <div style={{ display: "flex", gap: "5px" }}>
+            <Text color="text.inactive">Don't have an account yet?</Text>
+            <Link to="/">
+              <Text
+                color="brand.400"
+                _hover={{
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                  fontWeight: "semibold",
+                }}
+              >
+                Signup
+              </Text>
+            </Link>
+          </div>
         </div>
         <section>
           <Alert

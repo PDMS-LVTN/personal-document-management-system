@@ -50,28 +50,29 @@ import { BlockEditor } from "./components/BlockEditor";
 
 function Editor({ editorRef }) {
   const currentNote = useApp((state) => state.currentNote);
+  // console.log(currentNote);
 
+  if (!currentNote)
+    return (
+      <Text pl="2em" pr="2em" pt="2em" color="text.inactive">
+        <strong>Select</strong> or <strong>Create</strong> a new note to edit
+      </Text>
+    );
   return (
     <Fragment>
       {/* There is only one editor instance.       */}
       {/* This editor is shared between all notes. */}
-      {currentNote && currentNote.content ? (
-        <Suspense fallback={<Skeleton />}>
-          {/* <MDXEditor
+      {/* <Suspense fallback={<Skeleton />}> */}
+      {/* <MDXEditor
             ref={editorRef}
             markdown={currentNote.content}
             // onChange={() => {}}
             plugins={ALL_PLUGINS}
             contentEditableClassName="prose prose-lg inside-editor max-w-full"
           /> */}
-          {/* <Tiptap editorRef={editorRef} /> */}
-          <BlockEditor editorRef={editorRef} />
-        </Suspense>
-      ) : (
-        <Text pl="2em" pr="2em" color="text.inactive">
-          <strong>Select</strong> or <strong>Create</strong> a new note to edit
-        </Text>
-      )}
+      {/* <Tiptap editorRef={editorRef} /> */}
+      <BlockEditor editorRef={editorRef} />
+      {/* </Suspense> */}
     </Fragment>
   );
 }

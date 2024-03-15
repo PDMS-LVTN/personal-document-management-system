@@ -1,5 +1,5 @@
 import { Icon } from "@/editor/components/ui/Icon";
-// import { EditorInfo } from "./EditorInfo";
+import { EditorInfo } from "./EditorInfo";
 // import { EditorUser } from "../types";
 // import { WebSocketStatus } from '@hocuspocus/provider'
 import { Toolbar } from "@/editor/components/ui/Toolbar";
@@ -7,17 +7,17 @@ import { Toolbar } from "@/editor/components/ui/Toolbar";
 export type EditorHeaderProps = {
   isSidebarOpen?: boolean;
   toggleSidebar?: () => void;
-  // characters: number
-  // words: number
+  characters: number;
+  words: number;
   // collabState: WebSocketStatus
   // users: EditorUser[]
 };
 
 export const EditorHeader = ({
-  // characters,
+  characters,
   // collabState,
   // users,
-  // words,
+  words,
   isSidebarOpen,
   toggleSidebar,
 }: EditorHeaderProps) => {
@@ -35,8 +35,8 @@ export const EditorHeader = ({
           </Toolbar.Button>
         </div>
       </div>
-      <div>editor info</div>
       {/* <EditorInfo characters={characters} words={words} collabState={collabState} users={users} /> */}
+      <EditorInfo characters={characters} words={words} />
     </div>
   );
 };

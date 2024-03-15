@@ -21,7 +21,6 @@ import { useAuthentication } from "../store/useAuth";
 import { useApp } from "../store/useApp";
 import { Suspense, useRef } from "react";
 import SearchModal from "../components/SearchModal";
-import { MDXEditorMethods } from "@mdxeditor/editor";
 
 function HomeLayout() {
   const auth = useAuthentication((state) => state.auth);
@@ -32,7 +31,7 @@ function HomeLayout() {
   const clean = useApp((state) => state.clean);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const ref = useRef<MDXEditorMethods>(null);
+  const ref = useRef<any>(null);
 
   return (
     <Grid
@@ -89,15 +88,15 @@ function HomeLayout() {
         id="info-grid-item"
       >
         <Flex justifyContent="left" alignItems="center" gap="1em">
-          <Suspense fallback={<Skeleton />}>
+          {currentNote && (
             <Input
-              variant="unstyled"
+              variant="outline"
               value={currentNote ? currentNote.title : ""}
               onChange={(e) => {
                 setCurrentNote({ ...currentNote, title: e.target.value });
               }}
             />
-          </Suspense>
+          )}
         </Flex>
         <Flex justifyContent="right" alignItems="center" gap="1em">
           <p>{auth.email}</p>

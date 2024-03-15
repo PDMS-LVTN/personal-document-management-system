@@ -13,9 +13,14 @@ import {
   ManyToMany,
   JoinTable,
   Index,
+  Tree,
+  ChildEntity,
+  TreeChildren,
+  TreeParent,
 } from 'typeorm';
 
 @Entity()
+@Tree('closure-table')
 export class Note {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -31,13 +36,13 @@ export class Note {
   @Column({ type: 'int', default: 0 })
   size: number;
 
-  @Column({ type: 'tinyint' })
+  @Column({ type: 'tinyint', nullable: true })
   read_only: boolean;
 
-  @Column({ type: 'tinyint' })
+  @Column({ type: 'tinyint', nullable: true })
   is_pinned: boolean;
 
-  @Column({ type: 'tinyint' })
+  @Column({ type: 'tinyint', nullable: true })
   is_favorited: boolean;
 
   @Column('uuid', { nullable: true })
@@ -59,10 +64,11 @@ export class Note {
   })
   updated_at: Date;
 
-  @OneToMany(() => Note, (note) => note.parentNote, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  // @OneToMany(() => Note, (note) => note.parentNote, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
+  @TreeChildren()
   childNotes: Note[];
 
   @ManyToOne(() => Note, (note) => note.childNotes, {
@@ -71,6 +77,7 @@ export class Note {
     nullable: true,
   })
   @JoinColumn({ name: 'parent_id' })
+  @TreeParent()
   parentNote: Note;
 
   @ManyToOne(() => User, (user) => user.notes, {

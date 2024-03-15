@@ -113,7 +113,7 @@ export const useBlockEditor = () => {
     //     })
     //   }, [editor?.storage.collaborationCursor?.users])
 
-    //   const characterCount = editor?.storage.characterCount || { characters: () => 0, words: () => 0 }
+    const characterCount = editor?.storage.characterCount || { characters: () => 0, words: () => 0 }
 
     //   useEffect(() => {
     //     provider?.on('status', (event: { status: WebSocketStatus }) => {
@@ -124,5 +124,5 @@ export const useBlockEditor = () => {
     window.editor = editor
 
     // return { editor, users, characterCount, collabState, leftSidebar }
-    return { editor, leftSidebar }
+    return { editor, leftSidebar, characterCount }
 }

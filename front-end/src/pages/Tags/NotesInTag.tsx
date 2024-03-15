@@ -5,7 +5,7 @@ import { IoMdPricetag } from "react-icons/io";
 import { useParams, useOutletContext, useNavigate } from "react-router-dom";
 import { useTags } from "../../hooks/useTags";
 import useNotes from "../../hooks/useNotes";
-import { ContextType } from "../../layouts/TreeAndEditorContainer";
+// import { ContextType } from "../../layouts/TreeAndEditorContainer";
 import { useApp } from "../../store/useApp";
 
 interface TagData {
@@ -22,8 +22,8 @@ const NotesInTag = () => {
   const navigate = useNavigate();
   const { getNotesInTag } = useTags();
   const [data, setData] = useState<TagData>(null);
-  const { ref } = useOutletContext<ContextType>();
-  const { actions } = useNotes(ref);
+  // const { ref } = useOutletContext<ContextType>();
+  const { actions } = useNotes();
 
   const fetchData = async () => {
     const { responseData } = await getNotesInTag(tagId);
@@ -31,13 +31,11 @@ const NotesInTag = () => {
   };
 
   useEffect(() => {
-    console.log("here 1");
     fetchData();
   }, [tagId, currentTags]);
 
   // delete note
   useEffect(() => {
-    console.log("here 2");
     if (!currentNote) {
       fetchData();
     }
@@ -79,13 +77,14 @@ const NotesInTag = () => {
               w="100%"
               pt={3}
               pb={3}
+              pl="2em"
+              pr="2em"
               borderTop={idx == 0 ? "1px" : "0px"}
               borderBottom="1px"
               borderColor="gray.200"
               display="flex"
               justifyContent="flex-start"
-              height="fit-content"
-              gap={2}
+              height="40px"
               onClick={() => {
                 actions.clickANoteHandler(item.id);
               }}

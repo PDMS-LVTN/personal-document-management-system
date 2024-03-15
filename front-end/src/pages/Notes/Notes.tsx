@@ -1,30 +1,98 @@
 import {
   Button,
   Flex,
+  Input,
+  InputGroup,
+  InputLeftElement,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  Skeleton,
   Spinner,
   Text,
-  Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
 import ToolsIcon from "../../assets/tools-icon.svg";
+import { Tree, TreeApi } from "react-arborist";
 import PlusIcon from "../../assets/plus-icon.svg";
-import { Suspense } from "react";
-import { useApp } from "../../store/useApp";
-import { TreeView } from "../../components/TreeView";
-import useNotes from "../../hooks/useNotes";
+import { useState, useRef, useEffect } from "react";
+import { Note, useApp } from "../../store/useApp";
+import Node from "./Node";
+import { IoSearch } from "react-icons/io5";
+import { useTree } from "@/hooks/useTree";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
+import { NodeApi } from "react-arborist";
 
-const Notes = ({ editorRef }) => {
-  const treeItems = useApp((state) => state.treeItems);
-  const { isLoading, actions } = useNotes(editorRef);
-  const handleInputChange = (e) => {
-    actions.importNote(null, e.target.files[0]);
+declare global {
+  interface Window {
+    note_tree: TreeApi<Note> | null;
+  }
+}
+
+const Notes = ({
+  editorRef,
+  notes,
+  actions,
+  isLoading,
+}: {
+  editorRef;
+  notes: Note[];
+  actions;
+  isLoading;
+}) => {
+  const [term, setTerm] = useState("");
+  const treeRef = useRef<TreeApi<Note>>(null);
+  const [data, controller] = useTree(notes, actions);
+  const currentNote = useApp((state) => state.currentNote);
+
+  // set editor content when clicking on each note
+  const handleActivate = async (e: NodeApi<Note>) => {
+    const focusedNode = treeRef.current.focusedNode;
+    const id = focusedNode?.id;
+    console.log(id);
+    // const title = focusedNode?.data.title;
+    // if (id === "temp") {
+    //   let parent_id = null;
+    //   const level = focusedNode.level;
+    //   if (level) parent_id = focusedNode.parent.data.id;
+    //   const response = await actions.createNote(parent_id, title);
+    //   focusedNode.id = response.id;
+    //   focusedNode.data.id = response.id;
+    // }
+    if (id === "temp") {
+      e.id = currentNote.id;
+      e.data.id = currentNote.id;
+      e.data.title = currentNote.title;
+      return;
+    }
+    if (id) await actions.clickANoteHandler(focusedNode.id);
   };
+
+  const handleInputChange = async (e) => {
+    await actions.importNote(null, e.target.files[0]);
+    treeRef.current.create({
+      type: "internal",
+      parentId: null,
+      index: treeRef.current.root.children?.length,
+    });
+  };
+
+  const handleCreateNote = async () => {
+    await actions.createNote(null);
+    treeRef.current.create({
+      type: "internal",
+      parentId: null,
+      index: treeRef.current.root.children?.length,
+    });
+  };
+
+  useEffect(() => {
+    if (currentNote) {
+      treeRef.current.focus(currentNote.id);
+    }
+    window.note_tree = treeRef.current;
+  }, []);
+
   const { onClose } = useDisclosure();
 
   return (
@@ -68,56 +136,119 @@ const Notes = ({ editorRef }) => {
           >
             <img src={ToolsIcon} alt="tools" />
           </Button>
-          <Tooltip label="Add">
-            <Menu>
-              <MenuButton
-                height="40px"
-                width="40px"
-                padding="12px"
-                // transition="all 0.2s"
-                borderRadius="50%"
-                background="var(--brand400)"
+          {/* <Tooltip label="Add"> */}
+          <Menu>
+            <MenuButton
+              height="40px"
+              width="40px"
+              padding="12px"
+              // transition="all 0.2s"
+              borderRadius="50%"
+              background="var(--brand400)"
+            >
+              <img src={PlusIcon} alt="create" />
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                position={"relative"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // treeRef.current.create({
+                  //   type: "internal",
+                  //   parentId: null,
+                  //   index: treeRef.current.root.children?.length,
+                  // });
+                  handleCreateNote();
+                }}
               >
-                <img src={PlusIcon} alt="create" />
-              </MenuButton>
-              <MenuList>
-                <MenuItem
-                  position={"relative"}
-                  onClick={() => actions.createNote(null)}
-                >
-                  Create new note
-                </MenuItem>
-                <MenuItem>
-                  <span>Import file</span>
-                  <input
-                    style={{
-                      opacity: 0,
-                      zIndex: 5,
-                      position: "absolute",
-                      maxWidth: "200px",
-                      cursor: "pointer",
-                    }}
-                    accept=".docx, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    type="file"
-                    className="upload-file"
-                    name="upload_file"
-                    onChange={handleInputChange}
-                  />
-                </MenuItem>
-              </MenuList>
-            </Menu>
-          </Tooltip>
+                Create new note
+              </MenuItem>
+              <MenuItem>
+                <span>Import file</span>
+                <input
+                  style={{
+                    opacity: 0,
+                    zIndex: 5,
+                    position: "absolute",
+                    maxWidth: "200px",
+                    cursor: "pointer",
+                  }}
+                  accept=".docx, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  type="file"
+                  className="upload-file"
+                  name="upload_file"
+                  onChange={handleInputChange}
+                />
+              </MenuItem>
+            </MenuList>
+          </Menu>
+          {/* <Button
+              style={{
+                height: "40px",
+                width: "40px",
+                padding: "7px",
+                borderRadius: "50%",
+                background: "var(--brand400)",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                treeRef.current.create({
+                  type: "internal",
+                  parentId: null,
+                  index: treeRef.current.root.children?.length,
+                });
+              }}
+            >
+              <FaPlus color="white" />
+            </Button>
+          </Tooltip> */}
         </div>
       </Flex>
-      {treeItems && treeItems.length > 0 ? (
-        <Suspense fallback={<Skeleton />}>
-          <TreeView data={treeItems} editorRef={editorRef} />
-        </Suspense>
-      ) : (
-        <Text pl="2em" pr="2em" color="text.inactive">
+      <InputGroup pl="2em" pr="2em" w="100%">
+        <InputLeftElement pointerEvents="none" ml="2em">
+          <IoSearch size="24px" color="var(--brand400)" />
+        </InputLeftElement>
+        <Input
+          m={0}
+          type="text"
+          placeholder="Search..."
+          className="search-input"
+          value={term}
+          onChange={(e) => setTerm(e.target.value)}
+        />
+      </InputGroup>
+      {/* {data && data.length ? ( */}
+      {/* //  <div className=data.length == 0 ? "hide" : ""> */}
+      <Tree
+        ref={treeRef}
+        data={data}
+        {...controller}
+        openByDefault={false}
+        width="100%"
+        indent={24}
+        rowHeight={40}
+        overscanCount={1}
+        paddingTop={30}
+        paddingBottom={10}
+        padding={25 /* sets both */}
+        searchTerm={term}
+        searchMatch={(node, term) =>
+          node.data.title.toLowerCase().includes(term.toLowerCase())
+        }
+        childrenAccessor={(d) => d.childNotes}
+        onActivate={handleActivate}
+      >
+        {Node}
+      </Tree>
+      {/* ) : ( */}
+      {/* // </div> */}
+
+      {/* // <div className={data.length ? "hide" : ""}>
+        <Text pl="2em" pr="2em" paddingTop="1rem" color="text.inactive">
           Click <strong>Add</strong> to create a new note
-        </Text>
-      )}
+        </Text> */}
+      {/* // </div> */}
+      {/* )} */}
     </>
   );
 };
