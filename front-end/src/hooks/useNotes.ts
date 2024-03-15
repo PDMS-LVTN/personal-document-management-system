@@ -192,6 +192,35 @@ const useNotes = () => {
     return responseData
   };
 
+  async function replaceAsync(string: string, regexp: RegExp, replacerFunction, tempState) {
+    const replacements = await Promise.all(
+      Array.from(string.matchAll(regexp),
+        match => replacerFunction(tempState, ...match)));
+    let i = 0;
+    console.log(replacements)
+    return string.replace(regexp, () => replacements[i++]);
+  }
+
+  async function replaceImageTag(temp, ...group) {
+    const src = group[1]
+    console.log(src)
+    const response = await fetch(src);
+    const blob = await response.blob();
+    const type = src.substring(5, src.indexOf(";"));
+    const ext = type.substring(6);
+    const image = new File([blob], "File name", { type: type });
+
+    const url = URL.createObjectURL(image);
+    const pos = url.lastIndexOf("/");
+    const fileName = url.substring(pos + 1);
+
+    const newFile = new File([image], fileName + "." + ext, {
+      type: image.type,
+    });
+    temp.waitingImages.push(newFile);
+    return group[0].replace(/src="[^"]+"/, `src="${url}"`);
+  }
+
   const importNote = async (parentId, file) => {
     setLoading(true);
     let title = file.name.substring(0, file.name.indexOf('.'))
@@ -199,41 +228,21 @@ const useNotes = () => {
     await convertToHtml({ arrayBuffer: file })
       .then(async function (result) {
         tempState.content = result.value;
-        const images = tempState.content.match(/<img[^>]+src="([^">]+)/g); // Extract img tags
-        const urls = [];
 
-        if (images) {
-          for (const imgTag of images) {
-            const src = imgTag.match(/src="([^">]+)/)[1]; // Extract src attribute value
-            const response = await fetch(src);
-            const blob = await response.blob();
-            const type = src.substring(5, src.indexOf(";"));
-            const ext = type.substring(6);
-            const image = new File([blob], "File name", { type: type });
+        const regex = "<img[^>]*?src=\"([^>]+)\"[^>]*>"
+        const regexp = new RegExp(regex, 'g')
+        const sourceReplacedContent = await replaceAsync(tempState.content, regexp, replaceImageTag, tempState)
+        tempState.content = sourceReplacedContent
 
-            const url = URL.createObjectURL(image);
-            const pos = url.lastIndexOf("/");
-            const fileName = url.substring(pos + 1);
-
-            const newFile = new File([image], fileName + "." + ext, {
-              type: image.type,
-            });
-            tempState.waitingImages.push(newFile);
-            urls.push(url);
+        tempState.content = tempState.content.replace(
+          // /<p\b[^>]*>(<strong>|<i>|<em>|<u>)*(<img\b[^>]*>)(<\/strong>|<\/i>|<\/em>|<\/u>)*<\/p>/g,
+          /<p[^>]*>([^\/]*?)(<img[^>]*?src="([^>]+)"[^>]*>).*?<\/p>/g,
+          (...match) => {
+            console.log(match[1])
+            return match[2]
           }
-        }
-
-        if (urls.length > 0) {
-          let currentIndex = 0;
-          tempState.content = tempState.content.replace(
-            /<p\b[^>]*>(<strong>|<i>|<em>|<u>)*(<img\b[^>]*>)(<\/strong>|<\/i>|<\/em>|<\/u>)*<\/p>/g,
-            (match, a, imgTag) => {
-              const newUrl = urls[currentIndex];
-              currentIndex++;
-              return imgTag.replace(/src="([^"]+)"/, `src="${newUrl}"`);
-            }
-          );
-        }
+        );
+        console.log(tempState.content)
       })
       .catch(function (error) {
         console.error(error);
