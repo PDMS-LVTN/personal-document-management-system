@@ -8,6 +8,7 @@ import { Editor, useEditor } from '@tiptap/react'
 // import * as Y from 'yjs'
 
 import { ExtensionKit } from '@/editor/extensions/extension-kit'
+import History from '@tiptap/extension-history'
 // import { EditorContext } from '../context/EditorContext'
 // import { userColors, userNames } from '../lib/constants'
 // import { randomElement } from '../lib/utils'
@@ -55,6 +56,7 @@ export const useBlockEditor = () => {
             },
             extensions: [
                 ...ExtensionKit(),
+                History
                 // Collaboration.configure({
                 //   document: ydoc,
                 // }),
