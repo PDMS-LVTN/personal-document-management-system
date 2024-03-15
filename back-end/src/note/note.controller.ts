@@ -55,10 +55,14 @@ export class NoteController {
     @Body()
     req: {
       user_id: string;
-      sort_by?: Object;
-      tags?: Array<string>;
-      date_from?: Date;
-      date_to?: Date;
+      key_word: string;
+      only_title: Boolean;
+      sort_by?: string;
+      tags?: Array<number>;
+      created_date_from?: Date;
+      created_date_to?: Date;
+      updated_date_from?: Date;
+      updated_date_to?: Date;
     },
   ) {
     return this.noteService.filterNote(req);

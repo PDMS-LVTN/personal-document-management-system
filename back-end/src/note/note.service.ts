@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
-import { Between, Equal, In, IsNull, Repository } from 'typeorm';
+import { Between, Brackets, Equal, In, IsNull, Repository } from 'typeorm';
 import { Note } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImageContent } from '../image_content/entities/image_content.entity';
@@ -9,6 +9,8 @@ import { ImageContentService } from '../image_content/image_content.service';
 import { User } from '../user/entities/user.entity';
 import { Tag } from '../tag/entities/tag.entity';
 import { FileUploadService } from '../file_upload/file_upload.service';
+import { title } from 'process';
+import { format } from 'path';
 
 require('dotenv').config();
 
@@ -23,7 +25,7 @@ export class NoteService {
     private readonly uploadFileService: FileUploadService,
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
-  ) { }
+  ) {}
 
   async createNote(createNoteDto: CreateNoteDto) {
     const user = new User({ id: createNoteDto.user_id });
@@ -109,41 +111,92 @@ export class NoteService {
   }
 
   async filterNote(req) {
-    const tagIdList = req.tags;
-    const sort_key = Object.keys(req.sort_by)[0];
-    const sort_value = Object.values(req.sort_by)[0];
+    const queryBuilder = await this.noteRepository.createQueryBuilder('note');
 
-    return await this.noteRepository.find({
-      select: {
-        id: true,
-        title: true,
-        childNotes: {
-          id: true,
-          title: true,
-        },
-        parent_id: true,
-        // parentNote: { id: true }
-      },
-      where: {
-        user: { id: Equal(req.user_id) },
-        parentNote: IsNull(),
-        updated_at:
-          req.date_from && req.date_to
-            ? Between(req.date_from, req.date_to)
-            : undefined,
-        tags: {
-          id: tagIdList?.length > 0 ? In(tagIdList) : undefined,
-        },
-      },
-      order: {
-        created_at: sort_key === 'created_at' ? sort_value : undefined,
-        updated_at: sort_key === 'updated_at' ? sort_value : undefined,
-      },
-      relations: {
-        // parentNote: true,
-        childNotes: true,
-      },
-    });
+    queryBuilder.where('note.user_id = :user_id', { user_id: req.user_id });
+
+    if (req.created_date_from && req.created_date_to) {
+      const currentDate = new Date(req.created_date_to);
+      const nextDate = new Date(currentDate);
+      nextDate.setDate(currentDate.getDate() + 1);
+      console.log(nextDate);
+      queryBuilder.andWhere(`note.created_at BETWEEN :from AND :to`, {
+        from: req.created_date_from + ' 00:00:00',
+        to: nextDate,
+      });
+    }
+
+    if (req.updated_date_from && req.updated_date_to) {
+      const currentDate = new Date(req.updated_date_to);
+      const nextDate = new Date(currentDate);
+      nextDate.setDate(currentDate.getDate() + 1);
+      console.log(nextDate);
+      queryBuilder.andWhere(`note.updated_at BETWEEN :from AND :to`, {
+        from: req.updated_date_from + ' 00:00:00',
+        to: nextDate,
+      });
+    }
+
+    const tagsLength = req.tags?.length;
+
+    if (tagsLength > 0) {
+      queryBuilder
+        .andWhere(`tags.id IN (:tagId)`, {
+          tagId: req.tags,
+        })
+        .groupBy('note.id')
+        .having('COUNT(tags.id) = :count', { count: tagsLength });
+    }
+
+    if (req.sort_by) {
+      req.sort_by === 'CreatedNewest' &&
+        queryBuilder.orderBy('note.' + 'created_at', 'DESC');
+      req.sort_by == 'CreatedOldest' &&
+        queryBuilder.orderBy('note.' + 'created_at', 'ASC');
+      req.sort_by == 'UpdatedNewest' &&
+        queryBuilder.orderBy('note.' + 'updated_at', 'DESC');
+      req.sort_by == 'UpdatedOldest' &&
+        queryBuilder.orderBy('note.' + 'updated_at', 'ASC');
+    }
+
+    if (req.key_word) {
+      if (req.title_only) {
+        queryBuilder.andWhere(
+          `MATCH(note.title) AGAINST ('"${req.key_word}"' IN BOOLEAN MODE)`,
+        );
+      } else {
+        queryBuilder.andWhere(
+          new Brackets((qb) => {
+            qb.where(
+              `MATCH(note.title) AGAINST ('"${req.key_word}"' IN BOOLEAN MODE)`,
+            )
+              .orWhere(
+                new Brackets((qb) => {
+                  qb.where(
+                    `note.content REGEXP '>([^<]*)${req.key_word}([^>]*)<'`,
+                  ).andWhere(
+                    `MATCH(note.content) AGAINST ('"${req.key_word}"' IN BOOLEAN MODE)`,
+                  );
+                }),
+              )
+              .orWhere(
+                `MATCH(image_content.content) AGAINST ('"${req.key_word}"' IN BOOLEAN MODE)`,
+              );
+          }),
+        );
+      }
+    }
+
+    return await queryBuilder
+      .leftJoin('note.image_contents', 'image_content')
+      .leftJoin('note.tags', 'tags')
+      .select([
+        'note.id AS id',
+        'note.title AS title',
+        'note.created_at AS created_at',
+        'note.updated_at AS updated_at',
+      ])
+      .getRawMany();
   }
 
   async searchNote(req) {
@@ -154,8 +207,19 @@ export class NoteService {
       .select(['id', 'title', 'created_at', 'updated_at'])
       .where('note.user_id = :id', { id: req.body.user_id })
       .andWhere(
-        // `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
-        `note.content REGEXP '>([^<]*)size([^>]*)<'`,
+        new Brackets((qb) => {
+          qb.where(
+            `MATCH(note.title) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
+          ).orWhere(
+            new Brackets((qb) => {
+              qb.where(
+                `note.content REGEXP '>([^<]*)${searchQuery}([^>]*)<'`,
+              ).andWhere(
+                `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
+              );
+            }),
+          );
+        }),
       )
       .getRawMany();
     const notes_matching_image_content =

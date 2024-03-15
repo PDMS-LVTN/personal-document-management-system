@@ -4,6 +4,7 @@ import {
   Entity,
   Index,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -23,11 +24,11 @@ export class ImageContent {
   @Column('uuid')
   note_ID: string;
 
-  @OneToOne(() => Note, (note) => note.id, {
+  @ManyToOne(() => Note, (note) => note.image_contents, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     nullable: false,
   })
-  @JoinColumn({ name: 'note_ID'})
+  @JoinColumn({ name: 'note_ID' })
   note: Note;
 }
