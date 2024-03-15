@@ -1,3 +1,4 @@
+import { ImageContent } from '../../image_content/entities/image_content.entity';
 import { Tag } from '../../tag/entities/tag.entity';
 import { User } from '../../user/entities/user.entity';
 import {
@@ -19,6 +20,7 @@ export class Note {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index({ fulltext: true })
   @Column({ type: 'longtext' })
   title: string;
 
@@ -107,4 +109,11 @@ export class Note {
     onUpdate: 'CASCADE',
   })
   tags?: Tag[];
+
+  @OneToMany(() => ImageContent, (image_content) => image_content.note, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    nullable: true,
+  })
+  image_contents?: ImageContent[];
 }
