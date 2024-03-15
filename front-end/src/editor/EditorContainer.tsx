@@ -1,6 +1,31 @@
 import { useState } from "react";
 import Editor from "./Editor";
 import ConfirmModal from "../components/ConfirmModal";
+
+import Montserract from "../assets/fonts/Montserrat/Montserrat-Regular.ttf";
+import MontserractBold from "../assets/fonts/Montserrat/Montserrat-Bold.ttf";
+import MontserractItalic from "../assets/fonts/Montserrat/Montserrat-Italic.ttf";
+import MontserractBoldItalic from "../assets/fonts/Montserrat/Montserrat-BoldItalic.ttf";
+
+import Times from "../assets/fonts/Times/SVN-Times New Roman.ttf";
+import TimesBold from "../assets/fonts/Times/SVN-Times New Roman Bold.ttf";
+import TimesItalic from "../assets/fonts/Times/SVN-Times New Roman Italic.ttf";
+import TimesBoldItalic from "../assets/fonts/Times/SVN-Times New Roman Bold Italic.ttf";
+
+import Vollkorn from "../assets/fonts/Vollkorn/Vollkorn-Regular.ttf";
+import VollkornBold from "../assets/fonts/Vollkorn/Vollkorn-Bold.ttf";
+import VollkornItalic from "../assets/fonts/Vollkorn/Vollkorn-Italic.ttf";
+import VollkornBoldItalic from "../assets/fonts/Vollkorn/Vollkorn-BoldItalic.ttf";
+
+import Courier from "../assets/fonts/Courier/cour.ttf";
+import CourierBold from "../assets/fonts/Courier/courbd.ttf";
+import CourierItalic from "../assets/fonts/Courier/couri.ttf";
+import CourierBoldItalic from "../assets/fonts/Courier/courbi.ttf";
+
+import BeVietnamPro from "../assets/fonts/BeVietNam/BeVietnamPro-Regular.ttf";
+import BeVietnamProBold from "../assets/fonts/BeVietNam/BeVietnamPro-Bold.ttf";
+import BeVietnamProItalic from "../assets/fonts/BeVietNam/BeVietnamPro-Italic.ttf";
+import BeVietnamProBoldItalic from "../assets/fonts/BeVietNam/BeVietnamPro-BoldItalic.ttf";
 import {
   Button,
   Flex,
@@ -8,17 +33,19 @@ import {
   FormControl,
   useDisclosure,
   Spinner,
+  Text,
 } from "@chakra-ui/react";
-import { FaRegStar, FaStar } from "react-icons/fa";
+import { FaRegStar, FaStar, FaRegSave } from "react-icons/fa";
+import { MdOutlineDelete } from "react-icons/md";
+import { TbFileExport } from "react-icons/tb";
 import { useApp } from "../store/useApp";
-import TrashCanIcon from "../assets/trashcan-icon.svg";
-import SaveIcon from "../assets/save-icon.svg";
 import useNotes from "../hooks/useNotes";
 import { useFavorite } from "../hooks/useFavorite";
 import { useTags } from "../hooks/useTags";
 import { CreatableSelect } from "chakra-react-select";
 import { IoMdPricetag } from "react-icons/io";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
+import { jsPDF } from "jspdf";
 
 function EditorContainer({ editorRef }) {
   const currentNote = useApp((state) => state.currentNote);
@@ -30,6 +57,7 @@ function EditorContainer({ editorRef }) {
   };
 
   const { isLoading, actions } = useNotes(editorRef);
+  const [isLoadingExport, setLoadingExport] = useState(false);
   const { updateFavorite } = useFavorite();
   const { createTag, deleteTagInNote, applyTag } = useTags();
 
@@ -60,6 +88,78 @@ function EditorContainer({ editorRef }) {
     setAllTags([...allTags, newTag]);
   };
 
+  const fonts = [
+    { path: Montserract, name: "Montserrat", size: "normal" },
+    { path: MontserractBold, name: "Montserrat", size: "bold" },
+    { path: MontserractItalic, name: "Montserrat", size: "italic" },
+    { path: MontserractBoldItalic, name: "Montserrat", size: "bolditalic" },
+
+    { path: Times, name: "times", size: "normal" },
+    { path: TimesBold, name: "times", size: "bold" },
+    { path: TimesItalic, name: "times", size: "italic" },
+    { path: TimesBoldItalic, name: "times", size: "bolditalic" },
+
+    { path: Vollkorn, name: "Vollkorn", size: "normal" },
+    { path: VollkornBold, name: "Vollkorn", size: "bold" },
+    { path: VollkornItalic, name: "Vollkorn", size: "italic" },
+    { path: VollkornBoldItalic, name: "Vollkorn", size: "bolditalic" },
+
+    { path: BeVietnamPro, name: "Be Vietnam Pro", size: "normal" },
+    { path: BeVietnamProBold, name: "Be Vietnam Pro", size: "bold" },
+    { path: BeVietnamProItalic, name: "Be Vietnam Pro", size: "italic" },
+    { path: BeVietnamProBoldItalic, name: "Be Vietnam Pro", size: "bolditalic" },
+
+    { path: Courier, name: "Courier New", size: "normal" },
+    { path: CourierBold, name: "Courier New", size: "bold" },
+    { path: CourierItalic, name: "Courier New", size: "italic" },
+    { path: CourierBoldItalic, name: "Courier New", size: "bolditalic" },
+  ];
+
+  const handelExportFile = async () => {
+    setLoadingExport(true);
+    const doc = new jsPDF();
+
+    async function convertTTFToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          const base64String = reader.result.split(",")[1];
+          resolve(base64String);
+        };
+
+        reader.onerror = (error) => {
+          reject(error);
+        };
+
+        reader.readAsDataURL(file);
+      });
+    }
+
+    for (const font of fonts) {
+      const response = await fetch(font.path);
+      const blob = await response.blob();
+      const file = new File([blob], "font.ttf", { type: "font/ttf" });
+      const base64String = await convertTTFToBase64(file);
+      doc.addFileToVFS("font.ttf", base64String);
+      doc.addFont("font.ttf", font.name, font.size);
+    }
+
+    const content = editorRef.current.firstChild;
+    console.log(content);
+    console.log(doc.getFontList());
+
+    await doc.html(content, {
+      async callback(doc) {
+        await doc.save(`${currentNote.title}.pdf`);
+      },
+      autoPaging: 'text',
+      margin: [20, 0, 20, 20],
+      html2canvas: { scale: 0.25 },
+    });
+    setLoadingExport(false);
+  };
+
   return (
     <>
       {/* BUG: where is the spinner? */}
@@ -74,6 +174,28 @@ function EditorContainer({ editorRef }) {
               emptyColor="gray.200"
               color="blue.500"
               size="xl"
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isLoadingExport} onClose={onClose} size="sm">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalBody
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            gap={4}
+          >
+            <Text fontSize="xl" fontWeight="50" color="brand.300">
+              Exporting...
+            </Text>
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="brand.300"
+              size="md"
             />
           </ModalBody>
         </ModalContent>
@@ -100,7 +222,7 @@ function EditorContainer({ editorRef }) {
               setConfirmDelete(true);
             }}
           >
-            <img src={TrashCanIcon} alt="delete-note" />
+            <MdOutlineDelete size={22} color="var(--brand400)" />
           </Button>
         </Tooltip>
         <Tooltip label="Save note">
@@ -115,7 +237,7 @@ function EditorContainer({ editorRef }) {
             }}
             onClick={actions.updateNote}
           >
-            <img src={SaveIcon} alt="save-note" />
+            <FaRegSave size={19} color="var(--brand400)" />
           </Button>
         </Tooltip>
         <Tooltip label="Favorite">
@@ -135,6 +257,21 @@ function EditorContainer({ editorRef }) {
             ) : (
               <FaRegStar size={20} color="var(--brand400)" />
             )}
+          </Button>
+        </Tooltip>
+        <Tooltip label="Export file">
+          <Button
+            isDisabled={currentNote === undefined}
+            variant="ghost"
+            style={{
+              height: "40px",
+              width: "40px",
+              padding: "7px",
+              borderRadius: "50%",
+            }}
+            onClick={handelExportFile}
+          >
+            <TbFileExport size={21} color="var(--brand400)" />
           </Button>
         </Tooltip>
       </Flex>

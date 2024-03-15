@@ -12,23 +12,20 @@ const FONT_FAMILY_GROUPS = [
   {
     label: "Sans Serif",
     options: [
-      { label: "Inter", value: "" },
-      { label: "Arial", value: "Arial" },
-      { label: "Helvetica", value: "Helvetica" },
+      { label: "Be Vietnam Pro", value: "Be Vietnam Pro" },
+      { label: "Montserrat", value: "Montserrat" },
     ],
   },
   {
     label: "Serif",
     options: [
       { label: "Times New Roman", value: "Times" },
-      { label: "Garamond", value: "Garamond" },
-      { label: "Georgia", value: "Georgia" },
+      { label: "Vollkorn", value: "Vollkorn" },
     ],
   },
   {
     label: "Monospace",
     options: [
-      { label: "Courier", value: "Courier" },
       { label: "Courier New", value: "Courier New" },
     ],
   },
@@ -48,7 +45,7 @@ export const FontFamilyPicker = ({
   value,
 }: FontFamilyPickerProps) => {
   const currentValue = FONT_FAMILIES.find((size) => size.value === value);
-  const currentFontLabel = currentValue?.label.split(" ")[0] || "Inter";
+  const currentFontLabel = currentValue?.label.split(" ")[0] || "Be Vietnam Pro";
 
   const selectFont = useCallback(
     (font: string) => () => onChange(font),

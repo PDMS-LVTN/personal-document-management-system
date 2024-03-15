@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@tiptap/extension-history": "^2.2.4"
+  }
+}
