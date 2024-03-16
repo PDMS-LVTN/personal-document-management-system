@@ -93,6 +93,10 @@ export class NoteService {
           id: true,
           title: true,
         },
+        parentNote: {
+          id: true,
+          title: true,
+        },
         parent_id: true,
         is_favorited: true,
         is_pinned: true,
@@ -103,6 +107,7 @@ export class NoteService {
         headlinks: true,
         backlinks: true,
         tags: true,
+        parentNote: true,
       },
     });
     // return this.noteRepository.findOneBy({ id }); //Display without relations
@@ -314,11 +319,12 @@ export class NoteService {
   }
 
   async importNote(files, req) {
+    const data = JSON.parse(req.body.data);
     const newNote: CreateNoteDto = {
-      title: 'Untitled',
-      user_id: req.user.id,
+      title: data.title ? data.title : 'Untitled',
+      user_id: data.user_id,
       size: 0,
-      parent_id: req.body.parent_id,
+      parent_id: data.parent_id,
     };
     const note = await this.createNote(newNote);
     await this.updateNote(note.id, files, req).catch((err) => {
