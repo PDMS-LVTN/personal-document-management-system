@@ -143,11 +143,11 @@ export class NoteService {
 
   async filterNote(req) {
     const queryBuilder = await this.noteRepository.createQueryBuilder('note');
-    console.log(req)
+    console.log(req);
 
-    queryBuilder
-    .where('note.user_id = :user_id', { user_id: req.user_id })
-      .andWhere('note.is_favorited  = :is_favorited', {
+    queryBuilder.where('note.user_id = :user_id', { user_id: req.user_id });
+    if (req.isFavorite)
+      queryBuilder.andWhere('note.is_favorited  = :is_favorited', {
         is_favorited: req.isFavorite,
       });
 
@@ -177,6 +177,7 @@ export class NoteService {
 
     if (tagsLength > 0) {
       queryBuilder
+        .leftJoin('note.tags', 'tags')
         .andWhere(`tags.id IN (:tagId)`, {
           tagId: req.tags,
         })
@@ -201,7 +202,7 @@ export class NoteService {
           `MATCH(note.title) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
         );
       } else {
-        queryBuilder.andWhere(
+        queryBuilder.leftJoin('note.image_contents', 'image_content').andWhere(
           new Brackets((qb) => {
             qb.where(
               `MATCH(note.title) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
@@ -224,8 +225,6 @@ export class NoteService {
     }
 
     return await queryBuilder
-      .leftJoin('note.image_contents', 'image_content')
-      .leftJoin('note.tags', 'tags')
       .select('DISTINCT note.id AS id')
       .addSelect([
         'note.title AS title',
@@ -250,7 +249,7 @@ export class NoteService {
           ).orWhere(
             new Brackets((qb) => {
               qb.where(
-                `note.content REGEXP '>([^<]*)${req.keyword}([^>]*)<'`,
+                `note.content REGEXP '>([^<]*)${searchQuery}([^>]*)<'`,
               ).andWhere(
                 `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
               );
