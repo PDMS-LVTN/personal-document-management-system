@@ -213,12 +213,13 @@ export class NoteService {
     return await queryBuilder
       .leftJoin('note.image_contents', 'image_content')
       .leftJoin('note.tags', 'tags')
-      .select([
-        'note.id AS id',
+      .select('DISTINCT note.id AS id')
+      .addSelect([
         'note.title AS title',
         'note.created_at AS created_at',
         'note.updated_at AS updated_at',
       ])
+      .distinct(true)
       .getRawMany();
   }
 
