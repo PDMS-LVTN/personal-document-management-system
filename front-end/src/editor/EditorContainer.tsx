@@ -259,7 +259,6 @@ function EditorContainer({ editorRef }) {
                 onClick={async () => {
                   await actions.updateNote();
                   const note = window.note_tree?.get(currentNote.id);
-                  console.log(note);
                   if (note)
                     window.note_tree.submit(currentNote.id, currentNote?.title);
                 }}

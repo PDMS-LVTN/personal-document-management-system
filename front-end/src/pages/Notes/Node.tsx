@@ -41,19 +41,19 @@ const Node = ({
   const { isLoading, actions } = useNotes();
 
   const handleInputChange = async (e) => {
-    await actions.importNote(node.id, e.target.files[0]);
+    const res = await actions.importNote(node.id, e.target.files[0]);
     tree.create({
       type: "internal",
-      parentId: node.id,
+      parentId: node.id +','+ res.id + ','+ res.title,
       index: node.childIndex + 1,
     });
   };
 
   const handleCreateNote = async () => {
-    await actions.createNote(node.id);
+    const res = await actions.createNote(node.id);
     tree.create({
       type: "internal",
-      parentId: node.id,
+      parentId: node.id + ','+ res.id + ','+ res.title,
       index: node.childIndex + 1,
     });
   };

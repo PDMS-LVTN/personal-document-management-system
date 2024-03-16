@@ -37,13 +37,16 @@ export function useTree<T>(initialData: T[], actions?) {
 
     const onRename: RenameHandler<T> = ({ name, id }) => {
         tree.update({ id, changes: { title: name } as any });
-        console.log("rename")
         setData(tree.data);
     };
 
     const onCreate: CreateHandler<T> = async ({ parentId, index, type }) => {
         // const response = await actions.createNote(parentId)
-        const data = { id: tempId, title: "Untitled" } as any;
+        const id = parentId.split(',')[1]
+        const title = parentId.split(',')[2]
+        parentId = parentId.split(',')[0]=== 'null' ? null : parentId.split(',')[0]
+        console.log(id, title, parentId)
+        const data = { id: id, title: title } as any;
         if (type === "internal") data.childNotes = [];
         tree.create({ parentId, index, data });
         setData(tree.data);

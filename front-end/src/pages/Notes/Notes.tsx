@@ -59,29 +59,23 @@ const Notes = ({
     //   focusedNode.id = response.id;
     //   focusedNode.data.id = response.id;
     // }
-    if (id === "temp") {
-      e.id = currentNote.id;
-      e.data.id = currentNote.id;
-      e.data.title = currentNote.title;
-      return;
-    }
     if (id) await actions.clickANoteHandler(focusedNode.id);
   };
 
   const handleInputChange = async (e) => {
-    await actions.importNote(null, e.target.files[0]);
+    const res = await actions.importNote(null, e.target.files[0]);
     treeRef.current.create({
       type: "internal",
-      parentId: null,
+      parentId: 'null' + ',' + res.id + ',' + res.title,
       index: treeRef.current.root.children?.length,
     });
   };
 
   const handleCreateNote = async () => {
-    await actions.createNote(null);
+    const res = await actions.createNote(null);
     treeRef.current.create({
       type: "internal",
-      parentId: null,
+      parentId: 'null' + ',' + res.id + ',' + res.title,
       index: treeRef.current.root.children?.length,
     });
   };
