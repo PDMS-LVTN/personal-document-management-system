@@ -58,7 +58,7 @@ export class NoteController {
       keyword: string;
       onlyTitle: Boolean;
       sortBy?: string;
-      tags?: Array<number>;
+      tags?: Array<string>;
       createdTimeFrom?: Date;
       createdTimeTo?: Date;
       updatedTimeFrom?: Date;

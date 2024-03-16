@@ -1,7 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
-import { Between, Brackets, Equal, In, IsNull, Repository, TreeRepository } from 'typeorm';
+import {
+  Between,
+  Brackets,
+  Equal,
+  In,
+  IsNull,
+  Repository,
+  TreeRepository,
+} from 'typeorm';
 import { Note } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImageContent } from '../image_content/entities/image_content.entity';
@@ -25,7 +33,7 @@ export class NoteService {
     private readonly uploadFileService: FileUploadService,
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
-  ) { }
+  ) {}
 
   async createNote(createNoteDto: CreateNoteDto) {
     // const user = new User({ id: createNoteDto.user_id });
@@ -134,6 +142,7 @@ export class NoteService {
   }
 
   async filterNote(req) {
+    console.log(req);
     const queryBuilder = await this.noteRepository.createQueryBuilder('note');
 
     queryBuilder.where('note.user_id = :user_id', { user_id: req.user_id });
@@ -161,9 +170,11 @@ export class NoteService {
     }
 
     const tagsLength = req.tags?.length;
-
+    console.log(tagsLength);
+    console.log(req.tags);
     if (tagsLength > 0) {
       queryBuilder
+        .leftJoin('note.tags', 'tags')
         .andWhere(`tags.id IN (:tagId)`, {
           tagId: req.tags,
         })
@@ -188,7 +199,7 @@ export class NoteService {
           `MATCH(note.title) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
         );
       } else {
-        queryBuilder.andWhere(
+        queryBuilder.leftJoin('note.image_contents', 'image_content').andWhere(
           new Brackets((qb) => {
             qb.where(
               `MATCH(note.title) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
@@ -211,8 +222,6 @@ export class NoteService {
     }
 
     return await queryBuilder
-      .leftJoin('note.image_contents', 'image_content')
-      .leftJoin('note.tags', 'tags')
       .select('DISTINCT note.id AS id')
       .addSelect([
         'note.title AS title',
