@@ -1,7 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
-import { Between, Brackets, Equal, In, IsNull, Repository, TreeRepository } from 'typeorm';
+import {
+  Between,
+  Brackets,
+  Equal,
+  In,
+  IsNull,
+  Repository,
+  TreeRepository,
+} from 'typeorm';
 import { Note } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImageContent } from '../image_content/entities/image_content.entity';
@@ -25,7 +33,7 @@ export class NoteService {
     private readonly uploadFileService: FileUploadService,
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
-  ) { }
+  ) {}
 
   async createNote(createNoteDto: CreateNoteDto) {
     // const user = new User({ id: createNoteDto.user_id });
@@ -332,5 +340,15 @@ export class NoteService {
       throw err;
     });
     return await this.findOneNote(note.id);
+  }
+
+  async moveNote(id, req) {
+    const updateNoteDto: UpdateNoteDto = {
+      parent_id: req.parent_id,
+    };
+    await this.noteRepository.update(id, updateNoteDto).catch((err) => {
+      throw err;
+    });
+    return this.findAllNote({ user_id: req.user_id });
   }
 }
