@@ -23,7 +23,7 @@ export const Search = () => {
           <Text fontSize="2xl" fontWeight="600">
             Search results
           </Text>
-          <Text>{searchResults.length} notes found</Text>
+          <Text>{searchResults?.length} notes found</Text>
         </Flex>
       </Flex>
       {searchResults && searchResults.length ? (

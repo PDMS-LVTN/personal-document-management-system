@@ -87,17 +87,19 @@ function HomeLayout() {
         gap="1em"
         id="info-grid-item"
       >
-        <Flex justifyContent="left" alignItems="center" gap="1em">
+        {/* <Flex justifyContent="left" alignItems="center" gap="1em"> */}
           {currentNote && (
             <Input
               variant="outline"
+              maxWidth="60%"
               value={currentNote ? currentNote.title : ""}
+              border={0}
               onChange={(e) => {
                 setCurrentNote({ ...currentNote, title: e.target.value });
               }}
             />
           )}
-        </Flex>
+        {/* </Flex> */}
         <Flex justifyContent="right" alignItems="center" gap="1em">
           <p>{auth.email}</p>
           <Button

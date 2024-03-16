@@ -160,7 +160,7 @@ function EditorContainer({ editorRef }) {
     }
 
     const content = editorRef.current.firstChild;
-    console.log(content);
+    console.log(content.textContent);
     console.log(doc.getFontList());
 
     await doc.html(content, {
