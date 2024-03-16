@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 export const tempState = { waitingImage: [], waitingFile: [] };
 
 export class API {
-  public static uploadImage = async (file: File) => {
+  public static uploadImage = async (file) => {
     console.log(file)
     const ext = file.name.substring(file.name.indexOf("."));
     const url = URL.createObjectURL(file);

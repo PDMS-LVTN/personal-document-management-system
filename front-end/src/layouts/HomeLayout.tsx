@@ -46,7 +46,7 @@ function HomeLayout() {
       </GridItem>
       <GridItem
         rowSpan={1}
-        colSpan={3}
+        colSpan={2}
         bg="#FAF9FE"
         display="flex"
         alignItems="center"
@@ -77,7 +77,7 @@ function HomeLayout() {
       </GridItem>
       <GridItem
         rowSpan={1}
-        colSpan={6}
+        colSpan={7}
         bg="white"
         display="flex"
         alignItems="center"

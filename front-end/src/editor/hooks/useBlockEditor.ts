@@ -16,6 +16,8 @@ import History from '@tiptap/extension-history'
 import { useSidebar } from './useSidebar'
 // import { initialContent } from '@/editor/lib/data/initialContent'
 import { useApp } from '@/store/useApp'
+import API, { tempState } from '../lib/api'
+import { images } from 'mammoth'
 
 // const TIPTAP_AI_APP_ID = process.env.NEXT_PUBLIC_TIPTAP_AI_APP_ID
 // const TIPTAP_AI_BASE_URL = process.env.NEXT_PUBLIC_TIPTAP_AI_BASE_URL || 'https://api.tiptap.dev/v1/ai'
@@ -93,9 +95,30 @@ export const useBlockEditor = () => {
                     autocapitalize: 'off',
                     // class: 'border border-gray-400 p-4 ',
                 },
+                handlePaste: (view, event, slice) => {
+                    const items = Array.from(event.clipboardData?.files || []);
+                    for (const item of items) {
+                        if (item.type.indexOf("image") === 0) {
+                            // let img = new Image(); /* global Image */
+                            const ext = item.name.substring(item.name.indexOf("."));
+                            const url = URL.createObjectURL(item);
+                            console.log(url)
+                            const pos = url.lastIndexOf("/");
+                            const fileName = url.substring(pos + 1);
+
+                            const newFile = new File([item], fileName + ext, { type: item.type });
+                            tempState.waitingImage.push(newFile);
+                            const node = view.state.schema.nodes.imageBlock.create({ src: url }); // creates the image element
+                            const transaction = view.state.tr.replaceSelectionWith(node); // places it in the correct position
+                            view.dispatch(transaction);
+                            return true; // handled
+                        }
+                    }
+                    return false; // not handled use default behaviour
+                },
             },
-        },
-        // [ydoc, provider],
+            // [ydoc, provider],
+        }
     )
 
     //   const users = useMemo(() => {

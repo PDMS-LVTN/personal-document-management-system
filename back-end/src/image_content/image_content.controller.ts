@@ -40,7 +40,7 @@ export class ImageContentController {
   constructor(
     private readonly imageContentService: ImageContentService,
     private readonly httpService: HttpService,
-  ) {}
+  ) { }
 
   // @Get('search')
   // searchImageContent(@Req() req: { user_id: string; keyword: string }) {
@@ -60,5 +60,10 @@ export class ImageContentController {
   @Delete()
   removeImageContent(@Body() req: { path: string }) {
     return this.imageContentService.removeImageContent(req.path);
+  }
+
+  @Post('extract_text')
+  async extractText(@Body() req: { note_ID: string; path: string }) {
+    return await this.imageContentService.extractText(req);
   }
 }

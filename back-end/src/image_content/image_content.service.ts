@@ -146,4 +146,14 @@ export class ImageContentService {
     const image_content = await this.imageContentRepository.findOneBy({ path });
     return await this.imageContentRepository.remove(image_content);
   }
+
+  async extractText(req) {
+    console.log(req.note_ID, req.path)
+    return await this.imageContentRepository.find({
+      select: {
+        content: true,
+      },
+      where: { note_ID: Equal(req.note_ID), path: Equal(req.path) },
+    });
+  }
 }
