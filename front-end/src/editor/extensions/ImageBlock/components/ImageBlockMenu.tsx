@@ -164,9 +164,9 @@ export const ImageBlockMenu = ({
           <Toolbar.Button
             tooltip="Copy text"
             onClick={onGetText}
-            // disabled={editor
-            //   .getAttributes("imageBlock")
-            //   .src?.includes(`${import.meta.env.VITE_CLIENT_PATH}`)}
+            disabled={editor
+              .getAttributes("imageBlock")
+              .src?.includes(`${import.meta.env.VITE_CLIENT_PATH}`)}
           >
             <Icon name="ClipboardType" />
           </Toolbar.Button>
