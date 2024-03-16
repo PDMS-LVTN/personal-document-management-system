@@ -55,6 +55,8 @@ import { FaEllipsisVertical } from "react-icons/fa6";
 import { Expand, LockKeyhole, Paperclip } from "lucide-react";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
 import { jsPDF } from "jspdf";
+import useDrawer from "@/hooks/useDrawer";
+import AttachmentsDrawer from "@/components/AttachmentsDrawer";
 
 function EditorContainer({ editorRef }) {
   const currentNote = useApp((state) => state.currentNote);
@@ -174,8 +176,11 @@ function EditorContainer({ editorRef }) {
     setLoadingExport(false);
   };
 
+  const [drawer, showDrawer] = useDrawer("sm");
+
   return (
     <>
+      {drawer}
       {/* BUG: where is the spinner? */}
       {/* FIX: https://stackoverflow.com/questions/73031972/how-to-get-state-from-custom-hooks-to-update-in-parent-component */}
       <Modal isOpen={isLoading} onClose={onClose}>
@@ -218,7 +223,6 @@ function EditorContainer({ editorRef }) {
         modalTitle="Delete note"
         config={currentNote?.title}
         isOpen={confirmDeleteNote}
-        // confirmDelete={() => actions.deleteNote(currentNote.id)}
         confirmDelete={() => {
           const id = window.note_tree?.focusedNode?.id;
           if (id) window.note_tree.delete(id);
@@ -329,6 +333,11 @@ function EditorContainer({ editorRef }) {
                 </MenuItem>
                 <MenuItem
                   icon={<Paperclip size={20} color="var(--brand400)" />}
+                  onClick={() => {
+                    showDrawer("Attachments", (onClose) => (
+                      <AttachmentsDrawer></AttachmentsDrawer>
+                    ));
+                  }}
                 >
                   Attachments
                 </MenuItem>

@@ -10,9 +10,9 @@ import {
   MenuList,
   Spinner,
   Text,
+  Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
-import ToolsIcon from "../../assets/tools-icon.svg";
 import { Tree, TreeApi } from "react-arborist";
 import PlusIcon from "../../assets/plus-icon.svg";
 import { useState, useRef, useEffect } from "react";
@@ -23,6 +23,12 @@ import { useTree } from "@/hooks/useTree";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
 import { NodeApi } from "react-arborist";
 import SearchFilter from "@/components/SearchFilter";
+import {
+  ChevronsDownUp,
+  ChevronsUpDown,
+  SlidersHorizontal,
+} from "lucide-react";
+
 declare global {
   interface Window {
     note_tree: TreeApi<Note> | null;
@@ -41,6 +47,7 @@ const Notes = ({
   isLoading;
 }) => {
   const [term, setTerm] = useState("");
+  const [toggle, setToggle] = useState<boolean>(false);
   const treeRef = useRef<TreeApi<Note>>(null);
   const [data, controller] = useTree(notes, actions);
   const currentNote = useApp((state) => state.currentNote);
@@ -64,18 +71,19 @@ const Notes = ({
 
   const handleInputChange = async (e) => {
     const res = await actions.importNote(null, e.target.files[0]);
-    res && treeRef.current.create({
-      type: "internal",
-      parentId: 'null' + ',' + res.id + ',' + res.title,
-      index: treeRef.current.root.children?.length,
-    });
+    res &&
+      treeRef.current.create({
+        type: "internal",
+        parentId: "null" + "," + res.id + "," + res.title,
+        index: treeRef.current.root.children?.length,
+      });
   };
 
   const handleCreateNote = async () => {
     const res = await actions.createNote(null);
     treeRef.current.create({
       type: "internal",
-      parentId: 'null' + ',' + res.id + ',' + res.title,
+      parentId: "null" + "," + res.id + "," + res.title,
       index: treeRef.current.root.children?.length,
     });
   };
@@ -126,19 +134,43 @@ const Notes = ({
           Notes
         </Text>
         <div>
-          <Button
-            variant="ghost"
-            mr="0.5em"
-            style={{
-              height: "40px",
-              width: "40px",
-              padding: "7px",
-              borderRadius: "50%",
-            }}
-            onClick={onOpen}
-          >
-            <img src={ToolsIcon} alt="tools" />
-          </Button>
+          <Tooltip label={toggle ? "Collapse all" : "Expand all"}>
+            <Button
+              variant="ghost"
+              style={{
+                height: "40px",
+                width: "40px",
+                padding: "7px",
+                borderRadius: "50%",
+              }}
+              onClick={() => {
+                if (!toggle) treeRef.current?.openAll();
+                else treeRef.current?.closeAll();
+                setToggle(!toggle);
+              }}
+            >
+              {toggle ? (
+                <ChevronsDownUp color="var(--brand400)" />
+              ) : (
+                <ChevronsUpDown color="var(--brand400)" />
+              )}
+            </Button>
+          </Tooltip>
+          <Tooltip>
+            <Button
+              variant="ghost"
+              mr="0.5em"
+              style={{
+                height: "40px",
+                width: "40px",
+                padding: "7px",
+                borderRadius: "50%",
+              }}
+              onClick={onOpen}
+            >
+              <SlidersHorizontal color="var(--brand400)" />
+            </Button>
+          </Tooltip>
           {/* <Tooltip label="Add"> */}
           <Menu>
             <MenuButton

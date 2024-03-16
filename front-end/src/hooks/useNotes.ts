@@ -91,6 +91,16 @@ const useNotes = () => {
         }
       );
       console.log(response);
+      const note = {
+        id: response.data.id,
+        title: response.data.title,
+        content: response.data.content,
+        parent_id: response.data.parent_id,
+        is_favorited: false,
+        is_pinned: false,
+      };
+      setCurrentNote(note);
+      window.editor.commands.setContent(response.data.content);
       toast({
         title: `Your note has been updated. 🙂`,
         status: "success",

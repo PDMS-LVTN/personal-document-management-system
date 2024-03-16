@@ -55,16 +55,16 @@ export default function useModal(
         scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent pb={5}>
           <ModalHeader>{title}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{content}</ModalBody>
 
-          <ModalFooter>
+          {/* <ModalFooter>
             <Button colorScheme="brand" onClick={onClose}>
               Close
             </Button>
-          </ModalFooter>
+          </ModalFooter> */}
         </ModalContent>
       </Modal>
     );

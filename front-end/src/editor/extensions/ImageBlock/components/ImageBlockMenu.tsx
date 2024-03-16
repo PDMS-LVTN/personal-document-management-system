@@ -9,6 +9,8 @@ import { ImageBlockWidth } from "./ImageBlockWidth";
 import { MenuProps } from "@/editor/components/menus/types";
 import { getRenderContainer } from "@/editor/lib/utils";
 import { Button } from "@chakra-ui/react";
+import { useApp } from "@/store/useApp";
+import useAxiosJWT from "@/hooks/useAxiosJWT";
 
 export const ImageBlockMenu = ({
   editor,
@@ -67,11 +69,30 @@ export const ImageBlockMenu = ({
     [editor]
   );
 
-  const onGetText = useCallback(() => {
+  const currentNote = useApp((state) => state.currentNote);
+  const axiosJWT = useAxiosJWT();
+
+  const onGetText = useCallback(async () => {
     // TODO: fetch image text
-    let text = `Now I'd like to remove the outline. I tried to add outline={'none'} like the above, but it didn't work. In console I can see that Chakra CSS is always in the highest priority and overrides all other CSS.
-How can I apply this custom CSS to the Tag component? I tried importing a SCSS file, but it's the same, overridden by Chakra default CSS.
-`;
+    let text;
+    const src: string = editor.getAttributes("imageBlock").src;
+    console.log(src.substring(src.lastIndexOf("/") + 1), currentNote.id);
+    try {
+      const response = await axiosJWT.post(
+        "image_content/extract_text",
+        JSON.stringify({
+          note_ID: currentNote.id,
+          path: src.substring(src.lastIndexOf("/") + 1),
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      console.log(response.data);
+      text = response.data[0].content;
+    } catch (e) {
+      console.log(e);
+    }
     showModal("Extracted text", (onClose) => {
       return (
         <div className="flex justify-between">
@@ -143,9 +164,9 @@ How can I apply this custom CSS to the Tag component? I tried importing a SCSS f
           <Toolbar.Button
             tooltip="Copy text"
             onClick={onGetText}
-            // disabled={editor
-            //   .getAttributes("imageBlock")
-            //   .src?.includes(`${import.meta.env.VITE_CLIENT_PATH}`)}
+            disabled={editor
+              .getAttributes("imageBlock")
+              .src?.includes(`${import.meta.env.VITE_CLIENT_PATH}`)}
           >
             <Icon name="ClipboardType" />
           </Toolbar.Button>

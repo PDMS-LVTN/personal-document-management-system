@@ -321,7 +321,8 @@ export class NoteService {
     console.log(req.body);
     // Update a note with title and content
     const updateNoteDto: UpdateNoteDto = req.body;
-    return await this.noteRepository.update(id, updateNoteDto);
+    await this.noteRepository.update(id, updateNoteDto);
+    return await this.findOneNote(id);
   }
 
   async removeNote(id: string) {

@@ -1,6 +1,7 @@
 import { Icon } from "@/editor/components/ui/Icon";
 import { Node } from "@tiptap/pm/model";
 import { Editor, NodeViewWrapper } from "@tiptap/react";
+import { FileText } from "lucide-react";
 import { useCallback, useRef } from "react";
 
 interface FileBlockViewProps {
@@ -41,15 +42,42 @@ export const FileBlockView = (props: FileBlockViewProps) => {
         <div
           contentEditable={false}
           ref={fileWrapperRef}
-          className="flex justify-start items-center gap-2 bg-orange-50 rounded-xl hover:cursor-pointer p-3"
+          className="flex justify-start gap-2 rounded-md hover:cursor-pointer  "
+          style={{
+            backgroundColor: "var(--brand50)",
+            width: "40%",
+            position: "relative",
+            height: "40px",
+          }}
           onClick={onClick}
         >
-          <Icon
-            name="ArrowBigDownDash"
-            className="w-12 h-12 text-black dark:text-white opacity-20"
-          />
-          <span>{name}</span>
-          <span className="text-gray-400">{formatFileSize(size)}</span>
+          <div
+            style={{
+              backgroundColor: "var(--brand100)",
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              width: "40px",
+              borderTopLeftRadius: "0.375rem",
+              borderBottomLeftRadius: "0.375rem",
+            }}
+            className="flex justify-center items-center"
+          >
+            <FileText
+              className="w-5 h-5 text-black dark:text-white "
+              style={{ color: "var(--brand400)" }}
+            />
+          </div>
+          <div
+            className="flex flex-col justify-center pl-1 py-1"
+            style={{ marginLeft: "50px" }}
+          >
+            <div className="text-xs line-clamp-1">{name}</div>
+            <div className="text-gray-400" style={{ fontSize: "10px" }}>
+              {formatFileSize(size)}
+            </div>
+          </div>
         </div>
         <a
           id="file-node"

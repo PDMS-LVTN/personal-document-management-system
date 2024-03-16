@@ -61,7 +61,7 @@ function TreeAndEditorContainer() {
       <GridItem
         id="structure-grid-item"
         rowSpan={1}
-        colSpan={3}
+        colSpan={2}
         bg="#FAF9FE"
         pos="relative"
         pt="1em"
@@ -72,7 +72,7 @@ function TreeAndEditorContainer() {
       <GridItem
         id="editor-grid-item"
         rowSpan={1}
-        colSpan={6}
+        colSpan={7}
         bg="white"
         overflow="hidden"
         pos="relative"
