@@ -12,16 +12,18 @@ import {
 } from '@nestjs/common';
 import { NoteService } from './note.service';
 import { CreateNoteDto } from './dto/create-note.dto';
-import { UpdateNoteDto } from './dto/update-note.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
-import { FileFieldsInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FilesInterceptor,
+} from '@nestjs/platform-express';
 import path = require('path');
 
 @ApiTags('note')
 @Controller('api/note/')
 export class NoteController {
-  constructor(private readonly noteService: NoteService) { }
+  constructor(private readonly noteService: NoteService) {}
 
   @Post('add_note')
   async createNote(@Body() createNoteDto: CreateNoteDto) {
@@ -116,8 +118,6 @@ export class NoteController {
           const fileName: string = path
             .parse(file.originalname)
             .name.replace(/\s/g, '');
-          // const pos = req.body.urls[idx].lastIndexOf('/');
-          // const fileName = req.body.urls[idx].substring(pos + 1) + extension;
           const extension: string = path.parse(file.originalname).ext;
           cb(null, `${fileName}${extension}`);
         },
@@ -126,5 +126,13 @@ export class NoteController {
   )
   async importNote(@UploadedFiles() files, @Req() req) {
     return await this.noteService.importNote(files, req);
+  }
+
+  @Patch('move_note/:id')
+  async moveNote(
+    @Param('id') id: string,
+    @Body() req: { parent_id: string; user_id: string },
+  ) {
+    return await this.noteService.moveNote(id, req);
   }
 }

@@ -42,22 +42,30 @@ export const Search = () => {
               flexDir="column"
               alignItems="flex-start"
               height="fit-content"
+              // backgroundColor="brand.50"
               gap={2}
               onClick={async () => {
                 await actions.clickANoteHandler(item.id);
                 close();
               }}
             >
-              <Text fontWeight="bold" fontSize="lg" mb={2}>
-                {item.title}
-              </Text>
-              {/* <Text fontWeight="normal">path</Text> */}
-              <Text fontWeight="normal">
-                Created: {moment(item.created_at).format("L")}{" "}
-              </Text>
-              <Text fontWeight="normal">
-                Edited: {moment(item.updated_at).format("L")}
-              </Text>
+              <Text
+            width="100%"
+            fontWeight="bold"
+            mb={1}
+            fontSize={13}
+            className="line-clamp-1"
+            textAlign="left"
+          >
+            {item.title}
+          </Text>
+          {/* <Text fontWeight="normal">path</Text> */}
+          <Text fontWeight="normal" fontSize={12}>
+            Created: {moment(item.created_at).format("YYYY-MM-DD HH:mm:ss")}
+          </Text>
+          <Text fontWeight="normal" fontSize={12}>
+            Updated: {moment(item.updated_at).format("YYYY-MM-DD HH:mm:ss")}
+          </Text>
             </Button>
           );
         })

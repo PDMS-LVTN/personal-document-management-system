@@ -64,7 +64,7 @@ const Notes = ({
 
   const handleInputChange = async (e) => {
     const res = await actions.importNote(null, e.target.files[0]);
-    treeRef.current.create({
+    res && treeRef.current.create({
       type: "internal",
       parentId: 'null' + ',' + res.id + ',' + res.title,
       index: treeRef.current.root.children?.length,
@@ -114,6 +114,14 @@ const Notes = ({
         </ModalContent>
       </Modal>
       <Modal isOpen={isOpen} onClose={onClose} size="3xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalBody>
+            <SearchFilter editorRef={null} close={onClose} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isOpen} onClose={onClose} size="5xl">
         <ModalOverlay />
         <ModalContent>
           <ModalBody>

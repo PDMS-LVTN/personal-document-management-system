@@ -142,10 +142,13 @@ export class NoteService {
   }
 
   async filterNote(req) {
-    console.log(req);
     const queryBuilder = await this.noteRepository.createQueryBuilder('note');
 
-    queryBuilder.where('note.user_id = :user_id', { user_id: req.user_id });
+    queryBuilder
+    .where('note.user_id = :user_id', { user_id: req.user_id })
+      .andWhere('note.is_favorited  = :is_favorited', {
+        is_favorited: req.isFavorite,
+      });
 
     if (req.createdTimeFrom && req.createdTimeTo) {
       const currentDate = new Date(req.createdTimeTo);
@@ -341,5 +344,15 @@ export class NoteService {
       throw err;
     });
     return await this.findOneNote(note.id);
+  }
+
+  async moveNote(id, req) {
+    const updateNoteDto: UpdateNoteDto = {
+      parent_id: req.parent_id,
+    };
+    await this.noteRepository.update(id, updateNoteDto).catch((err) => {
+      throw err;
+    });
+    return this.findAllNote({ user_id: req.user_id });
   }
 }
