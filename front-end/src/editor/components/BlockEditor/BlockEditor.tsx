@@ -19,16 +19,18 @@ import { TableColumnMenu, TableRowMenu } from "@/editor/extensions/Table/menus";
 // import { TiptapProps } from "./types";
 import { EditorHeader } from "./components/EditorHeader";
 import { TextMenu } from "../menus/TextMenu";
-import { ContentItemMenu } from "../menus/ContentItemMenu";
+import useModal from "@/hooks/useModal";
+// import { ContentItemMenu } from "../menus/ContentItemMenu";
 
 // export const BlockEditor = ({ aiToken, ydoc, provider }: TiptapProps) => {
 export const BlockEditor = ({ editorRef }) => {
   // const aiState = useAIState()
   const menuContainerRef = useRef(null);
+  const [modal, showModal] = useModal();
   // const editorRef = useRef<PureEditorContent | null>(null);
 
   // const { editor, users, characterCount, collabState, leftSidebar } = useBlockEditor({ aiToken, ydoc, provider })
-  const { editor, leftSidebar } = useBlockEditor();
+  const { editor, leftSidebar, characterCount } = useBlockEditor();
 
   // const displayedUsers = users.slice(0, 3)
 
@@ -50,6 +52,7 @@ export const BlockEditor = ({ editorRef }) => {
   return (
     // <EditorContext.Provider value={providerValue}>
     <div className="flex" ref={menuContainerRef}>
+      {modal}
       <Sidebar
         isOpen={leftSidebar.isOpen}
         onClose={leftSidebar.close}
@@ -57,10 +60,10 @@ export const BlockEditor = ({ editorRef }) => {
       />
       <div className="relative flex flex-col flex-1 h-full overflow-hidden">
         <EditorHeader
-          // characters={characterCount.characters()}
+          characters={characterCount.characters()}
           // collabState={collabState}
           // users={displayedUsers}
-          // words={characterCount.words()}
+          words={characterCount.words()}
           isSidebarOpen={leftSidebar.isOpen}
           toggleSidebar={leftSidebar.toggle}
         />
@@ -69,7 +72,11 @@ export const BlockEditor = ({ editorRef }) => {
         <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
         <TableRowMenu editor={editor} appendTo={menuContainerRef} />
         <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
-        <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
+        <ImageBlockMenu
+          editor={editor}
+          appendTo={menuContainerRef}
+          showModal={showModal}
+        />
         <EditorContent
           editor={editor}
           ref={editorRef}

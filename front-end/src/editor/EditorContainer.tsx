@@ -34,6 +34,11 @@ import {
   useDisclosure,
   Spinner,
   Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  IconButton,
 } from "@chakra-ui/react";
 import { FaRegStar, FaStar, FaRegSave } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
@@ -44,6 +49,10 @@ import { useFavorite } from "../hooks/useFavorite";
 import { useTags } from "../hooks/useTags";
 import { CreatableSelect } from "chakra-react-select";
 import { IoMdPricetag } from "react-icons/io";
+import { TbFocus2 } from "react-icons/tb";
+import { useLocation } from "react-router-dom";
+import { FaEllipsisVertical } from "react-icons/fa6";
+import { Expand, LockKeyhole, Paperclip } from "lucide-react";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
 import { jsPDF } from "jspdf";
 
@@ -56,16 +65,17 @@ function EditorContainer({ editorRef }) {
     setConfirmDelete(false);
   };
 
-  const { isLoading, actions } = useNotes(editorRef);
+  const { isLoading, actions } = useNotes();
   const [isLoadingExport, setLoadingExport] = useState(false);
   const { updateFavorite } = useFavorite();
   const { createTag, deleteTagInNote, applyTag } = useTags();
 
   const currentTags = useApp((state) => state.currentTags);
-  // console.log("currenttag", currentTags);
   const setCurrentTags = useApp((state) => state.setCurrentTags);
   const allTags = useApp((state) => state.allTags);
   const setAllTags = useApp((state) => state.setAllTags);
+
+  const location = useLocation();
 
   const handleChange = (selected) => {
     if (selected.length > currentTags.length) {
@@ -107,7 +117,11 @@ function EditorContainer({ editorRef }) {
     { path: BeVietnamPro, name: "Be Vietnam Pro", size: "normal" },
     { path: BeVietnamProBold, name: "Be Vietnam Pro", size: "bold" },
     { path: BeVietnamProItalic, name: "Be Vietnam Pro", size: "italic" },
-    { path: BeVietnamProBoldItalic, name: "Be Vietnam Pro", size: "bolditalic" },
+    {
+      path: BeVietnamProBoldItalic,
+      name: "Be Vietnam Pro",
+      size: "bolditalic",
+    },
 
     { path: Courier, name: "Courier New", size: "normal" },
     { path: CourierBold, name: "Courier New", size: "bold" },
@@ -153,7 +167,7 @@ function EditorContainer({ editorRef }) {
       async callback(doc) {
         await doc.save(`${currentNote.title}.pdf`);
       },
-      autoPaging: 'text',
+      autoPaging: "text",
       margin: [20, 0, 20, 20],
       html2canvas: { scale: 0.25 },
     });
@@ -204,100 +218,146 @@ function EditorContainer({ editorRef }) {
         modalTitle="Delete note"
         config={currentNote?.title}
         isOpen={confirmDeleteNote}
-        confirmDelete={() => actions.deleteNote(currentNote.id)}
+        // confirmDelete={() => actions.deleteNote(currentNote.id)}
+        confirmDelete={() => {
+          const id = window.note_tree?.focusedNode?.id;
+          if (id) window.note_tree.delete(id);
+          else actions.deleteNote(currentNote.id);
+        }}
         close={handleCloseConfirm}
       />
-      <Flex justifyContent="right">
-        <Tooltip label="Delete note">
-          <Button
-            isDisabled={currentNote === undefined}
-            variant="ghost"
-            style={{
-              height: "40px",
-              width: "40px",
-              padding: "7px",
-              borderRadius: "50%",
-            }}
-            onClick={() => {
-              setConfirmDelete(true);
-            }}
-          >
-            <MdOutlineDelete size={22} color="var(--brand400)" />
-          </Button>
-        </Tooltip>
-        <Tooltip label="Save note">
-          <Button
-            isDisabled={currentNote === undefined}
-            variant="ghost"
-            style={{
-              height: "40px",
-              width: "40px",
-              padding: "7px",
-              borderRadius: "50%",
-            }}
-            onClick={actions.updateNote}
-          >
-            <FaRegSave size={19} color="var(--brand400)" />
-          </Button>
-        </Tooltip>
-        <Tooltip label="Favorite">
-          <Button
-            isDisabled={currentNote === undefined}
-            variant="ghost"
-            style={{
-              height: "40px",
-              width: "40px",
-              padding: "1px",
-              borderRadius: "50%",
-            }}
-            onClick={updateFavorite}
-          >
-            {currentNote?.is_favorited ? (
-              <FaStar size={20} color="var(--brand400)" />
-            ) : (
-              <FaRegStar size={20} color="var(--brand400)" />
-            )}
-          </Button>
-        </Tooltip>
-        <Tooltip label="Export file">
-          <Button
-            isDisabled={currentNote === undefined}
-            variant="ghost"
-            style={{
-              height: "40px",
-              width: "40px",
-              padding: "7px",
-              borderRadius: "50%",
-            }}
-            onClick={handelExportFile}
-          >
-            <TbFileExport size={21} color="var(--brand400)" />
-          </Button>
-        </Tooltip>
-      </Flex>
       {currentNote && (
-        <Flex pos="absolute" bottom={0} zIndex={3} left={0} right={0} p={2}>
-          <Tooltip
-            shouldWrapChildren={true}
-            label="Your note belongs to these tags"
-          >
-            <IoMdPricetag size={40} color="var(--brand400)" />
-          </Tooltip>
-          <FormControl ml={3}>
-            <CreatableSelect
-              id="input-tags"
-              isMulti
-              // name="tags"
-              options={allTags}
-              menuPlacement="top"
-              placeholder="Select some tags..."
-              value={currentTags}
-              isClearable={false}
-              onCreateOption={handleCreate}
-              onChange={handleChange}
-            />
-          </FormControl>
-        </Flex>
+        <>
+          <Flex justifyContent="right">
+            <Tooltip label="Delete note">
+              <Button
+                isDisabled={currentNote === undefined}
+                variant="ghost"
+                style={{
+                  height: "40px",
+                  width: "40px",
+                  padding: "7px",
+                  borderRadius: "50%",
+                }}
+                onClick={() => {
+                  setConfirmDelete(true);
+                }}
+              >
+                <MdOutlineDelete size={22} color="var(--brand400)" />
+              </Button>
+            </Tooltip>
+            <Tooltip label="Save note">
+              <Button
+                isDisabled={currentNote === undefined}
+                variant="ghost"
+                style={{
+                  height: "40px",
+                  width: "40px",
+                  padding: "7px",
+                  borderRadius: "50%",
+                }}
+                onClick={async () => {
+                  await actions.updateNote();
+                  const note = window.note_tree?.get(currentNote.id);
+                  if (note)
+                    window.note_tree.submit(currentNote.id, currentNote?.title);
+                }}
+              >
+                <FaRegSave size={19} color="var(--brand400)" />
+              </Button>
+            </Tooltip>
+            <Tooltip label="Favorite">
+              <Button
+                isDisabled={currentNote === undefined}
+                variant="ghost"
+                style={{
+                  height: "40px",
+                  width: "40px",
+                  padding: "1px",
+                  borderRadius: "50%",
+                }}
+                onClick={updateFavorite}
+              >
+                {currentNote?.is_favorited ? (
+                  <FaStar size={20} color="var(--brand400)" />
+                ) : (
+                  <FaRegStar size={20} color="var(--brand400)" />
+                )}
+              </Button>
+            </Tooltip>
+            <Tooltip label="Focus note">
+              <Button
+                isDisabled={
+                  currentNote === undefined ||
+                  !location.pathname.includes("notes")
+                }
+                variant="ghost"
+                style={{
+                  height: "40px",
+                  width: "40px",
+                  padding: "1px",
+                  borderRadius: "50%",
+                }}
+                onClick={() => {
+                  window.note_tree?.focus(currentNote.id, { scroll: true });
+                }}
+              >
+                <TbFocus2 size={20} color="var(--brand400)" />
+              </Button>
+            </Tooltip>
+            <Menu>
+              <MenuButton
+                as={IconButton}
+                aria-label="Options"
+                icon={<FaEllipsisVertical size={20} color="var(--brand400)" />}
+                variant="unstyled"
+              ></MenuButton>
+              <MenuList>
+                <MenuItem icon={<Expand size={20} color="var(--brand400)" />}>
+                  Full width
+                </MenuItem>
+                <MenuItem
+                  onClick={handelExportFile}
+                  icon={<TbFileExport size={21} color="var(--brand400)" />}
+                >
+                  Export note
+                </MenuItem>
+                <MenuItem
+                  icon={<LockKeyhole size={20} color="var(--brand400)" />}
+                >
+                  Lock note
+                </MenuItem>
+                <MenuItem
+                  icon={<Paperclip size={20} color="var(--brand400)" />}
+                >
+                  Attachments
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </Flex>
+          <Flex pos="absolute" bottom={0} zIndex={3} left={0} right={0} p={2}>
+            <Tooltip
+              shouldWrapChildren={true}
+              label="Your note belongs to these tags"
+            >
+              <IoMdPricetag size={40} color="var(--brand400)" />
+            </Tooltip>
+            <FormControl ml={3}>
+              <CreatableSelect
+                id="input-tags"
+                isMulti
+                // name="tags"
+                options={allTags}
+                menuPlacement="top"
+                placeholder="Select some tags..."
+                value={currentTags}
+                isClearable={false}
+                onCreateOption={handleCreate}
+                onChange={handleChange}
+              />
+            </FormControl>
+          </Flex>
+        </>
       )}
 
       <Editor editorRef={editorRef} />

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
-import { Between, Brackets, Equal, In, IsNull, Repository } from 'typeorm';
+import { Between, Brackets, Equal, In, IsNull, Repository, TreeRepository } from 'typeorm';
 import { Note } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImageContent } from '../image_content/entities/image_content.entity';
@@ -18,50 +18,68 @@ require('dotenv').config();
 export class NoteService {
   constructor(
     @InjectRepository(Note)
-    private readonly noteRepository: Repository<Note>,
+    private readonly noteRepository: TreeRepository<Note>,
     @InjectRepository(ImageContent)
     private readonly imageContentRepository: Repository<ImageContent>,
     private readonly imageContentService: ImageContentService,
     private readonly uploadFileService: FileUploadService,
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
-  ) {}
+  ) { }
 
   async createNote(createNoteDto: CreateNoteDto) {
-    const user = new User({ id: createNoteDto.user_id });
-    const parent_note = new Note();
-    parent_note.id = createNoteDto.parent_id;
+    // const user = new User({ id: createNoteDto.user_id });
+    // const parent_note = new Note();
+    // parent_note.id = createNoteDto.parent_id;
+    // const newNote = this.noteRepository.create(createNoteDto);
+    // // user.notes=[newNote]
+    // // await this.userRepository.save(user);
+    // newNote.parentNote = parent_note;
+    // newNote.user = user;
     const newNote = this.noteRepository.create(createNoteDto);
-    // user.notes=[newNote]
-    // await this.userRepository.save(user);
-    newNote.parentNote = parent_note;
-    newNote.user = user;
+    if (createNoteDto.parent_id) {
+      const parent = await this.noteRepository.findOne({
+        where: {
+          id: createNoteDto.parent_id,
+        },
+      });
+      newNote.parentNote = parent;
+      console.log(newNote);
+    }
     return await this.noteRepository.save(newNote);
   }
 
   async findAllNote(req: { user_id: string }) {
-    return await this.noteRepository.find({
-      select: {
-        id: true,
-        title: true,
-        childNotes: {
-          id: true,
-          title: true,
-        },
-        parent_id: true,
-        created_at: true,
-        updated_at: true,
-        // parentNote: { id: true }
-      },
-      where: { user: { id: Equal(req.user_id) }, parentNote: IsNull() },
-      order: {
-        created_at: 'ASC',
-      },
-      relations: {
-        // user: true,
-        childNotes: true,
-      },
-    });
+    const roots = (await this.noteRepository.findRoots()).filter(
+      (e) => e.user_id === req.user_id,
+    );
+    const notes = Promise.all(
+      roots.map((root) => this.noteRepository.findDescendantsTree(root)),
+    );
+    console.log(await notes);
+    return await notes;
+    // return await this.noteRepository.find({
+    //   select: {
+    //     id: true,
+    //     title: true,
+    //     childNotes: {
+    //       id: true,
+    //       title: true,
+    //     },
+    //     parent_id: true,
+    //     // parentNote: { id: true }
+    //   },
+    //   where: { user: { id: Equal(req.user_id) } },
+    //   order: {
+    //     created_at: 'ASC',
+    //   },
+    //   relations: {
+    //     // user: true,
+    //     childNotes: {
+    //       childNotes: true,
+    //     },
+    //   },
+    // });
     // return this.noteRepository.find(); //Display without relations
   }
 
@@ -75,6 +93,10 @@ export class NoteService {
           id: true,
           title: true,
         },
+        parentNote: {
+          id: true,
+          title: true,
+        },
         parent_id: true,
         is_favorited: true,
         is_pinned: true,
@@ -85,6 +107,7 @@ export class NoteService {
         headlinks: true,
         backlinks: true,
         tags: true,
+        parentNote: true,
       },
     });
     // return this.noteRepository.findOneBy({ id }); //Display without relations
@@ -190,12 +213,13 @@ export class NoteService {
     return await queryBuilder
       .leftJoin('note.image_contents', 'image_content')
       .leftJoin('note.tags', 'tags')
-      .select([
-        'note.id AS id',
+      .select('DISTINCT note.id AS id')
+      .addSelect([
         'note.title AS title',
         'note.created_at AS created_at',
         'note.updated_at AS updated_at',
       ])
+      .distinct(true)
       .getRawMany();
   }
 
@@ -296,11 +320,12 @@ export class NoteService {
   }
 
   async importNote(files, req) {
+    const data = JSON.parse(req.body.data);
     const newNote: CreateNoteDto = {
-      title: 'Untitled',
-      user_id: req.user.id,
+      title: data.title ? data.title : 'Untitled',
+      user_id: data.user_id,
       size: 0,
-      parent_id: req.body.parent_id,
+      parent_id: data.parent_id,
     };
     const note = await this.createNote(newNote);
     await this.updateNote(note.id, files, req).catch((err) => {

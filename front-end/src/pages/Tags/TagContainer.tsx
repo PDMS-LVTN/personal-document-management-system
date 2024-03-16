@@ -51,7 +51,6 @@ const TagContainer = () => {
     const controller = new AbortController();
     const loadData = async () => {
       const { tags } = await getAllTags(controller);
-      // console.log("tags", tags);
       isMounted && setAllTags(tags);
     };
     loadData();
@@ -83,12 +82,14 @@ const TagContainer = () => {
             w="100%"
             pt={3}
             pb={3}
+            pl="2em"
+            pr="2em"
             borderTop={idx == 0 ? "1px" : "0px"}
             borderBottom="1px"
             borderColor="gray.200"
             display="flex"
             justifyContent="flex-start"
-            height="fit-content"
+            height="40px"
             alignItems="center"
             gap={2}
             onClick={() => {

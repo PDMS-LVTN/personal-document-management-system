@@ -1,26 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Notes from "./Notes";
 import useNotes from "../../hooks/useNotes";
 import { useOutletContext } from "react-router-dom";
 import { ContextType } from "../../layouts/TreeAndEditorContainer";
 import { useTags } from "../../hooks/useTags";
-import { useApp } from "../../store/useApp";
+import { Note, useApp } from "../../store/useApp";
 
 function NoteContainer() {
   const { ref } = useOutletContext<ContextType>();
-  const { actions } = useNotes(ref);
+  const { isLoading, actions } = useNotes();
   const { getAllTags } = useTags();
-  const setTree = useApp((state) => state.setTree);
+  const [notes, setNotes] = useState<Note[]>(null);
   const setAllTags = useApp((state) => state.setAllTags);
 
   useEffect(() => {
+    console.log("note container");
     let isMounted = true;
     const controller = new AbortController();
     const loadData = async () => {
-      const notes = await actions.getAllNotes(controller);
+      const notesData: Note[] = await actions.getAllNotes(controller);
       const { tags } = await getAllTags(controller);
       if (isMounted) {
-        setTree(notes);
+        setNotes(notesData);
         setAllTags(tags);
       }
     };
@@ -32,7 +33,16 @@ function NoteContainer() {
     };
   }, []);
 
-  return <Notes editorRef={ref} />;
+  if (!notes) return null;
+
+  return (
+    <Notes
+      editorRef={ref}
+      notes={notes}
+      actions={actions}
+      isLoading={isLoading}
+    />
+  );
 }
 
 export default NoteContainer;

@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import useNotes from "../hooks/useNotes";
 import { ContextType } from "../layouts/TreeAndEditorContainer";
 import { useLocation, useOutletContext } from "react-router";
-import moment from 'moment';
+import moment from "moment";
 
 export const Search = () => {
   const { ref } = useOutletContext<ContextType>();
   const [searchResults, setSearchResults] = useState([]);
-  const { actions } = useNotes(ref);
+  const { actions } = useNotes();
   let location = useLocation();
 
   useEffect(() => {
@@ -36,6 +36,8 @@ export const Search = () => {
               pt={3}
               pb={3}
               mb={2}
+              pl="2em"
+              pr="2em"
               display="flex"
               flexDir="column"
               alignItems="flex-start"
@@ -50,8 +52,12 @@ export const Search = () => {
                 {item.title}
               </Text>
               {/* <Text fontWeight="normal">path</Text> */}
-              <Text fontWeight="normal">Created: {moment(item.created_at).format("L")} </Text>
-              <Text fontWeight="normal">Edited: {moment(item.updated_at).format("L")}</Text>
+              <Text fontWeight="normal">
+                Created: {moment(item.created_at).format("L")}{" "}
+              </Text>
+              <Text fontWeight="normal">
+                Edited: {moment(item.updated_at).format("L")}
+              </Text>
             </Button>
           );
         })

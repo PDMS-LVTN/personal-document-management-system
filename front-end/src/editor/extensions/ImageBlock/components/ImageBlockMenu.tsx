@@ -8,23 +8,21 @@ import { Icon } from "@/editor/components/ui/Icon";
 import { ImageBlockWidth } from "./ImageBlockWidth";
 import { MenuProps } from "@/editor/components/menus/types";
 import { getRenderContainer } from "@/editor/lib/utils";
+import { Button } from "@chakra-ui/react";
 
 export const ImageBlockMenu = ({
   editor,
   appendTo,
-}: MenuProps): JSX.Element => {
+  showModal,
+}: MenuProps & { showModal }): JSX.Element => {
   const menuRef = useRef<HTMLDivElement>(null);
   const tippyInstance = useRef<Instance | null>(null);
 
   const getReferenceClientRect = useCallback(() => {
     const renderContainer = getRenderContainer(editor, "node-imageBlock");
-    // console.log(renderContainer);
     const rect =
       renderContainer?.getBoundingClientRect() ||
       new DOMRect(-1000, -1000, 0, 0);
-
-    // console.log(rect);
-
     return rect;
   }, [editor]);
 
@@ -69,58 +67,91 @@ export const ImageBlockMenu = ({
     [editor]
   );
 
+  const onGetText = useCallback(() => {
+    // TODO: fetch image text
+    let text = `Now I'd like to remove the outline. I tried to add outline={'none'} like the above, but it didn't work. In console I can see that Chakra CSS is always in the highest priority and overrides all other CSS.
+How can I apply this custom CSS to the Tag component? I tried importing a SCSS file, but it's the same, overridden by Chakra default CSS.
+`;
+    showModal("Extracted text", (onClose) => {
+      return (
+        <div className="flex justify-between">
+          <p style={{ width: "80%" }}>{text}</p>
+          <Button
+            onClick={() => {
+              navigator.clipboard.writeText(text);
+              onClose();
+            }}
+          >
+            <Icon name="Copy" />
+          </Button>
+        </div>
+      );
+    });
+  }, [editor]);
+
   return (
-    <BaseBubbleMenu
-      editor={editor}
-      pluginKey={`imageBlockMenu-${uuid()}`}
-      shouldShow={shouldShow}
-      updateDelay={0}
-      tippyOptions={{
-        // hideOnClick: false,
-        offset: [0, 8],
-        popperOptions: {
-          modifiers: [{ name: "flip", enabled: false }],
-        },
-        getReferenceClientRect,
-        onCreate: (instance: Instance) => {
-          tippyInstance.current = instance;
-        },
-        appendTo: () => {
-          return appendTo?.current;
-        },
-        plugins: [sticky],
-        sticky: "popper",
-      }}
-    >
-      <Toolbar.Wrapper shouldShowContent={shouldShow()} ref={menuRef}>
-        <Toolbar.Button
-          tooltip="Align image left"
-          active={editor.isActive("imageBlock", { align: "left" })}
-          onClick={onAlignImageLeft}
-        >
-          <Icon name="AlignHorizontalDistributeStart" />
-        </Toolbar.Button>
-        <Toolbar.Button
-          tooltip="Align image center"
-          active={editor.isActive("imageBlock", { align: "center" })}
-          onClick={onAlignImageCenter}
-        >
-          <Icon name="AlignHorizontalDistributeCenter" />
-        </Toolbar.Button>
-        <Toolbar.Button
-          tooltip="Align image right"
-          active={editor.isActive("imageBlock", { align: "right" })}
-          onClick={onAlignImageRight}
-        >
-          <Icon name="AlignHorizontalDistributeEnd" />
-        </Toolbar.Button>
-        <Toolbar.Divider />
-        <ImageBlockWidth
-          onChange={onWidthChange}
-          value={parseInt(editor.getAttributes("imageBlock").width)}
-        />
-      </Toolbar.Wrapper>
-    </BaseBubbleMenu>
+    <>
+      <BaseBubbleMenu
+        editor={editor}
+        pluginKey={`imageBlockMenu-${uuid()}`}
+        shouldShow={shouldShow}
+        updateDelay={0}
+        tippyOptions={{
+          offset: [0, 8],
+          popperOptions: {
+            modifiers: [{ name: "flip", enabled: false }],
+          },
+          getReferenceClientRect,
+          onCreate: (instance: Instance) => {
+            tippyInstance.current = instance;
+          },
+          appendTo: () => {
+            return appendTo?.current;
+          },
+          plugins: [sticky],
+          sticky: "popper",
+        }}
+      >
+        <Toolbar.Wrapper shouldShowContent={shouldShow()} ref={menuRef}>
+          <Toolbar.Button
+            tooltip="Align image left"
+            active={editor.isActive("imageBlock", { align: "left" })}
+            onClick={onAlignImageLeft}
+          >
+            <Icon name="AlignHorizontalDistributeStart" />
+          </Toolbar.Button>
+          <Toolbar.Button
+            tooltip="Align image center"
+            active={editor.isActive("imageBlock", { align: "center" })}
+            onClick={onAlignImageCenter}
+          >
+            <Icon name="AlignHorizontalDistributeCenter" />
+          </Toolbar.Button>
+          <Toolbar.Button
+            tooltip="Align image right"
+            active={editor.isActive("imageBlock", { align: "right" })}
+            onClick={onAlignImageRight}
+          >
+            <Icon name="AlignHorizontalDistributeEnd" />
+          </Toolbar.Button>
+          <Toolbar.Divider />
+          <ImageBlockWidth
+            onChange={onWidthChange}
+            value={parseInt(editor.getAttributes("imageBlock").width)}
+          />
+          <Toolbar.Divider />
+          <Toolbar.Button
+            tooltip="Copy text"
+            onClick={onGetText}
+            // disabled={editor
+            //   .getAttributes("imageBlock")
+            //   .src?.includes(`${import.meta.env.VITE_CLIENT_PATH}`)}
+          >
+            <Icon name="ClipboardType" />
+          </Toolbar.Button>
+        </Toolbar.Wrapper>
+      </BaseBubbleMenu>
+    </>
   );
 };
 

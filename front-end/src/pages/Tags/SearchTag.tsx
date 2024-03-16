@@ -25,15 +25,15 @@ const SearchTag = ({ renderResults }) => {
   };
   return (
     <>
-      <InputGroup mb={4}>
-        <InputLeftElement pointerEvents="none">
+      <InputGroup pl="2em" pr="2em" mb={4} w="100%">
+        <InputLeftElement pointerEvents="none" ml="2em">
           <IoSearch size="24px" color="var(--brand400)" />
         </InputLeftElement>
         <Input
+          m={0}
           value={keyword}
           onChange={handleInputOnchange}
           placeholder="Search your tag"
-          size="lg"
         />
       </InputGroup>
 

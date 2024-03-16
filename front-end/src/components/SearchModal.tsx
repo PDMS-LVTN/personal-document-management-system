@@ -13,13 +13,13 @@ import { useCallback, useEffect, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import useNotes from "../hooks/useNotes";
 import { useNavigate } from "react-router";
-import moment from 'moment';
+import moment from "moment";
 
 const SearchModal = ({ editorRef, close }) => {
   const [keyword, setKeyword] = useState("");
   const [results, setResults] = useState([]);
   const [recentNotes, setRecentNotes] = useState([]);
-  const { isLoading, actions } = useNotes(editorRef);
+  const { isLoading, actions } = useNotes();
   const navigate = useNavigate();
 
   const renderResults = (notes) => {
