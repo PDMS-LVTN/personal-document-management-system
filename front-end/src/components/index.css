@@ -21,3 +21,8 @@
   left: -2em;
   top: 5%;
 }
+
+.form-label {
+  width: 24%;
+  font-weight: bold !important;
+}

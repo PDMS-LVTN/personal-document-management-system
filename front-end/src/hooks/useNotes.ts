@@ -219,7 +219,7 @@ const useNotes = () => {
     });
     temp.waitingImages.push(newFile);
     return group[0].replace(/src="[^"]+"/, `src="${url}"`);
-  }
+  };
 
   const importNote = async (parentId, file) => {
     setLoading(true);
@@ -243,52 +243,75 @@ const useNotes = () => {
           }
         );
         console.log(tempState.content)
+        const formData = new FormData();
+        // Append each of the files
+        tempState.waitingImages.forEach((file) => {
+          formData.append("files[]", file);
+        });
+        formData.append(
+          "data",
+          JSON.stringify({
+            user_id: auth.id,
+            title: title,
+            content: tempState.content,
+            read_only: false,
+            size: 0,
+            parent_id: parentId,
+          })
+        );
+        try {
+          const response = await axiosJWT.post(`note/import`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          const currentNote = {
+            id: response.data.id,
+            title: title,
+            content: response.data.content,
+            parent_id: response.data.parent_id,
+            is_favorited: false,
+            is_pinned: false,
+          };
+          setCurrentNote(currentNote);
+          window.editor.commands.setContent(tempState.content);
+          setLoading(false);
+          return currentNote;
+        } catch (error) {
+          setLoading(false);
+          if (error.response?.status === 403 || error.response?.status === 401) {
+            setAuth(undefined);
+            clean();
+          }
+        }
       })
       .catch(function (error) {
         console.error(error);
       });
-    const formData = new FormData();
-    // Append each of the files
-    tempState.waitingImages.forEach((file) => {
-      formData.append("files[]", file);
-    });
-    formData.append(
-      "data",
-      JSON.stringify({
-        user_id: auth.id,
-        title: title,
-        content: tempState.content,
-        read_only: false,
-        size: 0,
-        parent_id: parentId,
-      })
-    );
-    try {
-      const response = await axiosJWT.post(`note/import`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      const currentNote = {
-        id: response.data.id,
-        title: title,
-        content: response.data.content,
-        parent_id: response.data.parent_id,
-        is_favorited: false,
-        is_pinned: false,
-      };
-      setCurrentNote(currentNote);
-      window.editor.commands.setContent(tempState.content);
-      setLoading(false);
-      return currentNote;
-    } catch (error) {
-      setLoading(false);
-      if (error.response?.status === 403 || error.response?.status === 401) {
-        setAuth(undefined);
-        clean();
-      }
-    }
+    
   };
 
-  return { isLoading, actions: { createNote, updateNote, deleteNote, getAllNotes, getANote, clickANoteHandler, handleSearch, importNote } }
+  const handelFilterNotes = async (formValue) => {
+    const tags = formValue.tags.map((tag) => {
+      return tag.id;
+    });
+    // formValue.tags = tags
+    // formValue.sortBy = formValue.sortBy.value
+    console.log(2, formValue);
+    setLoading(true);
+    const options = {
+      method: "POST",
+      data: {
+        ...formValue,
+        tags: tags,
+        sortBy: formValue.sortBy.value,
+        user_id: auth.id,
+      },
+    }
+    const { responseData } = await callApi(APIEndPoints.FILTER, options)
+    setLoading(false)
+    return responseData
+  };
+
+  return { isLoading, actions: { createNote, updateNote, deleteNote, getAllNotes, getANote, clickANoteHandler, handleSearch, importNote, handelFilterNotes } }
 }
 
 export default useNotes;

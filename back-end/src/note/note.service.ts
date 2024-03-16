@@ -138,24 +138,24 @@ export class NoteService {
 
     queryBuilder.where('note.user_id = :user_id', { user_id: req.user_id });
 
-    if (req.created_date_from && req.created_date_to) {
-      const currentDate = new Date(req.created_date_to);
+    if (req.createdTimeFrom && req.createdTimeTo) {
+      const currentDate = new Date(req.createdTimeTo);
       const nextDate = new Date(currentDate);
       nextDate.setDate(currentDate.getDate() + 1);
       console.log(nextDate);
       queryBuilder.andWhere(`note.created_at BETWEEN :from AND :to`, {
-        from: req.created_date_from + ' 00:00:00',
+        from: req.createdTimeFrom + ' 00:00:00',
         to: nextDate,
       });
     }
 
-    if (req.updated_date_from && req.updated_date_to) {
-      const currentDate = new Date(req.updated_date_to);
+    if (req.updatedTimeFrom && req.updatedTimeTo) {
+      const currentDate = new Date(req.updatedTimeTo);
       const nextDate = new Date(currentDate);
       nextDate.setDate(currentDate.getDate() + 1);
       console.log(nextDate);
       queryBuilder.andWhere(`note.updated_at BETWEEN :from AND :to`, {
-        from: req.updated_date_from + ' 00:00:00',
+        from: req.updatedTimeFrom + ' 00:00:00',
         to: nextDate,
       });
     }
@@ -171,39 +171,39 @@ export class NoteService {
         .having('COUNT(tags.id) = :count', { count: tagsLength });
     }
 
-    if (req.sort_by) {
-      req.sort_by === 'CreatedNewest' &&
+    if (req.sortBy) {
+      req.sortBy === 'CreatedNewest' &&
         queryBuilder.orderBy('note.' + 'created_at', 'DESC');
-      req.sort_by == 'CreatedOldest' &&
+      req.sortBy == 'CreatedOldest' &&
         queryBuilder.orderBy('note.' + 'created_at', 'ASC');
-      req.sort_by == 'UpdatedNewest' &&
+      req.sortBy == 'UpdatedNewest' &&
         queryBuilder.orderBy('note.' + 'updated_at', 'DESC');
-      req.sort_by == 'UpdatedOldest' &&
+      req.sortBy == 'UpdatedOldest' &&
         queryBuilder.orderBy('note.' + 'updated_at', 'ASC');
     }
 
-    if (req.key_word) {
-      if (req.title_only) {
+    if (req.keyword) {
+      if (req.onlyTitle) {
         queryBuilder.andWhere(
-          `MATCH(note.title) AGAINST ('"${req.key_word}"' IN BOOLEAN MODE)`,
+          `MATCH(note.title) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
         );
       } else {
         queryBuilder.andWhere(
           new Brackets((qb) => {
             qb.where(
-              `MATCH(note.title) AGAINST ('"${req.key_word}"' IN BOOLEAN MODE)`,
+              `MATCH(note.title) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
             )
               .orWhere(
                 new Brackets((qb) => {
                   qb.where(
-                    `note.content REGEXP '>([^<]*)${req.key_word}([^>]*)<'`,
+                    `note.content REGEXP '>([^<]*)${req.keyword}([^>]*)<'`,
                   ).andWhere(
-                    `MATCH(note.content) AGAINST ('"${req.key_word}"' IN BOOLEAN MODE)`,
+                    `MATCH(note.content) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
                   );
                 }),
               )
               .orWhere(
-                `MATCH(image_content.content) AGAINST ('"${req.key_word}"' IN BOOLEAN MODE)`,
+                `MATCH(image_content.content) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
               );
           }),
         );
@@ -237,7 +237,7 @@ export class NoteService {
           ).orWhere(
             new Brackets((qb) => {
               qb.where(
-                `note.content REGEXP '>([^<]*)${searchQuery}([^>]*)<'`,
+                `note.content REGEXP BINARY '>([^<]*)${searchQuery}([^>]*)<' COLLATE utf8_general_ci;`,
               ).andWhere(
                 `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
               );

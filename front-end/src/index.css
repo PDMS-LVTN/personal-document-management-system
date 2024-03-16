@@ -170,3 +170,7 @@
   border-top: #ccb8fd solid 1px;
   border-bottom: #ccb8fd solid 1px;
 }
+
+*{
+  font-size: 14px;
+}
