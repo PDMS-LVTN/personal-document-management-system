@@ -51,6 +51,7 @@ class ConfigService {
 
       ssl: this.isProduction(),
       synchronize: false,
+      charset: 'utf8mb4',
     };
   }
 
@@ -67,6 +68,7 @@ class ConfigService {
       migrationsTableName: 'migration',
       migrations: ['./migrations/*.ts'],
       ssl: this.isProduction(),
+      charset: 'utf8mb4',
     };
   }
 }
