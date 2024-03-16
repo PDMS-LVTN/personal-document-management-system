@@ -12,8 +12,8 @@ const style = {
   dark: {
     background: "#7540EE",
     color: "black",
-    size: "md",
-    logoSize: "40px",
+    size: "14px",
+    logoSize: "25px",
     gap: "5px",
   },
 };
@@ -21,15 +21,16 @@ const style = {
 function Logo({ type = "light" }) {
   return (
     <Box
-      style={{ display: "flex", gap: style[type].gap, alignItems: "center" }}
+      style={{ display: "flex", gap: style[type].gap, alignItems: "center", justifyContent: "center" }}
       p="1em"
       pos="relative"
       zIndex="2"
+
     >
       <Box
-        p="2px"
+        p="4px"
         border="4px solid white"
-        borderRadius="16px"
+        borderRadius="10px"
         bg={style[type].background}
       >
         <object
@@ -41,9 +42,9 @@ function Logo({ type = "light" }) {
       <Text
         fontSize={style[type]?.size}
         color={style[type]?.color}
-        fontWeight="semibold"
+        fontWeight="800"
       >
-        SELF-NOTE
+        SELFNOTE
       </Text>
     </Box>
   );

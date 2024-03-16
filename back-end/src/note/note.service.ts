@@ -143,8 +143,13 @@ export class NoteService {
 
   async filterNote(req) {
     const queryBuilder = await this.noteRepository.createQueryBuilder('note');
+    console.log(req)
 
-    queryBuilder.where('note.user_id = :user_id', { user_id: req.user_id });
+    queryBuilder
+    .where('note.user_id = :user_id', { user_id: req.user_id })
+      .andWhere('note.is_favorited  = :is_favorited', {
+        is_favorited: req.isFavorite,
+      });
 
     if (req.createdTimeFrom && req.createdTimeTo) {
       const currentDate = new Date(req.createdTimeTo);
@@ -245,7 +250,7 @@ export class NoteService {
           ).orWhere(
             new Brackets((qb) => {
               qb.where(
-                `note.content REGEXP BINARY '>([^<]*)${searchQuery}([^>]*)<' COLLATE utf8_general_ci;`,
+                `note.content REGEXP '>([^<]*)${req.keyword}([^>]*)<'`,
               ).andWhere(
                 `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
               );

@@ -41,15 +41,22 @@ const SearchModal = ({ editorRef, close }) => {
             close();
           }}
         >
-          <Text fontWeight="bold" fontSize="lg" mb={2}>
+          <Text
+            width="100%"
+            fontWeight="bold"
+            mb={1}
+            fontSize={13}
+            className="line-clamp-1"
+            textAlign="left"
+          >
             {item.title}
           </Text>
           {/* <Text fontWeight="normal">path</Text> */}
-          <Text fontWeight="normal">
+          <Text fontWeight="normal" fontSize={12}>
             Created: {moment(item.created_at).format("YYYY-MM-DD HH:mm:ss")}
           </Text>
-          <Text fontWeight="normal">
-            Edited: {moment(item.updated_at).format("YYYY-MM-DD HH:mm:ss")}
+          <Text fontWeight="normal" fontSize={12}>
+            Updated: {moment(item.updated_at).format("YYYY-MM-DD HH:mm:ss")}
           </Text>
         </Button>
       );

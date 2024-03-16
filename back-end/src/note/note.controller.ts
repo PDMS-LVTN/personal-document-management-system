@@ -65,6 +65,7 @@ export class NoteController {
       createdTimeTo?: Date;
       updatedTimeFrom?: Date;
       updatedTimeTo?: Date;
+      isFavorite: Boolean;
     },
   ) {
     return this.noteService.filterNote(req);
