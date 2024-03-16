@@ -22,7 +22,7 @@ import { IoSearch } from "react-icons/io5";
 import { useTree } from "@/hooks/useTree";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
 import { NodeApi } from "react-arborist";
-
+import SearchFilter from "@/components/SearchFilter";
 declare global {
   interface Window {
     note_tree: TreeApi<Note> | null;
@@ -64,7 +64,7 @@ const Notes = ({
 
   const handleInputChange = async (e) => {
     const res = await actions.importNote(null, e.target.files[0]);
-    treeRef.current.create({
+    res && treeRef.current.create({
       type: "internal",
       parentId: 'null' + ',' + res.id + ',' + res.title,
       index: treeRef.current.root.children?.length,
@@ -87,7 +87,7 @@ const Notes = ({
     window.note_tree = treeRef.current;
   }, []);
 
-  const { onClose } = useDisclosure();
+  const { onOpen, isOpen, onClose } = useDisclosure();
 
   return (
     <>
@@ -113,6 +113,14 @@ const Notes = ({
           </ModalBody>
         </ModalContent>
       </Modal>
+      <Modal isOpen={isOpen} onClose={onClose} size="5xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalBody>
+            <SearchFilter editorRef={null} close={onClose} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
       <Flex justify="space-between" mb="1em" pl="2em" pr="2em" id="notes">
         <Text fontSize="2xl" fontWeight="600">
           Notes
@@ -127,6 +135,7 @@ const Notes = ({
               padding: "7px",
               borderRadius: "50%",
             }}
+            onClick={onOpen}
           >
             <img src={ToolsIcon} alt="tools" />
           </Button>
@@ -167,7 +176,7 @@ const Notes = ({
                     maxWidth: "200px",
                     cursor: "pointer",
                   }}
-                  accept=".docx, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  accept=".docx"
                   type="file"
                   className="upload-file"
                   name="upload_file"

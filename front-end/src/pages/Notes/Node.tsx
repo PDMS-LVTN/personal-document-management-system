@@ -42,7 +42,7 @@ const Node = ({
 
   const handleInputChange = async (e) => {
     const res = await actions.importNote(node.id, e.target.files[0]);
-    tree.create({
+    res && tree.create({
       type: "internal",
       parentId: node.id +','+ res.id + ','+ res.title,
       index: node.childIndex + 1,
@@ -98,7 +98,7 @@ const Node = ({
           <>
             <span className="arrow"></span>
             <span className="mr-5">
-              <AiFillFile color="#6bc7f6" size="24px" />
+              <AiFillFile color="var(--brand300)" size="24px" />
             </span>
           </>
         ) : (
@@ -107,7 +107,7 @@ const Node = ({
               {node.isOpen ? <RxCaretDown /> : <RxCaretRight />}
             </span>
             <span className="mr-5">
-              <FaFileCirclePlus color="#f6cf60" size="24px" />
+              <FaFileCirclePlus color="var(--brand600)" size="24px" />
             </span>
           </>
         )}

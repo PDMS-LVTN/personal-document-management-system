@@ -160,7 +160,7 @@ function EditorContainer({ editorRef }) {
     }
 
     const content = editorRef.current.firstChild;
-    console.log(content);
+    console.log(content.textContent);
     console.log(doc.getFontList());
 
     await doc.html(content, {
@@ -168,8 +168,8 @@ function EditorContainer({ editorRef }) {
         await doc.save(`${currentNote.title}.pdf`);
       },
       autoPaging: "text",
-      margin: [20, 0, 20, 20],
-      html2canvas: { scale: 0.25 },
+      margin: [16, 0, 20, 18],
+      html2canvas: { scale: 0.24 },
     });
     setLoadingExport(false);
   };

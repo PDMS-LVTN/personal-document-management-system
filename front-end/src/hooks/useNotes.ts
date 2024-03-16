@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { useApp } from "../store/useApp";
 import useAxiosJWT from "./useAxiosJWT";
 import { useToast } from "@chakra-ui/react";
 import { useAuthentication } from "../store/useAuth";
 import { APIEndPoints } from "../api/endpoint";
-import { tempState } from '@/editor/lib/api';
+import { tempState } from "@/editor/lib/api";
 import { useApi } from "./useApi";
 import { convertToHtml } from "mammoth";
 
@@ -24,18 +23,18 @@ const useNotes = () => {
   const currentNote = useApp((state) => state.currentNote);
   const setCurrentTags = useApp((state) => state.setCurrentTags);
 
-  const callApi = useApi()
+  const callApi = useApi();
 
   // const { getAllTags } = useTags()
 
   const createNote = async (id: string, title?: string) => {
-    const initialContent = '<p>Start writing your notes</p>'
+    const initialContent = "<p>Start writing your notes</p>";
     try {
       const response = await axiosJWT.post(
         APIEndPoints.CREATE_NOTE,
         JSON.stringify({
           user_id: auth.id,
-          title: title || 'Untitled',
+          title: title || "Untitled",
           content: initialContent,
           read_only: false,
           size: 0,
@@ -45,7 +44,7 @@ const useNotes = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log(response.data)
+      console.log(response.data);
       const currentNote = {
         id: response.data.id,
         title: response.data.title,
@@ -56,7 +55,7 @@ const useNotes = () => {
       };
       setCurrentNote(currentNote);
       // ref?.current?.setMarkdown(markdown);
-      window.editor?.commands.setContent(response.data.content)
+      window.editor?.commands.setContent(response.data.content);
       return currentNote;
     } catch (error) {
       console.log(error);
@@ -65,12 +64,12 @@ const useNotes = () => {
         clean();
       }
     }
-  }
+  };
 
   const updateNote = async () => {
     setLoading(true);
     console.log(tempState.waitingImage);
-    const editorContent = window.editor.getHTML()
+    const editorContent = window.editor.getHTML();
     const formData = new FormData();
     // Append each of the files
     tempState.waitingImage.forEach((file) => {
@@ -108,14 +107,14 @@ const useNotes = () => {
       });
       setLoading(false);
     }
-  }
+  };
 
   const deleteNote = async (id) => {
     try {
       await axiosJWT.delete(`note/${id}`, {
         headers: { "Content-Type": "application/json" },
       });
-      setCurrentNote(null)
+      setCurrentNote(null);
       toast({
         title: `Your note has been deleted.`,
         status: "success",
@@ -141,28 +140,28 @@ const useNotes = () => {
         }
       );
       console.log(response.data);
-      setLoading(false)
-      return response.data
+      setLoading(false);
+      return response.data;
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       if (error.response?.status === 403 || error.response?.status === 401) {
         setAuth(undefined);
         clean();
       }
     }
-  }
+  };
 
   const getANote = async (id) => {
     const options = {
       method: "GET",
-    }
-    const { responseData } = await callApi(`note/${id}`, options)
-    return responseData
-  }
+    };
+    const { responseData } = await callApi(`note/${id}`, options);
+    return responseData;
+  };
 
   const clickANoteHandler = async (id) => {
-    const noteItem = await getANote(id)
-    console.log(noteItem)
+    const noteItem = await getANote(id);
+    console.log(noteItem);
     setCurrentNote({
       title: noteItem?.title,
       id: noteItem?.id,
@@ -173,37 +172,44 @@ const useNotes = () => {
     });
     const tags = noteItem.tags.map((tag) => {
       return { value: tag.description, label: tag.description, id: tag.id };
-    })
-    console.log('current_tag', tags);
+    });
+    console.log("current_tag", tags);
     setCurrentTags(tags);
     // ref?.current?.setMarkdown(noteItem.content);
-    window.editor?.commands.setContent(noteItem.content)
+    window.editor?.commands.setContent(noteItem.content);
     return noteItem;
-  }
-
-  const handleSearch = async (keyword) => {
-    setLoading(true)
-    const options = {
-      method: "POST",
-      data: { user_id: auth.id, keyword: keyword }
-    }
-    const { responseData } = await callApi(APIEndPoints.SEARCH, options)
-    setLoading(false)
-    return responseData
   };
 
-  async function replaceAsync(string: string, regexp: RegExp, replacerFunction, tempState) {
+  const handleSearch = async (keyword) => {
+    setLoading(true);
+    const options = {
+      method: "POST",
+      data: { user_id: auth.id, keyword: keyword },
+    };
+    const { responseData } = await callApi(APIEndPoints.SEARCH, options);
+    setLoading(false);
+    return responseData;
+  };
+
+  async function replaceAsync(
+    string: string,
+    regexp: RegExp,
+    replacerFunction,
+    tempState
+  ) {
     const replacements = await Promise.all(
-      Array.from(string.matchAll(regexp),
-        match => replacerFunction(tempState, ...match)));
+      Array.from(string.matchAll(regexp), (match) =>
+        replacerFunction(tempState, ...match)
+      )
+    );
     let i = 0;
-    console.log(replacements)
+    console.log(replacements);
     return string.replace(regexp, () => replacements[i++]);
   }
 
   async function replaceImageTag(temp, ...group) {
-    const src = group[1]
-    console.log(src)
+    const src = group[1];
+    console.log(src);
     const response = await fetch(src);
     const blob = await response.blob();
     const type = src.substring(5, src.indexOf(";"));
@@ -223,30 +229,37 @@ const useNotes = () => {
 
   const importNote = async (parentId, file) => {
     setLoading(true);
-    let title = file.name.substring(0, file.name.indexOf('.'))
+    let title = file.name.substring(0, file.name.indexOf("."));
     const tempState = { waitingImages: [], content: "" };
-    await convertToHtml({ arrayBuffer: file })
-      .then(async function (result) {
-        tempState.content = result.value;
+    try {
+      const result = await convertToHtml({ arrayBuffer: file });
+      tempState.content = result.value;
 
-        const regex = "<img[^>]*?src=\"([^>]+)\"[^>]*>"
-        const regexp = new RegExp(regex, 'g')
-        const sourceReplacedContent = await replaceAsync(tempState.content, regexp, replaceImageTag, tempState)
-        tempState.content = sourceReplacedContent
+      const regex = '<img[^>]*?src="([^>]+)"[^>]*>';
+      const regexp = new RegExp(regex, "g");
+      const sourceReplacedContent = await replaceAsync(
+        tempState.content,
+        regexp,
+        replaceImageTag,
+        tempState
+      );
+      tempState.content = sourceReplacedContent;
 
-        tempState.content = tempState.content.replace(
-          // /<p\b[^>]*>(<strong>|<i>|<em>|<u>)*(<img\b[^>]*>)(<\/strong>|<\/i>|<\/em>|<\/u>)*<\/p>/g,
-          /<p[^>]*>([^\/]*?)(<img[^>]*?src="([^>]+)"[^>]*>).*?<\/p>/g,
-          (...match) => {
-            console.log(match[1])
-            return match[2]
-          }
-        );
-        console.log(tempState.content)
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+      tempState.content = tempState.content.replace(
+        // /<p\b[^>]*>(<strong>|<i>|<em>|<u>)*(<img\b[^>]*>)(<\/strong>|<\/i>|<\/em>|<\/u>)*<\/p>/g,
+        /<p[^>]*>([^\/]*?)(<img[^>]*?src="([^>]+)"[^>]*>).*?<\/p>/g,
+        (...match) => {
+          console.log(match[1]);
+          return match[2];
+        }
+      );
+      console.log(tempState.content);
+    } catch (error) {
+      setLoading(false);
+      console.error(error);
+      return;
+    }
+
     const formData = new FormData();
     // Append each of the files
     tempState.waitingImages.forEach((file) => {
@@ -278,6 +291,7 @@ const useNotes = () => {
       setCurrentNote(currentNote);
       window.editor.commands.setContent(tempState.content);
       setLoading(false);
+      console.log(currentNote);
       return currentNote;
     } catch (error) {
       setLoading(false);
@@ -288,10 +302,42 @@ const useNotes = () => {
     }
   };
 
-  return { isLoading, actions: { createNote, updateNote, deleteNote, getAllNotes, getANote, clickANoteHandler, handleSearch, importNote } }
-}
+  const handelFilterNotes = async (formValue) => {
+    const tags = formValue.tags.map((tag) => {
+      return tag.id;
+    });
+    // formValue.tags = tags
+    // formValue.sortBy = formValue.sortBy.value
+    console.log(2, formValue);
+    setLoading(true);
+    const options = {
+      method: "POST",
+      data: {
+        ...formValue,
+        tags: tags,
+        sortBy: formValue.sortBy.value,
+        user_id: auth.id,
+      },
+    };
+    const { responseData } = await callApi(APIEndPoints.FILTER, options);
+    setLoading(false);
+    return responseData;
+  };
+
+  return {
+    isLoading,
+    actions: {
+      createNote,
+      updateNote,
+      deleteNote,
+      getAllNotes,
+      getANote,
+      clickANoteHandler,
+      handleSearch,
+      importNote,
+      handelFilterNotes,
+    },
+  };
+};
 
 export default useNotes;
-
-
-

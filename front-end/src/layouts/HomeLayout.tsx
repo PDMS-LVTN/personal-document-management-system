@@ -41,7 +41,7 @@ function HomeLayout() {
       gap="2px"
       bg="#E9E9E9"
     >
-      <GridItem rowSpan={1} colSpan={1} bg="white" id="logo-grid-item">
+      <GridItem display={'flex'} rowSpan={1} colSpan={1} bg="white" id="logo-grid-item">
         <Logo type="dark" />
       </GridItem>
       <GridItem
@@ -81,23 +81,25 @@ function HomeLayout() {
         bg="white"
         display="flex"
         alignItems="center"
-        justifyContent="space-between"
+        justifyContent={currentNote?"space-between":"flex-end"}
         pr="2em"
         pl="2em"
         gap="1em"
         id="info-grid-item"
       >
-        <Flex justifyContent="left" alignItems="center" gap="1em">
+        {/* <Flex justifyContent="left" alignItems="center" gap="1em"> */}
           {currentNote && (
             <Input
               variant="outline"
+              maxWidth="60%"
               value={currentNote ? currentNote.title : ""}
+              border={0}
               onChange={(e) => {
                 setCurrentNote({ ...currentNote, title: e.target.value });
               }}
             />
           )}
-        </Flex>
+        {/* </Flex> */}
         <Flex justifyContent="right" alignItems="center" gap="1em">
           <p>{auth.email}</p>
           <Button
