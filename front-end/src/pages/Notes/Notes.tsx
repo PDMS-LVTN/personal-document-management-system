@@ -166,6 +166,7 @@ const Notes = ({
                 padding: "7px",
                 borderRadius: "50%",
               }}
+              onClick={onOpen}
             >
               <SlidersHorizontal color="var(--brand400)" />
             </Button>
