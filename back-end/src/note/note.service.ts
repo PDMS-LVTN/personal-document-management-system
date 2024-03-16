@@ -64,31 +64,7 @@ export class NoteService {
     const notes = Promise.all(
       roots.map((root) => this.noteRepository.findDescendantsTree(root)),
     );
-    console.log(await notes);
     return await notes;
-    // return await this.noteRepository.find({
-    //   select: {
-    //     id: true,
-    //     title: true,
-    //     childNotes: {
-    //       id: true,
-    //       title: true,
-    //     },
-    //     parent_id: true,
-    //     // parentNote: { id: true }
-    //   },
-    //   where: { user: { id: Equal(req.user_id) } },
-    //   order: {
-    //     created_at: 'ASC',
-    //   },
-    //   relations: {
-    //     // user: true,
-    //     childNotes: {
-    //       childNotes: true,
-    //     },
-    //   },
-    // });
-    // return this.noteRepository.find(); //Display without relations
   }
 
   async findOneNote(id: string) {
@@ -122,13 +98,17 @@ export class NoteService {
   }
 
   async findFavoritedNote(req: { user_id: string }) {
-    return await this.noteRepository.find({
+    const roots = await this.noteRepository.find({
       select: {
         id: true,
         title: true,
       },
       where: { user_id: Equal(req.user_id), is_favorited: true },
     });
+    const notes = Promise.all(
+      roots.map((root) => this.noteRepository.findDescendantsTree(root)),
+    );
+    return await notes;
   }
 
   async findPinnedNote(req: { user_id: string }) {
@@ -324,6 +304,7 @@ export class NoteService {
     // const note = await this.noteRepository.findOneBy({ id });
     // return await this.noteRepository.remove(note);
     // Method 2:
+
     return await this.noteRepository.delete(id);
   }
 
