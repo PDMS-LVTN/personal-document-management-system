@@ -353,4 +353,21 @@ export class NoteService {
     await this.noteRepository.save(currentNote);
     return await this.findAllNote({ user_id: req.user_id });
   }
+
+  async findAttachmentsOfNote(id: string) {
+    const images = await this.imageContentService
+      .findImagesOfNote({ note_ID: id })
+      .catch((err) => {
+        throw err;
+      });
+    const files = await this.uploadFileService
+      .findFilesOfNote({ note_ID: id })
+      .catch((err) => {
+        throw err;
+      });
+    return {
+      images: images,
+      files: files,
+    };
+  }
 }

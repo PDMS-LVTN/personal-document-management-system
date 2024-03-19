@@ -39,8 +39,8 @@ export class FileUploadService {
     });
   }
 
-  findOneFileUpload(id: number) {
-    return this.fileUploadRepository.findOne({
+  async findOneFileUpload(id: number) {
+    return await this.fileUploadRepository.findOne({
       where: { id: Equal(id) },
       relations: {
         note: true,
@@ -55,5 +55,17 @@ export class FileUploadService {
     // Remove image_content item from database
     const file_upload = await this.fileUploadRepository.findOneBy({ path });
     return await this.fileUploadRepository.remove(file_upload);
+  }
+
+  async findFilesOfNote(req) {
+    return await this.fileUploadRepository.find({
+      select: {
+        id: true,
+        path: true,
+      },
+      where: {
+        note_ID: Equal(req.note_ID),
+      },
+    });
   }
 }

@@ -136,4 +136,9 @@ export class NoteController {
   ) {
     return await this.noteService.moveNote(id, req);
   }
+
+  @Get('attachments/:id')
+  async findAttachmentsOfNote(@Param('id') id: string) {
+    return await this.noteService.findAttachmentsOfNote(id);
+  }
 }
