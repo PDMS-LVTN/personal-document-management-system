@@ -101,10 +101,6 @@ export class NoteService {
           id: true,
           title: true,
         },
-        parentNote: {
-          id: true,
-          title: true,
-        },
         parent_id: true,
         is_favorited: true,
         is_pinned: true,
@@ -115,7 +111,6 @@ export class NoteService {
         headlinks: true,
         backlinks: true,
         tags: true,
-        parentNote: true,
       },
     });
     // return this.noteRepository.findOneBy({ id }); //Display without relations
@@ -348,12 +343,14 @@ export class NoteService {
   }
 
   async moveNote(id, req) {
-    const updateNoteDto: UpdateNoteDto = {
-      parent_id: req.parent_id,
-    };
-    await this.noteRepository.update(id, updateNoteDto).catch((err) => {
-      throw err;
-    });
-    return this.findAllNote({ user_id: req.user_id });
+    const currentNote = await this.findOneNote(id);
+    if (req.parent_id === null) {
+      currentNote.parentNote = null;
+    } else {
+      const parent = await this.findOneNote(req.parent_id);
+      currentNote.parentNote = parent;
+    }
+    await this.noteRepository.save(currentNote);
+    return await this.findAllNote({ user_id: req.user_id });
   }
 }
