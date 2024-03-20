@@ -160,7 +160,6 @@ export class ImageContentService {
   async findImagesOfNote(req) {
     return await this.imageContentRepository.find({
       select: {
-        id: true,
         path: true,
       },
       where: {

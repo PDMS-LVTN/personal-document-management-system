@@ -60,7 +60,6 @@ export class FileUploadService {
   async findFilesOfNote(req) {
     return await this.fileUploadRepository.find({
       select: {
-        id: true,
         path: true,
       },
       where: {
