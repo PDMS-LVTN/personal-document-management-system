@@ -12,7 +12,6 @@
 
   & > * {
     /* @apply mx-auto max-w-3xl; */
-    width: 52rem;
     padding: 0;
     margin: 14px 0 !important;
   }
@@ -50,5 +49,11 @@
 }
 
 .inside-editor {
+  width: 100%;
   padding: 3rem 4rem 0 4rem;
+}
+
+.inside-editor .tiptap {
+  margin: auto;
+  width: 52rem;
 }

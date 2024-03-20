@@ -36,7 +36,7 @@ function HomeLayout() {
   return (
     <Grid
       h="100%"
-      templateRows="80px 1fr"
+      templateRows="60px 1fr"
       templateColumns="repeat(10, 1fr)"
       gap="2px"
       bg="#E9E9E9"
@@ -108,8 +108,8 @@ function HomeLayout() {
               clean();
             }}
             style={{
-              height: "42px",
-              width: "42px",
+              height: "40px",
+              width: "40px",
               padding: "11px",
               background: "var(--brand400)",
               borderRadius: "50%",
