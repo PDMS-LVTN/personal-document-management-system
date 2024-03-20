@@ -14,7 +14,6 @@ import { Note } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImageContent } from '../image_content/entities/image_content.entity';
 import { ImageContentService } from '../image_content/image_content.service';
-import { User } from '../user/entities/user.entity';
 import { Tag } from '../tag/entities/tag.entity';
 import { FileUploadService } from '../file_upload/file_upload.service';
 
@@ -318,19 +317,20 @@ export class NoteService {
     return await this.findOneNote(note.id);
   }
 
-  async moveNote(id, req) {
-    const currentNote = await this.findOneNote(id);
-    if (req.parent_id === null) {
-      currentNote.parentNote = null;
-    } else {
-      const parent = await this.noteRepository.findOne({
+  async moveNote(req) {
+    let parentNote = null;
+    if (req.parent_id) {
+      parentNote = await this.noteRepository.findOne({
         where: {
           id: Equal(req.parent_id),
         },
       });
-      currentNote.parentNote = parent;
     }
-    await this.noteRepository.save(currentNote);
+    req.note_id_list.map(async (id) => {
+      const currentNote = await this.findOneNote(id);
+      currentNote.parentNote = parentNote;
+      await this.noteRepository.save(currentNote);
+    });
     return await this.findAllNote({ user_id: req.user_id });
   }
 

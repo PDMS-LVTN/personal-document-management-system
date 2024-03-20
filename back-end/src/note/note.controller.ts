@@ -76,6 +76,18 @@ export class NoteController {
     return this.noteService.searchNote(req);
   }
 
+  @Patch('move_note')
+  async moveNote(
+    @Body()
+    req: {
+      note_id_list: Array<string>;
+      parent_id: string;
+      user_id: string;
+    },
+  ) {
+    return await this.noteService.moveNote(req);
+  }
+
   @Patch(':id')
   @UseInterceptors(
     FilesInterceptor('files[]', 20, {
@@ -127,14 +139,6 @@ export class NoteController {
   )
   async importNote(@UploadedFiles() files, @Req() req) {
     return await this.noteService.importNote(files, req);
-  }
-
-  @Patch('move_note/:id')
-  async moveNote(
-    @Param('id') id: string,
-    @Body() req: { parent_id: string; user_id: string },
-  ) {
-    return await this.noteService.moveNote(id, req);
   }
 
   @Patch('merge_note/:id')
