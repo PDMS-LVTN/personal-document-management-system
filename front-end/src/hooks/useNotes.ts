@@ -161,17 +161,18 @@ const useNotes = () => {
     return responseData;
   };
 
-  const moveNote = async (id, parentId) => {
+  const moveNote = async (listId, parentId) => {
     try {
       const options = {
         method: "PATCH",
         data: {
+          note_id_list: listId,
           parent_id: parentId,
           user_id: auth.id,
         },
       };
       const response = await callApi(
-        `note/move_note/${id}`,
+        `note/move_note`,
         options
       );
       console.log(response);

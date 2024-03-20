@@ -100,8 +100,8 @@ const Node = ({
         {!node.data.childNotes.length ? (
           <>
             <span className="arrow" style={{width:'16px'}}></span>
-            <span className="mr-5">
-              <AiFillFile color="var(--brand300)" size="24px" />
+            <span className="mr-3">
+              <AiFillFile color="var(--brand300)" size="20px" />
             </span>
           </>
         ) : (
@@ -109,8 +109,8 @@ const Node = ({
             <span className="arrow">
               {node.isOpen ? <RxCaretDown /> : <RxCaretRight />}
             </span>
-            <span className="mr-5">
-              <FaFileCirclePlus color="var(--brand600)" size="24px" />
+            <span className="mr-3">
+              <FaFileCirclePlus color="var(--brand600)" size="20px" />
             </span>
           </>
         )}

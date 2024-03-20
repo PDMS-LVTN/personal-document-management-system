@@ -296,7 +296,7 @@ const Notes = ({
         overscanCount={1}
         onMove={async (args) => {
           controller.onMove(args);
-          await actions.moveNote(args.dragIds[0], args.parentId);
+          await actions.moveNote(args.dragIds, args.parentId);
         }}
         // paddingTop={30}
         paddingBottom={10}

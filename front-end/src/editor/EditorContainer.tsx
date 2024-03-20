@@ -162,7 +162,7 @@ function EditorContainer({ editorRef }) {
     }
 
     const content = editorRef.current.firstChild;
-    console.log(content.textContent);
+    console.log(content);
     console.log(doc.getFontList());
 
     await doc.html(content, {
@@ -352,7 +352,7 @@ function EditorContainer({ editorRef }) {
               shouldWrapChildren={true}
               label="Your note belongs to these tags"
             >
-              <IoMdPricetag size={40} color="var(--brand400)" />
+              <IoMdPricetag size={30} color="var(--brand400)" />
             </Tooltip>
             <FormControl ml={3}>
               <CreatableSelect
