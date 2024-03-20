@@ -51,6 +51,8 @@ interface AppStore {
     setAllTags: (tags) => void
     currentTags: Tag[]
     setCurrentTags: (tags) => void
+    isMerge?: boolean
+    setIsMerge?: (isMerge: boolean) => void
 }
 
 export const useApp = create<AppStore>()(devtools(persist((set) => ({
@@ -78,5 +80,7 @@ export const useApp = create<AppStore>()(devtools(persist((set) => ({
     allTags: [],
     setAllTags: (tags) => set((state) => ({ ...state, allTags: tags })),
     currentTags: [],
-    setCurrentTags: (tags) => set((state) => ({ ...state, currentTags: tags }))
+    setCurrentTags: (tags) => set((state) => ({ ...state, currentTags: tags })),
+    isMerge: false,
+    setIsMerge: (isMerge) => set((state) => ({ ...state, isMerge: isMerge }))
 }), { name: "app store" })))

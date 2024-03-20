@@ -10,7 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-function ConfirmModal({ modalTitle, config, isOpen, confirmDelete, close }) {
+function ConfirmModal({ modalTitle, config, isOpen, confirmDelete, close, action }) {
   return (
     <Modal isOpen={isOpen} onClose={close}>
       <ModalOverlay />
@@ -18,7 +18,7 @@ function ConfirmModal({ modalTitle, config, isOpen, confirmDelete, close }) {
         <ModalHeader>{modalTitle}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text>Are you sure you want to delete "{config || ""}"?</Text>
+          <Text>Are you sure you want to {action} "{config || ""}"?</Text>
           <Text>It will be deleted forever.</Text>
         </ModalBody>
 
@@ -31,7 +31,7 @@ function ConfirmModal({ modalTitle, config, isOpen, confirmDelete, close }) {
               confirmDelete();
             }}
           >
-            Delete
+            {action.charAt(0).toUpperCase() + action.slice(1)}
           </Button>
           <Button variant="ghost" onClick={close}>
             Cancel

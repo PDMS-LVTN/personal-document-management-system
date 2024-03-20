@@ -225,10 +225,13 @@ function EditorContainer({ editorRef }) {
         isOpen={confirmDeleteNote}
         confirmDelete={() => {
           const id = window.note_tree?.focusedNode?.id;
-          if (id) window.note_tree.delete(id);
-          else actions.deleteNote(currentNote.id);
+          if (id) {
+            window.note_tree.delete(id);
+            actions.deleteNote(currentNote.id);
+          }
         }}
         close={handleCloseConfirm}
+        action={"delete"}
       />
       {currentNote && (
         <>
