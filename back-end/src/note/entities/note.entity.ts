@@ -1,3 +1,4 @@
+import { FileUpload } from '../../file_upload/entities/file_upload.entity';
 import { ImageContent } from '../../image_content/entities/image_content.entity';
 import { Tag } from '../../tag/entities/tag.entity';
 import { User } from '../../user/entities/user.entity';
@@ -123,4 +124,11 @@ export class Note {
     nullable: true,
   })
   image_contents?: ImageContent[];
+
+  @OneToMany(() => FileUpload, (file_upload) => file_upload.note, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    nullable: true,
+  })
+  file_uploads?: FileUpload[];
 }

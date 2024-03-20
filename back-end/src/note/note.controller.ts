@@ -137,6 +137,14 @@ export class NoteController {
     return await this.noteService.moveNote(id, req);
   }
 
+  @Patch('merge_note/:id')
+  async mergeNote(
+    @Param('id') id: string,
+    @Body() req: { merged_note_id: string },
+  ) {
+    return await this.noteService.mergeNote(id, req);
+  }
+
   @Get('attachments/:id')
   async findAttachmentsOfNote(@Param('id') id: string) {
     return await this.noteService.findAttachmentsOfNote(id);
