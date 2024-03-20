@@ -19,6 +19,7 @@ import { Tag } from '../tag/entities/tag.entity';
 import { FileUploadService } from '../file_upload/file_upload.service';
 import { title } from 'process';
 import { format } from 'path';
+import { log } from 'console';
 
 require('dotenv').config();
 
@@ -66,28 +67,6 @@ export class NoteService {
     );
     console.log(await notes);
     return await notes;
-    // return await this.noteRepository.find({
-    //   select: {
-    //     id: true,
-    //     title: true,
-    //     childNotes: {
-    //       id: true,
-    //       title: true,
-    //     },
-    //     parent_id: true,
-    //     // parentNote: { id: true }
-    //   },
-    //   where: { user: { id: Equal(req.user_id) } },
-    //   order: {
-    //     created_at: 'ASC',
-    //   },
-    //   relations: {
-    //     // user: true,
-    //     childNotes: {
-    //       childNotes: true,
-    //     },
-    //   },
-    // });
     // return this.noteRepository.find(); //Display without relations
   }
 
@@ -347,10 +326,59 @@ export class NoteService {
     if (req.parent_id === null) {
       currentNote.parentNote = null;
     } else {
-      const parent = await this.findOneNote(req.parent_id);
+      const parent = await this.noteRepository.findOne({
+        where: {
+          id: Equal(req.parent_id),
+        },
+      });
       currentNote.parentNote = parent;
     }
     await this.noteRepository.save(currentNote);
     return await this.findAllNote({ user_id: req.user_id });
+  }
+
+  async mergeNote(id, req) {
+    const merged_note = await this.noteRepository.findOne({
+      where: {
+        id: Equal(req.merged_note_id),
+      },
+      relations: {
+        tags: true,
+        image_contents: true,
+        childNotes: true,
+        backlinks: true,
+        headlinks: true,
+        file_uploads: true,
+      },
+    });
+    const current_note = await this.noteRepository.findOne({
+      where: {
+        id: Equal(id),
+      },
+      relations: {
+        tags: true,
+        image_contents: true,
+        childNotes: true,
+        backlinks: true,
+        headlinks: true,
+        file_uploads: true,
+      },
+    });
+    const dto = {
+      ...merged_note,
+      content: merged_note.content.concat(current_note.content),
+      tags: merged_note.tags.concat(current_note.tags),
+      image_contents: merged_note.image_contents.concat(
+        current_note.image_contents,
+      ),
+      childNotes: merged_note.childNotes.concat(current_note.childNotes),
+      backlinks: merged_note.backlinks.concat(current_note.backlinks),
+      headlinks: merged_note.headlinks.concat(current_note.headlinks),
+      file_uploads: merged_note.file_uploads.concat(current_note.file_uploads),
+    };
+
+    await this.noteRepository.save(dto);
+    await this.removeNote(id);
+    return await this.findOneNote(req.merged_note_id);
   }
 }

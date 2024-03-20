@@ -40,7 +40,7 @@ export class ImageContentController {
   constructor(
     private readonly imageContentService: ImageContentService,
     private readonly httpService: HttpService,
-  ) { }
+  ) {}
 
   // @Get('search')
   // searchImageContent(@Req() req: { user_id: string; keyword: string }) {
