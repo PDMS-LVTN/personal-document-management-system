@@ -18,7 +18,7 @@ export class ImageContentService {
     private readonly imageContentRepository: Repository<ImageContent>,
     // private readonly searchService: SearchService,
     private readonly httpService: HttpService,
-  ) { }
+  ) {}
 
   async uploadImage(files, req, note_ID) {
     const response = [];
@@ -129,8 +129,8 @@ export class ImageContentService {
   //   return this.searchService.search(req.body.keyword);
   // }
 
-  findOneImageContent(id: number) {
-    return this.imageContentRepository.findOne({
+  async findOneImageContent(id: number) {
+    return await this.imageContentRepository.findOne({
       where: { id: Equal(id) },
       relations: {
         note: true,
@@ -148,12 +148,23 @@ export class ImageContentService {
   }
 
   async extractText(req) {
-    console.log(req.note_ID, req.path)
+    console.log(req.note_ID, req.path);
     return await this.imageContentRepository.find({
       select: {
         content: true,
       },
       where: { note_ID: Equal(req.note_ID), path: Equal(req.path) },
+    });
+  }
+
+  async findImagesOfNote(req) {
+    return await this.imageContentRepository.find({
+      select: {
+        path: true,
+      },
+      where: {
+        note_ID: Equal(req.note_ID),
+      },
     });
   }
 }

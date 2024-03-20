@@ -51,12 +51,17 @@ export class FileUploadController {
   }
 
   @Get(':id')
-  findOneImageContent(@Param('id') id: number) {
-    return this.fileUploadService.findOneFileUpload(id);
+  async findOneFileUpload(@Param('id') id: number) {
+    return await this.fileUploadService.findOneFileUpload(id);
   }
 
   @Delete()
-  removeImageContent(@Body() req: { path: string }) {
-    return this.fileUploadService.removeFileUpload(req.path);
+  async removeFileUpload(@Body() req: { path: string }) {
+    return await this.fileUploadService.removeFileUpload(req.path);
+  }
+
+  @Post('note')
+  async findFilesOfNote(@Body() req: { note_ID: string }) {
+    return await this.fileUploadService.findFilesOfNote(req);
   }
 }

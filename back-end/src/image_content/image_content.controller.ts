@@ -53,17 +53,22 @@ export class ImageContentController {
   // }
 
   @Get(':id')
-  findOneImageContent(@Param('id') id: number) {
-    return this.imageContentService.findOneImageContent(id);
+  async findOneImageContent(@Param('id') id: number) {
+    return await this.imageContentService.findOneImageContent(id);
   }
 
   @Delete()
-  removeImageContent(@Body() req: { path: string }) {
-    return this.imageContentService.removeImageContent(req.path);
+  async removeImageContent(@Body() req: { path: string }) {
+    return await this.imageContentService.removeImageContent(req.path);
   }
 
   @Post('extract_text')
   async extractText(@Body() req: { note_ID: string; path: string }) {
     return await this.imageContentService.extractText(req);
+  }
+
+  @Post('note')
+  async findImagesOfNote(@Body() req: { note_ID: string }) {
+    return await this.imageContentService.findImagesOfNote(req);
   }
 }

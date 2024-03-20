@@ -17,9 +17,6 @@ import { ImageContentService } from '../image_content/image_content.service';
 import { User } from '../user/entities/user.entity';
 import { Tag } from '../tag/entities/tag.entity';
 import { FileUploadService } from '../file_upload/file_upload.service';
-import { title } from 'process';
-import { format } from 'path';
-import { log } from 'console';
 
 require('dotenv').config();
 
@@ -380,5 +377,22 @@ export class NoteService {
     await this.noteRepository.save(dto);
     await this.removeNote(id);
     return await this.findOneNote(req.merged_note_id);
+  }
+
+  async findAttachmentsOfNote(id: string) {
+    const images = await this.imageContentService
+      .findImagesOfNote({ note_ID: id })
+      .catch((err) => {
+        throw err;
+      });
+    const files = await this.uploadFileService
+      .findFilesOfNote({ note_ID: id })
+      .catch((err) => {
+        throw err;
+      });
+    return {
+      images: images,
+      files: files,
+    };
   }
 }
