@@ -108,9 +108,9 @@ function HomeLayout() {
               clean();
             }}
             style={{
-              height: "50px",
-              width: "50px",
-              padding: "15px",
+              height: "42px",
+              width: "42px",
+              padding: "11px",
               background: "var(--brand400)",
               borderRadius: "50%",
             }}

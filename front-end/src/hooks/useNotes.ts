@@ -52,6 +52,7 @@ const useNotes = () => {
         parent_id: response.data.parent_id,
         is_favorited: false,
         is_pinned: false,
+        childrenNotes: null,
       };
       setCurrentNote(currentNote);
       // ref?.current?.setMarkdown(markdown);
@@ -66,7 +67,7 @@ const useNotes = () => {
     }
   };
 
-  const updateNote = async () => {
+  const updateNote = async (title) => {
     setLoading(true);
     console.log(tempState.waitingImage);
     const editorContent = window.editor.getHTML();
@@ -79,7 +80,7 @@ const useNotes = () => {
       "data",
       JSON.stringify({
         content: editorContent,
-        title: currentNote?.title,
+        title: title ? title : currentNote?.title,
       })
     );
     try {
@@ -91,16 +92,7 @@ const useNotes = () => {
         }
       );
       console.log(response);
-      const note = {
-        id: response.data.id,
-        title: response.data.title,
-        content: response.data.content,
-        parent_id: response.data.parent_id,
-        is_favorited: false,
-        is_pinned: false,
-      };
-      setCurrentNote(note);
-      window.editor.commands.setContent(response.data.content);
+      await setCurrentNoteHandler(response.data);
       toast({
         title: `Your note has been updated. 🙂`,
         status: "success",
@@ -169,9 +161,53 @@ const useNotes = () => {
     return responseData;
   };
 
+  const moveNote = async (id, parentId) => {
+    try {
+      const options = {
+        method: "PATCH",
+        data: {
+          parent_id: parentId,
+          user_id: auth.id,
+        },
+      };
+      const response = await callApi(
+        `note/move_note/${id}`,
+        options
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const mergeNotes = async (id1, id2) => {
+    console.log(id1, ",", id2);
+    setLoading(true);
+    try {
+      const response = await axiosJWT.patch(
+        `note/merge_note/${id1}`,
+        JSON.stringify({ merged_note_id: id2 }),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      console.log(response.data);
+      setCurrentNoteHandler(response.data);
+      setLoading(false);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
   const clickANoteHandler = async (id) => {
     const noteItem = await getANote(id);
     console.log(noteItem);
+    setCurrentNoteHandler(noteItem);
+  };
+
+  const setCurrentNoteHandler = (noteItem) => {
     setCurrentNote({
       title: noteItem?.title,
       id: noteItem?.id,
@@ -179,6 +215,7 @@ const useNotes = () => {
       parent_id: noteItem?.parent_id,
       is_favorited: noteItem.is_favorited,
       is_pinned: noteItem.is_pinned,
+      childNotes: noteItem.childNotes,
     });
     const tags = noteItem.tags.map((tag) => {
       return { value: tag.description, label: tag.description, id: tag.id };
@@ -346,6 +383,8 @@ const useNotes = () => {
       handleSearch,
       importNote,
       handelFilterNotes,
+      mergeNotes,
+      moveNote
     },
   };
 };

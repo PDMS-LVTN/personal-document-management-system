@@ -23,6 +23,7 @@ import { useTree } from "@/hooks/useTree";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
 import { NodeApi } from "react-arborist";
 import SearchFilter from "@/components/SearchFilter";
+import ConfirmModal from "../../components/ConfirmModal";
 import {
   ChevronsDownUp,
   ChevronsUpDown,
@@ -51,12 +52,14 @@ const Notes = ({
   const treeRef = useRef<TreeApi<Note>>(null);
   const [data, controller] = useTree(notes, actions);
   const currentNote = useApp((state) => state.currentNote);
+  const isMerge = useApp((state) => state.isMerge);
+  const setIsMerge = useApp((state) => state.setIsMerge);
+  const [confirmMergeNote, setConfirmMergeNote] = useState(false);
 
   // set editor content when clicking on each note
   const handleActivate = async (e: NodeApi<Note>) => {
     const focusedNode = treeRef.current.focusedNode;
     const id = focusedNode?.id;
-    console.log(id);
     // const title = focusedNode?.data.title;
     // if (id === "temp") {
     //   let parent_id = null;
@@ -66,7 +69,24 @@ const Notes = ({
     //   focusedNode.id = response.id;
     //   focusedNode.data.id = response.id;
     // }
-    if (id) await actions.clickANoteHandler(focusedNode.id);
+    if (isMerge) {
+      setConfirmMergeNote(true);
+    } else if (id) await actions.clickANoteHandler(focusedNode.id);
+  };
+
+  const handleMergeNote = async () => {
+    const id = window.note_tree?.focusedNode?.id;
+    const dragIds = currentNote.childNotes.map((note) => note.id);
+    controller.onMove({
+      dragIds: dragIds,
+      parentId: id,
+      index: treeRef.current.root.children?.length,
+    });
+    if (id) {
+      window.note_tree.delete(currentNote.id);
+      await actions.mergeNotes(currentNote.id, id);
+      setIsMerge(false);
+    }
   };
 
   const handleInputChange = async (e) => {
@@ -99,6 +119,14 @@ const Notes = ({
 
   return (
     <>
+      <ConfirmModal
+        modalTitle="Confirm merge note"
+        config={currentNote?.title}
+        isOpen={confirmMergeNote}
+        confirmDelete={handleMergeNote}
+        close={() => setConfirmMergeNote(false)}
+        action={"merge"}
+      />
       <Modal isOpen={isLoading} onClose={onClose} size="sm">
         <ModalOverlay />
         <ModalContent>
@@ -133,14 +161,15 @@ const Notes = ({
         <Text fontSize="2xl" fontWeight="600">
           Notes
         </Text>
-        <div>
+        <div style={{display: 'flex'}}>
           <Tooltip label={toggle ? "Collapse all" : "Expand all"}>
             <Button
               variant="ghost"
+              // mr="0.5em"
               style={{
-                height: "40px",
-                width: "40px",
-                padding: "7px",
+                height: "32px",
+                width: "32px",
+                padding: "8px",
                 borderRadius: "50%",
               }}
               onClick={() => {
@@ -161,8 +190,8 @@ const Notes = ({
               variant="ghost"
               mr="0.5em"
               style={{
-                height: "40px",
-                width: "40px",
+                height: "32px",
+                width: "32px",
                 padding: "7px",
                 borderRadius: "50%",
               }}
@@ -174,9 +203,9 @@ const Notes = ({
           {/* <Tooltip label="Add"> */}
           <Menu>
             <MenuButton
-              height="40px"
-              width="40px"
-              padding="12px"
+              height="32px"
+              width="32px"
+              padding="10px"
               // transition="all 0.2s"
               borderRadius="50%"
               background="var(--brand400)"
@@ -217,31 +246,11 @@ const Notes = ({
               </MenuItem>
             </MenuList>
           </Menu>
-          {/* <Button
-              style={{
-                height: "40px",
-                width: "40px",
-                padding: "7px",
-                borderRadius: "50%",
-                background: "var(--brand400)",
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                treeRef.current.create({
-                  type: "internal",
-                  parentId: null,
-                  index: treeRef.current.root.children?.length,
-                });
-              }}
-            >
-              <FaPlus color="white" />
-            </Button>
-          </Tooltip> */}
         </div>
       </Flex>
       <InputGroup pl="2em" pr="2em" w="100%">
         <InputLeftElement pointerEvents="none" ml="2em">
-          <IoSearch size="24px" color="var(--brand400)" />
+          <IoSearch size="20px" color="var(--brand400)" />
         </InputLeftElement>
         <Input
           m={0}
@@ -254,6 +263,28 @@ const Notes = ({
       </InputGroup>
       {/* {data && data.length ? ( */}
       {/* //  <div className=data.length == 0 ? "hide" : ""> */}
+      {isMerge ? (
+        <div
+          style={{ display: "flex", backgroundColor: "var(--brand300", justifyContent: "center"}}
+          className="mt-1 p-1.5"
+        >
+          <Text className="mr-3" color={"white"} fontSize={'13px'}>
+            Choose a note to merge
+          </Text>
+          <Button
+            onClick={() => {
+              setIsMerge(false);
+            }}
+            size={"xs"}
+            colorScheme={"red"}
+          >
+            Cancel
+          </Button>
+        </div>
+      ) : (
+        <div style={{ display: "flex" }} className="mt-10"></div>
+      )}
+
       <Tree
         ref={treeRef}
         data={data}
@@ -263,9 +294,13 @@ const Notes = ({
         indent={24}
         rowHeight={40}
         overscanCount={1}
-        paddingTop={30}
+        onMove={async (args) => {
+          controller.onMove(args);
+          await actions.moveNote(args.dragIds[0], args.parentId);
+        }}
+        // paddingTop={30}
         paddingBottom={10}
-        padding={25 /* sets both */}
+        // padding={25 /* sets both */}
         searchTerm={term}
         searchMatch={(node, term) =>
           node.data.title.toLowerCase().includes(term.toLowerCase())

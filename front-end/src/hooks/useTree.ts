@@ -24,7 +24,7 @@ export function useTree<T>(initialData: T[], actions?) {
         [data]
     );
 
-    const onMove: MoveHandler<T> = (args: {
+    const onMove: MoveHandler<T> = async (args: {
         dragIds: string[];
         parentId: null | string;
         index: number;
@@ -54,7 +54,6 @@ export function useTree<T>(initialData: T[], actions?) {
     };
 
     const onDelete: DeleteHandler<T> = async (args: { ids: string[] }) => {
-        args.ids.forEach(async (id) => await actions.deleteNote(id));
         args.ids.forEach((id) => tree.drop({ id }));
         setData(tree.data);
     };

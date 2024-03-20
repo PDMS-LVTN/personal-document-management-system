@@ -1,4 +1,4 @@
-import { Note } from "@/store/useApp";
+import { Note, useApp } from "@/store/useApp";
 import {
   Button,
   Menu,
@@ -38,6 +38,9 @@ const Node = ({
   //   console.log("click");
   //   node.select();
   // };
+  const setCurrentNote = useApp((state) => state.setCurrentNote);
+  const currentNote = useApp((state) => state.currentNote);
+  const setIsMerge = useApp((state) => state.setIsMerge);
   const { isLoading, actions } = useNotes();
 
   const handleInputChange = async (e) => {
@@ -96,7 +99,7 @@ const Node = ({
       >
         {!node.data.childNotes.length ? (
           <>
-            <span className="arrow"></span>
+            <span className="arrow" style={{width:'16px'}}></span>
             <span className="mr-5">
               <AiFillFile color="var(--brand300)" size="24px" />
             </span>
@@ -118,9 +121,13 @@ const Node = ({
               defaultValue={node.data.title}
               onFocus={(e) => e.currentTarget.select()}
               onBlur={() => node.reset()}
-              onKeyDown={(e) => {
+              onKeyDown={async (e) => {
                 if (e.key === "Escape") node.reset();
-                if (e.key === "Enter") node.submit(e.currentTarget.value);
+                if (e.key === "Enter") {
+                  node.submit(e.currentTarget.value);
+                  setCurrentNote({...currentNote, title: e.currentTarget.value});
+                  actions.updateNote(e.currentTarget.value);
+                }
               }}
               autoFocus
             />
@@ -147,8 +154,11 @@ const Node = ({
             <BsThreeDots />
           </MenuButton>
           <MenuList>
-            <MenuItem>Move note</MenuItem>
-            <MenuItem>Merge note</MenuItem>
+            <MenuItem
+              onClick={() => setIsMerge(true)}
+            >
+              Merge note
+            </MenuItem>
             <MenuItem>
               <span>Import file</span>
               <input
@@ -174,12 +184,20 @@ const Node = ({
             >
               Rename Note
             </MenuItem> */}
+            <MenuItem
+              onClick = {() => {
+                node.edit();
+              }}
+            >
+            Rename
+            </MenuItem>
             <MenuItem>Share</MenuItem>
             <MenuDivider />
             <MenuItem
               onClick={async (e) => {
                 e.stopPropagation();
                 tree.delete(node.id);
+                actions.deleteNote(node.id);
               }}
             >
               Delete note
