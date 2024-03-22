@@ -58,7 +58,7 @@ import { jsPDF } from "jspdf";
 import useDrawer from "@/hooks/useDrawer";
 import AttachmentsDrawer from "@/components/AttachmentsDrawer";
 
-function EditorContainer({ editorRef }) {
+function EditorContainer({ editorRef, handleFullScreen }) {
   const currentNote = useApp((state) => state.currentNote);
   const [confirmDeleteNote, setConfirmDelete] = useState(false);
   const { onClose } = useDisclosure();
@@ -320,8 +320,16 @@ function EditorContainer({ editorRef }) {
                 variant="unstyled"
               ></MenuButton>
               <MenuList>
-                <MenuItem icon={<Expand size={20} color="var(--brand400)" />}>
-                  Full width
+                <MenuItem
+                  icon={
+                    <Expand
+                      size={20}
+                      color="var(--brand400)"
+                    />
+                  }
+                  onClick={handleFullScreen.enter}
+                >
+                  Full screen
                 </MenuItem>
                 <MenuItem
                   onClick={handelExportFile}

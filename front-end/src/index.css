@@ -170,3 +170,12 @@
   border-top: #ccb8fd solid 1px;
   border-bottom: #ccb8fd solid 1px;
 }
+
+
+.fullscreen {
+  background: #fff;
+}
+
+.fullscreen-enabled .fullscreen {
+  background: #000;
+}
