@@ -1,14 +1,12 @@
-import { Button, GridItem } from "@chakra-ui/react";
+import { GridItem } from "@chakra-ui/react";
 import { Fragment, useEffect } from "react";
 import { Outlet, useOutletContext } from "react-router-dom";
 import EditorContainer from "../editor/EditorContainer";
 // import { MDXEditorMethods } from "@mdxeditor/editor";
-import { FullScreen, useFullScreenHandle } from "react-full-screen";
 export type ContextType = { ref: any | null };
 
 function TreeAndEditorContainer() {
   const { ref } = useOutletContext<ContextType>();
-  const handleFullScreen = useFullScreenHandle();
 
   useEffect(() => {
     const column = document.getElementById("structure-grid-item");
@@ -79,10 +77,7 @@ function TreeAndEditorContainer() {
         overflow="hidden"
         pos="relative"
       >
-      {/* <Button onClick = {handleFullScreen.enter}>Full Screen</Button> */}
-      <FullScreen handle={handleFullScreen}>
-        <EditorContainer editorRef={ref} handleFullScreen={handleFullScreen}/>
-      </FullScreen>
+        <EditorContainer editorRef={ref}/>
       </GridItem>
     </Fragment>
   );

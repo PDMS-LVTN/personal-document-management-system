@@ -172,10 +172,6 @@
 }
 
 
-.fullscreen {
+.full-screen {
   background: #fff;
-}
-
-.fullscreen-enabled .fullscreen {
-  background: #000;
 }

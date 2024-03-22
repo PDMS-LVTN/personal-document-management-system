@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Editor from "./Editor";
 import ConfirmModal from "../components/ConfirmModal";
 
@@ -57,10 +57,12 @@ import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
 import { jsPDF } from "jspdf";
 import useDrawer from "@/hooks/useDrawer";
 import AttachmentsDrawer from "@/components/AttachmentsDrawer";
+import { set } from "lodash";
 
-function EditorContainer({ editorRef, handleFullScreen }) {
+function EditorContainer({ editorRef}) {
   const currentNote = useApp((state) => state.currentNote);
   const [confirmDeleteNote, setConfirmDelete] = useState(false);
+  const [isFullScreen, setFullScreen] = useState(false);
   const { onClose } = useDisclosure();
 
   const handleCloseConfirm = () => {
@@ -176,10 +178,33 @@ function EditorContainer({ editorRef, handleFullScreen }) {
     setLoadingExport(false);
   };
 
+  const escFunction = useCallback((event) => {
+    if (event.key === "Escape") {
+      setFullScreen(false);
+    }
+    if (event.key === "f" || event.key === "F") {
+      setFullScreen(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", escFunction, false);
+
+    return () => {
+      document.removeEventListener("keydown", escFunction, false);
+    };
+  }, [escFunction]);
+
   const [drawer, showDrawer] = useDrawer("sm");
 
   return (
-    <>
+    <div className="full-screen" style={ isFullScreen ? {
+      position: "fixed",
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+    } : {}}>
       {drawer}
       {/* BUG: where is the spinner? */}
       {/* FIX: https://stackoverflow.com/questions/73031972/how-to-get-state-from-custom-hooks-to-update-in-parent-component */}
@@ -327,7 +352,7 @@ function EditorContainer({ editorRef, handleFullScreen }) {
                       color="var(--brand400)"
                     />
                   }
-                  onClick={handleFullScreen.enter}
+                  onClick={() => setFullScreen(!isFullScreen)}
                 >
                   Full screen
                 </MenuItem>
@@ -379,9 +404,8 @@ function EditorContainer({ editorRef, handleFullScreen }) {
           </Flex>
         </>
       )}
-
       <Editor editorRef={editorRef} />
-    </>
+    </div>
   );
 }
 

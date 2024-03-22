@@ -4,9 +4,9 @@ import "/brand-icon-white.svg";
 const style = {
   light: {
     color: "white",
-    size: "xl",
+    size: "lg",
     mt: "20%",
-    logoSize: "50px",
+    logoSize: "30px",
     gap: "10px",
   },
   dark: {
@@ -21,15 +21,13 @@ const style = {
 function Logo({ type = "light" }) {
   return (
     <Box
-      style={{ display: "flex", gap: style[type].gap, alignItems: "center", justifyContent: "center" }}
+      style={{ display: "flex", gap: style[type].gap, alignItems: "center", justifyContent: "start" }}
       p="1em"
       pos="relative"
-      zIndex="2"
-
     >
       <Box
         p="4px"
-        border="4px solid white"
+        border="3px solid white"
         borderRadius="10px"
         bg={style[type].background}
       >

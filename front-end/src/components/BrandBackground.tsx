@@ -14,7 +14,6 @@ const SignUpText = () => {
       pl="2em"
       textAlign="left"
       position="relative"
-      zIndex="2"
     >
       Welcome <br /> Back!
     </Text>
@@ -29,7 +28,6 @@ const LoginText = () => {
         textAlign: "left",
         paddingLeft: "7em",
         position: "relative",
-        zIndex: "2",
       }}
     >
       <Text color="white" fontSize="6xl" fontWeight="semibold">
