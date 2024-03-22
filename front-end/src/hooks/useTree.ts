@@ -60,5 +60,5 @@ export function useTree<T>(initialData: T[], actions?) {
 
     const controller = { onMove, onRename, onCreate, onDelete };
 
-    return [data, controller] as const;
+    return [data, setData, controller] as const;
 }

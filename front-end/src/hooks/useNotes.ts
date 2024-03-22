@@ -131,7 +131,7 @@ const useNotes = () => {
   };
 
   const getAllNotes = async (controller) => {
-    setLoading(true);
+    // setLoading(true);
     try {
       const response = await axiosJWT.post(
         APIEndPoints.ALL_NOTE,
@@ -142,10 +142,10 @@ const useNotes = () => {
         }
       );
       console.log(response.data);
-      setLoading(false);
+      // setLoading(false);
       return response.data;
     } catch (error) {
-      setLoading(false);
+      // setLoading(false);
       if (error.response?.status === 403 || error.response?.status === 401) {
         setAuth(undefined);
         clean();

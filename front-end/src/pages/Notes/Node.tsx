@@ -155,7 +155,10 @@ const Node = ({
           </MenuButton>
           <MenuList>
             <MenuItem
-              onClick={() => setIsMerge(true)}
+              onClick={() => {
+                setIsMerge(true)
+                tree.delete(node.id);
+              }}
             >
               Merge note
             </MenuItem>

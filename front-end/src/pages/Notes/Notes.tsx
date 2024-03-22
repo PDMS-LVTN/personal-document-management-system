@@ -50,7 +50,7 @@ const Notes = ({
   const [term, setTerm] = useState("");
   const [toggle, setToggle] = useState<boolean>(false);
   const treeRef = useRef<TreeApi<Note>>(null);
-  const [data, controller] = useTree(notes, actions);
+  const [data, setData, controller] = useTree(notes, actions);
   const currentNote = useApp((state) => state.currentNote);
   const isMerge = useApp((state) => state.isMerge);
   const setIsMerge = useApp((state) => state.setIsMerge);
@@ -60,15 +60,6 @@ const Notes = ({
   const handleActivate = async (e: NodeApi<Note>) => {
     const focusedNode = treeRef.current.focusedNode;
     const id = focusedNode?.id;
-    // const title = focusedNode?.data.title;
-    // if (id === "temp") {
-    //   let parent_id = null;
-    //   const level = focusedNode.level;
-    //   if (level) parent_id = focusedNode.parent.data.id;
-    //   const response = await actions.createNote(parent_id, title);
-    //   focusedNode.id = response.id;
-    //   focusedNode.data.id = response.id;
-    // }
     if (isMerge) {
       setConfirmMergeNote(true);
     } else if (id) await actions.clickANoteHandler(focusedNode.id);
@@ -85,6 +76,8 @@ const Notes = ({
     if (id) {
       window.note_tree.delete(currentNote.id);
       await actions.mergeNotes(currentNote.id, id);
+      const notes = await actions.getAllNotes(controller);
+      await setData(notes);
       setIsMerge(false);
     }
   };
@@ -161,7 +154,7 @@ const Notes = ({
         <Text fontSize="2xl" fontWeight="600">
           Notes
         </Text>
-        <div style={{display: 'flex'}}>
+        <div style={{ display: "flex" }}>
           <Tooltip label={toggle ? "Collapse all" : "Expand all"}>
             <Button
               variant="ghost"
@@ -265,15 +258,21 @@ const Notes = ({
       {/* //  <div className=data.length == 0 ? "hide" : ""> */}
       {isMerge ? (
         <div
-          style={{ display: "flex", backgroundColor: "var(--brand300", justifyContent: "center"}}
+          style={{
+            display: "flex",
+            backgroundColor: "var(--brand300",
+            justifyContent: "center",
+          }}
           className="mt-1 p-1.5"
         >
-          <Text className="mr-3" color={"white"} fontSize={'13px'}>
+          <Text className="mr-3" color={"white"} fontSize={"13px"}>
             Choose a note to merge
           </Text>
           <Button
-            onClick={() => {
+            onClick={async () => {
               setIsMerge(false);
+              const notes = await actions.getAllNotes(controller);
+              setData(notes);
             }}
             size={"xs"}
             colorScheme={"red"}
@@ -284,7 +283,6 @@ const Notes = ({
       ) : (
         <div style={{ display: "flex" }} className="mt-10"></div>
       )}
-
       <Tree
         ref={treeRef}
         data={data}
