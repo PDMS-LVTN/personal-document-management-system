@@ -14,6 +14,7 @@ import { ImageContentModule } from './image_content/image_content.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { FileUploadModule } from './file_upload/file_upload.module';
+import { NoteCollaboratorModule } from './note_collaborator/note_collaborator.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { FileUploadModule } from './file_upload/file_upload.module';
       rootPath: join(__dirname, '..', 'uploads/image_content'),
     }),
     FileUploadModule,
+    NoteCollaboratorModule,
   ],
   controllers: [AppController],
   providers: [

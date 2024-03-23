@@ -88,6 +88,14 @@ export class NoteController {
     return await this.noteService.moveNote(req);
   }
 
+  @Patch('is_anyone/:id')
+  async updateIsAnyone(
+    @Param('id') id: string,
+    @Body() req: { is_anyone: boolean },
+  ) {
+    return await this.noteService.updateIsAnyone(id, req);
+  }
+
   @Patch(':id')
   @UseInterceptors(
     FilesInterceptor('files[]', 20, {

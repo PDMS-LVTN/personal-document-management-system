@@ -3,6 +3,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -18,7 +19,7 @@ export class FileUpload {
   @Column('uuid')
   note_ID: string;
 
-  @OneToOne(() => Note, (note) => note.id, {
+  @ManyToOne(() => Note, (note) => note.id, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     nullable: false,
