@@ -12,8 +12,9 @@ export class NoteCollaboratorService {
     @InjectRepository(NoteCollaborator)
     private readonly noteCollaboratorRepository: Repository<NoteCollaborator>,
     @InjectRepository(Note)
-    private readonly noteRepository: Repository<Note>,
-  ) {}
+    private readonly noteRepository: Repository<Note>
+  ) { }
+
   async createNoteCollaborator(
     createNoteCollaboratorDto: CreateNoteCollaboratorDto,
   ) {
@@ -49,7 +50,7 @@ export class NoteCollaboratorService {
       },
     });
     const retEmails = emails.map((email) => email.email);
-    return { emails: retEmails, ...is_anyone };
+    return { emails: retEmails, is_anyone: is_anyone.is_anyone };
   }
 
   async findOneNoteByCollaborator(note_id, req) {

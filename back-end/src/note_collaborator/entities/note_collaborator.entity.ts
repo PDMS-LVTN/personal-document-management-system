@@ -2,7 +2,7 @@ import { Note } from "../../note/entities/note.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 
 export enum ShareMode {
-  FULL = "full",
+  COMMENT = "comment",
   VIEW = "view",
   EDIT = "edit",
 }

@@ -7,6 +7,7 @@ import { APIEndPoints } from "../api/endpoint";
 import { tempState } from "@/editor/lib/api";
 import { useApi } from "./useApi";
 import { convertToHtml } from "mammoth";
+import { ShareMode } from "@/data/constant";
 
 const useNotes = () => {
   // console.log("use notes")
@@ -24,8 +25,6 @@ const useNotes = () => {
   const setCurrentTags = useApp((state) => state.setCurrentTags);
 
   const callApi = useApi();
-
-  // const { getAllTags } = useTags()
 
   const createNote = async (id: string, title?: string) => {
     const initialContent = "<p>Start writing your notes</p>";
@@ -67,7 +66,7 @@ const useNotes = () => {
     }
   };
 
-  const updateNote = async (title) => {
+  const updateNote = async (title?) => {
     setLoading(true);
     console.log(tempState.waitingImage);
     const editorContent = window.editor.getHTML();
@@ -372,6 +371,66 @@ const useNotes = () => {
     return responseData;
   };
 
+  const getAllSharedNotes = async () => {
+    setLoading(true);
+    // const options = {
+    //   method: "POST",
+    //   data: { user_id: auth.id, keyword: keyword },
+    // };
+    // const { responseData } = await callApi(APIEndPoints.SEARCH, options);
+    setLoading(false);
+    // return responseData;
+    return []
+  }
+
+  const getAttachments = async (noteId: string) => {
+    const options = {
+      method: "GET",
+    };
+    const { responseData } = await callApi(`note/attachments/${noteId}`, options);
+    return responseData
+  }
+
+  const removeNoteCollaborator = async (noteId: string, email: string) => {
+    const options = {
+      method: "DELETE",
+      data: {
+        note_id: noteId,
+        email
+      },
+    };
+    const { responseData } = await callApi(`note_collaborator`, options);
+    return responseData
+  }
+
+  const addCollaborator = async (noteId: string, email: string, mode: ShareMode) => {
+    const options = {
+      method: "POST",
+      data: { note_id: noteId, email, share_mode: mode }
+    };
+    const { responseData } = await callApi(`note_collaborator/add_note_collaborator`, options);
+    return responseData
+  }
+
+  const findCollaboratorsOfNote = async (noteId: string) => {
+    const options = {
+      method: "GET",
+    };
+    const { responseData } = await callApi(`note_collaborator/collaborators/${noteId}`, options);
+    return responseData
+  }
+
+  const updateGeneralPermission = async (noteId: string, is_anyone: boolean) => {
+    const options = {
+      method: "PATCH",
+      data: {
+        is_anyone
+      }
+    }
+    const { responseData } = await callApi(`note/is_anyone/${noteId}`, options);
+    return responseData
+  }
+
   return {
     isLoading,
     actions: {
@@ -385,7 +444,13 @@ const useNotes = () => {
       importNote,
       handelFilterNotes,
       mergeNotes,
-      moveNote
+      moveNote,
+      getAllSharedNotes,
+      getAttachments,
+      removeNoteCollaborator,
+      findCollaboratorsOfNote,
+      addCollaborator,
+      updateGeneralPermission
     },
   };
 };

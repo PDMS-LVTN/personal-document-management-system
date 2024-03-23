@@ -19,6 +19,7 @@ function NoteContainer() {
     const controller = new AbortController();
     const loadData = async () => {
       const notesData: Note[] = await actions.getAllNotes(controller);
+      console.log(notesData);
       const { tags } = await getAllTags(controller);
       if (isMounted) {
         setNotes(notesData);

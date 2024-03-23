@@ -18,6 +18,7 @@ import { useRef, useState, useEffect, useContext } from "react";
 import axios from "../api/axios";
 import { jwtDecode } from "jwt-decode";
 import { useAuthentication } from "../store/useAuth";
+import { useApi } from "@/hooks/useApi";
 
 const LOGIN_URL = "/auth/login";
 const GGLOGIN_URL = "/auth/loginGoogle";
@@ -52,6 +53,38 @@ const Login = () => {
     setErrMsg("");
   }, [user, pwd]);
 
+  const callApi = useApi();
+
+  const checkPermissionWithEmail = async (noteId: string, email: string) => {
+    const options = {
+      method: "GET",
+      data: {
+        email,
+      },
+    };
+    const { responseData, responseError } = await callApi(
+      `note_collaborator/${noteId}`,
+      options
+    );
+    return { responseData, responseError };
+  };
+  const handleShareNavigation = async (email: string) => {
+    console.log("handleShareNavigation");
+    const { responseData, responseError } = await checkPermissionWithEmail(
+      location.state.noteId,
+      email
+    );
+    console.log(responseData, responseError);
+    if (!responseData.length) {
+      navigate("/unauthorized");
+    } else {
+      navigate(from, {
+        replace: true,
+        state: { data: responseData },
+      });
+    }
+  };
+
   const handleResponseError = (err) => {
     console.log(err);
     if (!err?.response) {
@@ -84,7 +117,11 @@ const Login = () => {
       });
       setUser("");
       setPwd("");
-      navigate(from, { replace: true });
+      if (location.state?.isShared) {
+        handleShareNavigation(user);
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       handleResponseError(err);
     }
@@ -107,7 +144,11 @@ const Login = () => {
         id: response?.data?.id,
         avatar: userObject.picture,
       });
-      navigate(from, { replace: true });
+      if (location.state?.isShared) {
+        handleShareNavigation(userObject.email);
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       handleResponseError(err);
     }
@@ -127,8 +168,8 @@ const Login = () => {
   }, []);
 
   return (
-    <Box p="5em" w="50%">
-      <Flex flexDirection="column" rowGap="5em">
+    <Box p="5em" w="50%" overflow="auto">
+      <Flex flexDirection="column" rowGap="4em">
         <div>
           <Text
             fontSize="5xl"
@@ -141,25 +182,37 @@ const Login = () => {
 
           <div style={{ display: "flex", gap: "5px" }}>
             <Text color="text.inactive">Don't have an account yet?</Text>
-            <Link to="/">
-              <Text
-                color="brand.400"
-                _hover={{
-                  textDecoration: "underline",
-                  cursor: "pointer",
-                  fontWeight: "semibold",
-                }}
-              >
-                Signup
-              </Text>
-            </Link>
+            {/* <Link to="/"> */}
+            <Text
+              color="brand.400"
+              _hover={{
+                textDecoration: "underline",
+                cursor: "pointer",
+                fontWeight: "semibold",
+              }}
+              onClick={() =>
+                navigate("/", {
+                  replace: true,
+                  state: { isShared: location.state?.isShared, from },
+                })
+              }
+            >
+              Signup
+            </Text>
+            {/* </Link> */}
           </div>
         </div>
         <section>
+          {location.state?.isShared && (
+            <Alert status="info" sx={{ mb: "1em" }}>
+              <AlertIcon />
+              Sign in to open this document
+            </Alert>
+          )}
           <Alert
             status="error"
             ref={errRef}
-            sx={{ display: errMsg ? "flex" : "none", mb: "3em" }}
+            sx={{ display: errMsg ? "flex" : "none", mb: "1em" }}
             aria-live="assertive"
           >
             <AlertIcon />

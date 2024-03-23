@@ -6,5 +6,4 @@ export const APIEndPoints = {
     SEARCH: "note/search",
     CREATE_TAG: "tag/create_tag",
     ALL_TAG: "tag/all_tag",
-    
 }

@@ -34,10 +34,8 @@
 }
 
 .inside-editor {
-  /* padding-left: 3em; */
-  height: calc(100vh - 120px - 65px - 20px);
+  height: calc(100vh - 60px - 40px - 50px - 56px);
   overflow-y: auto;
-  /* position: relative; */
 }
 
 .resize-handle {
@@ -171,7 +169,6 @@
   border-bottom: #ccb8fd solid 1px;
 }
 
-
 .full-screen {
   position: fixed;
   left: 0;
@@ -179,12 +176,24 @@
   right: 0;
   bottom: 0;
   background: #fff;
+  z-index: 5;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  transition: all;
+  transition-duration: 300ms;
 }
 
 .full-screen .inside-editor {
-  height: calc(100vh - 120px - 30px);
+  height: calc(100vh - 40px - 50px - 56px);
 }
 
-.highlighted {
-  background: #f0c52a;
+.shared-view .inside-editor {
+  height: 100%;
+}
+
+.shared-view {
+  height: calc(100vh - 48px);
 }

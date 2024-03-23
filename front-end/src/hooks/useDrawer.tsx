@@ -61,7 +61,7 @@ export default function useDrawer(
       title: string,
       // eslint-disable-next-line no-shadow
       getContent: (onClose: () => void) => JSX.Element,
-      closeOnClickOutside = false
+      closeOnClickOutside = true
     ) => {
       setDrawerContent({
         closeOnClickOutside,

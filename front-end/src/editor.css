@@ -12,6 +12,32 @@
     margin-top: 0.75em;
   }
 
+  .Tiptap-mathematics-editor {
+    background: #202020;
+    color: yellowgreen;
+    font-family: monospace;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .Tiptap-mathematics-render {
+    padding: 0 0.25rem;
+
+    &--editable {
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #eee;
+      }
+    }
+  }
+
+  .Tiptap-mathematics-editor,
+  .Tiptap-mathematics-render {
+    border-radius: 0.25rem;
+    display: inline-block;
+  }
+
   .node-imageUpload {
     @apply rounded border-2 border-dotted border-black border-opacity-10 p-2 dark:border-neutral-500;
     transition: border 160ms cubic-bezier(0.45, 0.05, 0.55, 0.95);

@@ -29,8 +29,8 @@ export class NoteService {
     private readonly imageContentService: ImageContentService,
     private readonly uploadFileService: FileUploadService,
     @InjectRepository(Tag)
-    private readonly tagRepository: Repository<Tag>,
-  ) {}
+    private readonly tagRepository: Repository<Tag>
+  ) { }
 
   async createNote(createNoteDto: CreateNoteDto) {
     // const user = new User({ id: createNoteDto.user_id });

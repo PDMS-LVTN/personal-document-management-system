@@ -52,14 +52,23 @@ import { IoMdPricetag } from "react-icons/io";
 import { TbFocus2 } from "react-icons/tb";
 import { useLocation } from "react-router-dom";
 import { FaEllipsisVertical } from "react-icons/fa6";
-import { Expand, LockKeyhole, Paperclip } from "lucide-react";
+import {
+  ChevronDownIcon,
+  Expand,
+  Link,
+  LockKeyhole,
+  Paperclip,
+  Share2,
+} from "lucide-react";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
 import { jsPDF } from "jspdf";
 import useDrawer from "@/hooks/useDrawer";
 import AttachmentsDrawer from "@/components/AttachmentsDrawer";
-import { set } from "lodash";
+import { cn } from "./lib/utils";
+import useModal from "@/hooks/useModal";
+import SharedModal from "@/components/SharedModal";
 
-function EditorContainer({ editorRef}) {
+function EditorContainer({ editorRef }) {
   const currentNote = useApp((state) => state.currentNote);
   const [confirmDeleteNote, setConfirmDelete] = useState(false);
   const [isFullScreen, setFullScreen] = useState(false);
@@ -183,7 +192,7 @@ function EditorContainer({ editorRef}) {
       setFullScreen(false);
     }
     // if (event.key === "f" || event.key === "F") {
-    //   setFullScreen(true);
+    //   if (!window.editor.isFocused) setFullScreen(true);
     // }
   }, []);
 
@@ -196,10 +205,17 @@ function EditorContainer({ editorRef}) {
   }, [escFunction]);
 
   const [drawer, showDrawer] = useDrawer("sm");
+  const [modal, showModal] = useModal("xl");
+
+  const handleCopyLink = () => {
+    const text = `${import.meta.env.VITE_CLIENT_PATH}/note/${currentNote.id}`;
+    navigator.clipboard.writeText(text);
+  };
 
   return (
-    <div className={ isFullScreen?"full-screen":""}>
+    <div className={cn({ "full-screen": isFullScreen })}>
       {drawer}
+      {modal}
       {/* BUG: where is the spinner? */}
       {/* FIX: https://stackoverflow.com/questions/73031972/how-to-get-state-from-custom-hooks-to-update-in-parent-component */}
       <Modal isOpen={isLoading} onClose={onClose}>
@@ -252,8 +268,49 @@ function EditorContainer({ editorRef}) {
         close={handleCloseConfirm}
         action={"delete"}
       />
-      {currentNote && (
-        <>
+      {currentNote && !location.pathname.includes("shared") && (
+        <div className="flex justify-between">
+          <div className="flex justify-start items-center ml-8">
+            <Menu>
+              <MenuButton
+                as={Button}
+                rightIcon={<ChevronDownIcon size={15} />}
+                colorScheme="brand"
+                style={{ backgroundColor: "var(--brand400)" }}
+                size="sm"
+              >
+                Share
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  icon={<Share2 size={20} color="var(--brand400)" />}
+                  onClick={() =>
+                    showModal(
+                      `Share "${currentNote.title}"`,
+                      (onClose) => {
+                        return (
+                          <SharedModal
+                            actions={actions}
+                            noteId={currentNote.id}
+                            onClose={onClose}
+                          />
+                        );
+                      },
+                      true
+                    )
+                  }
+                >
+                  Share
+                </MenuItem>
+                <MenuItem
+                  icon={<Link size={20} color="var(--brand400)" />}
+                  onClick={handleCopyLink}
+                >
+                  Copy link
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </div>
           <Flex justifyContent="right">
             <Tooltip label="Delete note">
               <Button
@@ -340,12 +397,7 @@ function EditorContainer({ editorRef}) {
               ></MenuButton>
               <MenuList>
                 <MenuItem
-                  icon={
-                    <Expand
-                      size={20}
-                      color="var(--brand400)"
-                    />
-                  }
+                  icon={<Expand size={20} color="var(--brand400)" />}
                   onClick={() => setFullScreen(!isFullScreen)}
                 >
                   Full screen
@@ -365,7 +417,10 @@ function EditorContainer({ editorRef}) {
                   icon={<Paperclip size={20} color="var(--brand400)" />}
                   onClick={() => {
                     showDrawer("Attachments", (onClose) => (
-                      <AttachmentsDrawer></AttachmentsDrawer>
+                      <AttachmentsDrawer
+                        actions={actions}
+                        noteId={currentNote.id}
+                      />
                     ));
                   }}
                 >
@@ -374,7 +429,15 @@ function EditorContainer({ editorRef}) {
               </MenuList>
             </Menu>
           </Flex>
-          <Flex pos="absolute" bottom={0} zIndex={3} left={0} right={0} p={2}>
+          <Flex
+            alignItems="center"
+            pos="absolute"
+            bottom={0}
+            zIndex={3}
+            left={0}
+            right={0}
+            p={2}
+          >
             <Tooltip
               shouldWrapChildren={true}
               label="Your note belongs to these tags"
@@ -396,7 +459,7 @@ function EditorContainer({ editorRef}) {
               />
             </FormControl>
           </Flex>
-        </>
+        </div>
       )}
       <Editor editorRef={editorRef} />
     </div>

@@ -77,7 +77,7 @@ function TreeAndEditorContainer() {
         overflow="hidden"
         pos="relative"
       >
-        <EditorContainer editorRef={ref}/>
+        <EditorContainer editorRef={ref} />
       </GridItem>
     </Fragment>
   );
