@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { CreateNoteDto } from './dto/create-note.dto';
-import { UpdateNoteDto } from './dto/update-note.dto';
+import { Injectable } from "@nestjs/common";
+import { CreateNoteDto } from "./dto/create-note.dto";
+import { UpdateNoteDto } from "./dto/update-note.dto";
 import {
   Between,
   Brackets,
@@ -9,15 +9,15 @@ import {
   IsNull,
   Repository,
   TreeRepository,
-} from 'typeorm';
-import { Note } from './entities/note.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ImageContent } from '../image_content/entities/image_content.entity';
-import { ImageContentService } from '../image_content/image_content.service';
-import { Tag } from '../tag/entities/tag.entity';
-import { FileUploadService } from '../file_upload/file_upload.service';
+} from "typeorm";
+import { Note } from "./entities/note.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { ImageContent } from "../image_content/entities/image_content.entity";
+import { ImageContentService } from "../image_content/image_content.service";
+import { Tag } from "../tag/entities/tag.entity";
+import { FileUploadService } from "../file_upload/file_upload.service";
 
-require('dotenv').config();
+require("dotenv").config();
 
 @Injectable()
 export class NoteService {
@@ -29,7 +29,7 @@ export class NoteService {
     private readonly imageContentService: ImageContentService,
     private readonly uploadFileService: FileUploadService,
     @InjectRepository(Tag)
-    private readonly tagRepository: Repository<Tag>,
+    private readonly tagRepository: Repository<Tag>
   ) {}
 
   async createNote(createNoteDto: CreateNoteDto) {
@@ -56,10 +56,10 @@ export class NoteService {
 
   async findAllNote(req: { user_id: string }) {
     const roots = (await this.noteRepository.findRoots()).filter(
-      (e) => e.user_id === req.user_id,
+      (e) => e.user_id === req.user_id
     );
     const notes = Promise.all(
-      roots.map((root) => this.noteRepository.findDescendantsTree(root)),
+      roots.map((root) => this.noteRepository.findDescendantsTree(root))
     );
     console.log(await notes);
     return await notes;
@@ -112,12 +112,12 @@ export class NoteService {
   }
 
   async filterNote(req) {
-    const queryBuilder = await this.noteRepository.createQueryBuilder('note');
+    const queryBuilder = await this.noteRepository.createQueryBuilder("note");
     console.log(req);
 
-    queryBuilder.where('note.user_id = :user_id', { user_id: req.user_id });
+    queryBuilder.where("note.user_id = :user_id", { user_id: req.user_id });
     if (req.isFavorite)
-      queryBuilder.andWhere('note.is_favorited  = :is_favorited', {
+      queryBuilder.andWhere("note.is_favorited  = :is_favorited", {
         is_favorited: req.isFavorite,
       });
 
@@ -127,7 +127,7 @@ export class NoteService {
       nextDate.setDate(currentDate.getDate() + 1);
       console.log(nextDate);
       queryBuilder.andWhere(`note.created_at BETWEEN :from AND :to`, {
-        from: req.createdTimeFrom + ' 00:00:00',
+        from: req.createdTimeFrom + " 00:00:00",
         to: nextDate,
       });
     }
@@ -138,7 +138,7 @@ export class NoteService {
       nextDate.setDate(currentDate.getDate() + 1);
       console.log(nextDate);
       queryBuilder.andWhere(`note.updated_at BETWEEN :from AND :to`, {
-        from: req.updatedTimeFrom + ' 00:00:00',
+        from: req.updatedTimeFrom + " 00:00:00",
         to: nextDate,
       });
     }
@@ -147,85 +147,85 @@ export class NoteService {
 
     if (tagsLength > 0) {
       queryBuilder
-        .leftJoin('note.tags', 'tags')
+        .leftJoin("note.tags", "tags")
         .andWhere(`tags.id IN (:tagId)`, {
           tagId: req.tags,
         })
-        .groupBy('note.id')
-        .having('COUNT(tags.id) = :count', { count: tagsLength });
+        .groupBy("note.id")
+        .having("COUNT(tags.id) = :count", { count: tagsLength });
     }
 
     if (req.sortBy) {
-      req.sortBy === 'CreatedNewest' &&
-        queryBuilder.orderBy('note.' + 'created_at', 'DESC');
-      req.sortBy == 'CreatedOldest' &&
-        queryBuilder.orderBy('note.' + 'created_at', 'ASC');
-      req.sortBy == 'UpdatedNewest' &&
-        queryBuilder.orderBy('note.' + 'updated_at', 'DESC');
-      req.sortBy == 'UpdatedOldest' &&
-        queryBuilder.orderBy('note.' + 'updated_at', 'ASC');
+      req.sortBy === "CreatedNewest" &&
+        queryBuilder.orderBy("note." + "created_at", "DESC");
+      req.sortBy == "CreatedOldest" &&
+        queryBuilder.orderBy("note." + "created_at", "ASC");
+      req.sortBy == "UpdatedNewest" &&
+        queryBuilder.orderBy("note." + "updated_at", "DESC");
+      req.sortBy == "UpdatedOldest" &&
+        queryBuilder.orderBy("note." + "updated_at", "ASC");
     }
 
     if (req.keyword) {
       if (req.onlyTitle) {
         queryBuilder.andWhere(
-          `MATCH(note.title) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
+          `MATCH(note.title) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`
         );
       } else {
-        queryBuilder.leftJoin('note.image_contents', 'image_content').andWhere(
+        queryBuilder.leftJoin("note.image_contents", "image_content").andWhere(
           new Brackets((qb) => {
             qb.where(
-              `MATCH(note.title) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
+              `MATCH(note.title) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`
             )
               .orWhere(
                 new Brackets((qb) => {
                   qb.where(
-                    `note.content REGEXP '>([^<]*)${req.keyword}([^>]*)<'`,
+                    `note.content REGEXP '>([^<]*)${req.keyword}([^>]*)<'`
                   ).andWhere(
-                    `MATCH(note.content) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
+                    `MATCH(note.content) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`
                   );
-                }),
+                })
               )
               .orWhere(
-                `MATCH(image_content.content) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
+                `MATCH(image_content.content) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`
               );
-          }),
+          })
         );
       }
     }
 
     return await queryBuilder
-      .select('DISTINCT note.id AS id')
+      .select("DISTINCT note.id AS id")
       .addSelect([
-        'note.title AS title',
-        'note.created_at AS created_at',
-        'note.updated_at AS updated_at',
+        "note.title AS title",
+        "note.created_at AS created_at",
+        "note.updated_at AS updated_at",
       ])
       .distinct(true)
       .getRawMany();
   }
 
   async searchNote(req) {
-    const _ = require('lodash');
+    const _ = require("lodash");
     const searchQuery = req.body.keyword;
     const notes_matching_content = await this.noteRepository
-      .createQueryBuilder('note')
-      .select(['id', 'title', 'created_at', 'updated_at'])
-      .where('note.user_id = :id', { id: req.body.user_id })
+      .createQueryBuilder("note")
+      .select(["id", "title", "created_at", "updated_at"])
+      .where("note.user_id = :id", { id: req.body.user_id })
       .andWhere(
         new Brackets((qb) => {
           qb.where(
-            `MATCH(note.title) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
+            `MATCH(note.title) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`
           ).orWhere(
             new Brackets((qb) => {
               qb.where(
-                `note.content REGEXP '>([^<]*)${searchQuery}([^>]*)<'`,
+                `note.content REGEXP '>([^<]*)${searchQuery}([^>]*)<'`
               ).andWhere(
-                `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
+                `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`
               );
-            }),
+            })
           );
-        }),
+        })
       )
       .getRawMany();
     const notes_matching_image_content =
@@ -236,7 +236,7 @@ export class NoteService {
     return _.unionBy(
       notes_matching_content,
       notes_matching_image_content,
-      'id',
+      "id"
     );
   }
 
@@ -252,7 +252,7 @@ export class NoteService {
     const image_files = [];
     const other_files = [];
     files.map((e) => {
-      if (e.mimetype.includes('image')) {
+      if (e.mimetype.includes("image")) {
         image_files.push(e);
       } else {
         other_files.push(e);
@@ -282,8 +282,8 @@ export class NoteService {
     // Retrieve note's content and edit image's url (replace blob by localhost)
     if (req.body.content) {
       req.body.content = req.body.content.replaceAll(
-        'blob' + ':' + 'http://localhost:5173',
-        process.env.IMAGE_SERVER_PATH,
+        "blob" + ":" + "http://localhost:5173",
+        process.env.IMAGE_SERVER_PATH
       );
     }
 
@@ -305,7 +305,7 @@ export class NoteService {
   async importNote(files, req) {
     const data = JSON.parse(req.body.data);
     const newNote: CreateNoteDto = {
-      title: data.title ? data.title : 'Untitled',
+      title: data.title ? data.title : "Untitled",
       user_id: data.user_id,
       size: 0,
       parent_id: data.parent_id,
@@ -366,7 +366,7 @@ export class NoteService {
       content: merged_note.content.concat(current_note.content),
       tags: merged_note.tags.concat(current_note.tags),
       image_contents: merged_note.image_contents.concat(
-        current_note.image_contents,
+        current_note.image_contents
       ),
       childNotes: merged_note.childNotes.concat(current_note.childNotes),
       backlinks: merged_note.backlinks.concat(current_note.backlinks),
@@ -377,6 +377,10 @@ export class NoteService {
     await this.noteRepository.save(dto);
     await this.removeNote(id);
     return await this.findOneNote(req.merged_note_id);
+  }
+
+  async updateIsAnyone(id, is_anyone) {
+    return await this.noteRepository.update(id, { is_anyone: is_anyone });
   }
 
   async findAttachmentsOfNote(id: string) {
