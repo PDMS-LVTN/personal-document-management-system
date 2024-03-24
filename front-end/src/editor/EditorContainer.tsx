@@ -172,8 +172,8 @@ function EditorContainer({ editorRef}) {
         await doc.save(`${currentNote.title}.pdf`);
       },
       autoPaging: "text",
-      margin: [16, 0, 20, 18],
-      html2canvas: { scale: 0.24 },
+      margin: [20, 0, 20, 16],
+      html2canvas: { scale: 0.23 },
     });
     setLoadingExport(false);
   };
@@ -182,9 +182,9 @@ function EditorContainer({ editorRef}) {
     if (event.key === "Escape") {
       setFullScreen(false);
     }
-    if (event.key === "f" || event.key === "F") {
-      setFullScreen(true);
-    }
+    // if (event.key === "f" || event.key === "F") {
+    //   setFullScreen(true);
+    // }
   }, []);
 
   useEffect(() => {
@@ -198,13 +198,7 @@ function EditorContainer({ editorRef}) {
   const [drawer, showDrawer] = useDrawer("sm");
 
   return (
-    <div className="full-screen" style={ isFullScreen ? {
-      position: "fixed",
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-    } : {}}>
+    <div className={ isFullScreen?"full-screen":""}>
       {drawer}
       {/* BUG: where is the spinner? */}
       {/* FIX: https://stackoverflow.com/questions/73031972/how-to-get-state-from-custom-hooks-to-update-in-parent-component */}

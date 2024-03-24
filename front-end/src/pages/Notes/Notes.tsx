@@ -187,6 +187,7 @@ const Notes = ({
                 width: "32px",
                 padding: "7px",
                 borderRadius: "50%",
+                background: "var(--brand50)",
               }}
               onClick={onOpen}
             >

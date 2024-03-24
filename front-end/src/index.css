@@ -35,7 +35,7 @@
 
 .inside-editor {
   /* padding-left: 3em; */
-  height: calc(100vh - 120px - 65px - 60px);
+  height: calc(100vh - 120px - 65px - 20px);
   overflow-y: auto;
   /* position: relative; */
 }
@@ -85,7 +85,7 @@
 
 #structure-grid-item,
 #search-box-grid-item {
-  min-width: 320px;
+  min-width: 380px;
 }
 
 /* #structure-grid-item,
@@ -173,5 +173,18 @@
 
 
 .full-screen {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   background: #fff;
+}
+
+.full-screen .inside-editor {
+  height: calc(100vh - 120px - 30px);
+}
+
+.highlighted {
+  background: #f0c52a;
 }
