@@ -19,6 +19,7 @@ import {
   FilesInterceptor,
 } from '@nestjs/platform-express';
 import path = require('path');
+import { Public } from '../auth/auth.decorator';
 
 @ApiTags('note')
 @Controller('api/note/')
@@ -160,5 +161,11 @@ export class NoteController {
   @Get('attachments/:id')
   async findAttachmentsOfNote(@Param('id') id: string) {
     return await this.noteService.findAttachmentsOfNote(id);
+  }
+
+  @Public()
+  @Get('is_anyone/:id')
+  async findOneNoteForAnyone(@Param('id') id: string) {
+    return await this.noteService.findOneNoteForAnyone(id);
   }
 }

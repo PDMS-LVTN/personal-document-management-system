@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import {
@@ -373,8 +373,8 @@ export class NoteService {
     return await this.findOneNote(req.merged_note_id);
   }
 
-  async updateIsAnyone(id, is_anyone) {
-    return await this.noteRepository.update(id, { is_anyone: is_anyone });
+  async updateIsAnyone(id, req) {
+    return await this.noteRepository.update(id, { is_anyone: req.is_anyone });
   }
 
   async findAttachmentsOfNote(id: string) {
@@ -392,5 +392,36 @@ export class NoteService {
       images: images,
       files: files,
     };
+  }
+
+  async findOneNoteForAnyone(id: string) {
+    const note = await this.noteRepository.findOne({
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        childNotes: {
+          id: true,
+          title: true,
+        },
+        parent_id: true,
+        is_favorited: true,
+        is_pinned: true,
+      },
+      where: {
+        id: Equal(id),
+        is_anyone: true,
+      },
+      relations: {
+        childNotes: true,
+        headlinks: true,
+        backlinks: true,
+        tags: true,
+      },
+    });
+    if (!note) {
+      return false;
+    }
+    return note;
   }
 }
