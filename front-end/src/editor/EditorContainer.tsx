@@ -167,7 +167,7 @@ function EditorContainer({ editorRef }) {
       const response = await fetch(font.path);
       const blob = await response.blob();
       const file = new File([blob], "font.ttf", { type: "font/ttf" });
-      const base64String = await convertTTFToBase64(file);
+      const base64String = (await convertTTFToBase64(file)) as string;
       doc.addFileToVFS("font.ttf", base64String);
       doc.addFont("font.ttf", font.name, font.size);
     }

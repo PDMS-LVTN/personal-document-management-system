@@ -9,6 +9,7 @@ import {
   UploadedFiles,
   Req,
   UseInterceptors,
+  Logger,
 } from '@nestjs/common';
 import { NoteService } from './note.service';
 import { CreateNoteDto } from './dto/create-note.dto';
@@ -24,7 +25,9 @@ import { Public } from '../auth/auth.decorator';
 @ApiTags('note')
 @Controller('api/note/')
 export class NoteController {
-  constructor(private readonly noteService: NoteService) {}
+  constructor(private readonly noteService: NoteService) { }
+  private readonly logger = new Logger(NoteController.name);
+
 
   @Post('add_note')
   async createNote(@Body() createNoteDto: CreateNoteDto) {
@@ -94,7 +97,7 @@ export class NoteController {
     @Param('id') id: string,
     @Body() req: { is_anyone: boolean },
   ) {
-    return await this.noteService.updateIsAnyone(id, req);
+    return await this.noteService.updateIsAnyone(id, req.is_anyone);
   }
 
   @Patch(':id')

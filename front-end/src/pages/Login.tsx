@@ -33,7 +33,8 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/notes";
+  const from = location.state?.from || "/notes";
+  const isShared = location.state?.isShared;
 
   // const { auth, setAuth } = useContext(AuthContext);
   const setAuth = useAuthentication((state) => state.setAuth);
@@ -58,9 +59,7 @@ const Login = () => {
   const checkPermissionWithEmail = async (noteId: string, email: string) => {
     const options = {
       method: "GET",
-      data: {
-        email,
-      },
+      params: { email },
     };
     const { responseData, responseError } = await callApi(
       `note_collaborator/${noteId}`,
@@ -69,14 +68,18 @@ const Login = () => {
     return { responseData, responseError };
   };
   const handleShareNavigation = async (email: string) => {
-    console.log("handleShareNavigation");
     const { responseData, responseError } = await checkPermissionWithEmail(
       location.state.noteId,
       email
     );
-    console.log(responseData, responseError);
-    if (!responseData.length) {
-      navigate("/unauthorized");
+    if (responseError) {
+      navigate("/unauthorized", {
+        state: {
+          isShared: true,
+          noteId: location.state.noteId,
+          from: from,
+        },
+      });
     } else {
       navigate(from, {
         replace: true,
@@ -117,7 +120,7 @@ const Login = () => {
       });
       setUser("");
       setPwd("");
-      if (location.state?.isShared) {
+      if (isShared) {
         handleShareNavigation(user);
       } else {
         navigate(from, { replace: true });
@@ -144,7 +147,8 @@ const Login = () => {
         id: response?.data?.id,
         avatar: userObject.picture,
       });
-      if (location.state?.isShared) {
+      if (isShared) {
+        console.log("here");
         handleShareNavigation(userObject.email);
       } else {
         navigate(from, { replace: true });
@@ -193,7 +197,7 @@ const Login = () => {
               onClick={() =>
                 navigate("/", {
                   replace: true,
-                  state: { isShared: location.state?.isShared, from },
+                  state: { isShared: isShared, from },
                 })
               }
             >
@@ -203,7 +207,7 @@ const Login = () => {
           </div>
         </div>
         <section>
-          {location.state?.isShared && (
+          {isShared && (
             <Alert status="info" sx={{ mb: "1em" }}>
               <AlertIcon />
               Sign in to open this document

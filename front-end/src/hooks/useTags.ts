@@ -1,4 +1,3 @@
-import { useApp } from "../store/useApp";
 import { useAuthentication } from "../store/useAuth";
 import { APIEndPoints } from "../api/endpoint";
 import { useApi } from "./useApi";
@@ -6,11 +5,6 @@ import { AxiosRequestConfig } from "axios";
 
 export const useTags = () => {
     const auth = useAuthentication((state) => state.auth);
-    // const currentTags = useApp((state) => state.currentTags);
-    // const setCurrentTags = useApp((state) => state.setCurrentTags);
-    // const allTags = useApp((state) => state.allTags);
-    // const setAllTags = useApp((state) => state.setAllTags);
-
     const callApi = useApi()
 
     const createTag = async (newTag: string, note_id: string) => {

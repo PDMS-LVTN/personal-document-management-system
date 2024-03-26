@@ -5,7 +5,7 @@ import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
 import { Tag, TagCloseButton, TagLabel } from "@chakra-ui/tag";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDownIcon, Link } from "lucide-react";
-import { ShareMode } from "@/data/constant";
+import { ShareMode } from "@/lib/data/constant";
 import { Spinner } from "@chakra-ui/spinner";
 
 const SharedModal = ({ noteId, onClose, actions }) => {
@@ -37,13 +37,12 @@ const SharedModal = ({ noteId, onClose, actions }) => {
   }, []);
 
   const generalAccessMode = (x) => {
-    console.log(x);
     return x ? "Anyone with the link" : "Restricted";
   };
 
   const ref = useRef(null);
 
-  if (isLoading) return <Spinner />;
+  if (isLoading) return <Spinner margin="auto" />;
   return (
     <>
       <div className="flex gap-3">

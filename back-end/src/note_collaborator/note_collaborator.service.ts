@@ -1,4 +1,4 @@
-import { Get, Injectable, NotAcceptableException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateNoteCollaboratorDto } from './dto/create-note_collaborator.dto';
 import { UpdateNoteCollaboratorDto } from './dto/update-note_collaborator.dto';
 import { NoteCollaborator } from './entities/note_collaborator.entity';
@@ -53,19 +53,24 @@ export class NoteCollaboratorService {
     return { emails: retEmails, is_anyone: is_anyone.is_anyone };
   }
 
-  async findOneNoteByCollaborator(note_id, req) {
+  async findOneNoteByCollaborator(note_id, email) {
     const note = await this.noteCollaboratorRepository.findOne({
-      where: {
+      where: [{
         note_id: note_id,
-        email: req.email,
-      },
+        email: email,
+      }, {
+        note_id: note_id,
+        note: {
+          is_anyone: true,
+        },
+      },],
       relations: {
         note: true,
       },
     });
     if (!note) {
-      throw new NotAcceptableException('Email is not invited');
+      throw new UnauthorizedException();
     }
-    return note;
+    return note.note;
   }
 }

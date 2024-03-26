@@ -3,7 +3,6 @@ import { useApp } from "../store/useApp";
 import useAxiosJWT from "./useAxiosJWT";
 import { useToast } from "@chakra-ui/react";
 import { useAuthentication } from "../store/useAuth";
-// import { useLocation } from "react-router-dom";
 
 export const useFavorite = () => {
     const clean = useApp((state) => state.clean);
@@ -14,11 +13,6 @@ export const useFavorite = () => {
     const setAuth = useAuthentication((state) => state.setAuth);
     const currentNote = useApp((state) => state.currentNote);
     const setCurrentNote = useApp((state) => state.setCurrentNote);
-
-    // const treeItems = useApp((state) => state.treeItems);
-    // const setTree = useApp((state) => state.setTree);
-
-    // const location = useLocation()
 
     const getFavoriteNotes = async () => {
         try {
@@ -58,26 +52,6 @@ export const useFavorite = () => {
                 }
             );
             console.log(response.data);
-
-            // if (location.pathname == '/favorite') {
-            //     if (!currentNote?.is_favorited) {
-            //         setTree([
-            //             ...treeItems,
-            //             {
-            //                 title: currentNote.title,
-            //                 id: currentNote.id,
-            //                 childNotes: [],
-            //             },
-            //         ]);
-            //     }
-            //     else {
-            //         let index = treeItems.findIndex((x) => x.id === currentNote.id);
-            //         setTree([
-            //             ...treeItems.slice(0, index),
-            //             ...treeItems.slice(index + 1),
-            //         ]);
-            //     }
-            // }
             setCurrentNote({
                 ...currentNote,
                 is_favorited: !currentNote.is_favorited,

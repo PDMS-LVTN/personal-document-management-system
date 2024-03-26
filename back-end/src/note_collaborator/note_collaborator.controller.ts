@@ -6,19 +6,22 @@ import {
   Patch,
   Param,
   Delete,
-} from '@nestjs/common';
-import { NoteCollaboratorService } from './note_collaborator.service';
-import { CreateNoteCollaboratorDto } from './dto/create-note_collaborator.dto';
-import { UpdateNoteCollaboratorDto } from './dto/update-note_collaborator.dto';
-import { ApiTags } from '@nestjs/swagger';
-import { Public } from '../auth/auth.decorator';
+  Logger,
+  Query
+} from "@nestjs/common";
+import { NoteCollaboratorService } from "./note_collaborator.service";
+import { CreateNoteCollaboratorDto } from "./dto/create-note_collaborator.dto";
+import { UpdateNoteCollaboratorDto } from "./dto/update-note_collaborator.dto";
+import { ApiTags } from "@nestjs/swagger";
+import { Public } from '../auth/auth.decorator'
 
 @ApiTags('note_collaborator')
 @Controller('api/note_collaborator/')
 export class NoteCollaboratorController {
   constructor(
     private readonly noteCollaboratorService: NoteCollaboratorService,
-  ) {}
+  ) { }
+  // private readonly logger = new Logger(NoteCollaboratorController.name);
 
   @Post('add_note_collaborator')
   async createNoteCollaborator(
@@ -34,17 +37,17 @@ export class NoteCollaboratorController {
     return await this.noteCollaboratorService.findCollaboratorsOfNote(note_id);
   }
 
-  @Get(':note_id')
-  async findOneNoteByCollaborator(
-    @Param('note_id') note_id: string,
-    @Body()
-    req: {
-      email: string;
-    },
+  @Get(":note_id")
+  async findOneNoteWithEmail(
+    @Param("note_id") note_id: string,
+    @Query() query
+      : {
+        email: string;
+      }
   ) {
     return await this.noteCollaboratorService.findOneNoteByCollaborator(
       note_id,
-      req,
+      query.email
     );
   }
 

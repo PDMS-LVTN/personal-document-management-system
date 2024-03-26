@@ -7,7 +7,7 @@ import { APIEndPoints } from "../api/endpoint";
 import { tempState } from "@/editor/lib/api";
 import { useApi } from "./useApi";
 import { convertToHtml } from "mammoth";
-import { ShareMode } from "@/data/constant";
+import { ShareMode } from "@/lib/data/constant";
 
 const useNotes = () => {
   // console.log("use notes")
@@ -256,7 +256,6 @@ const useNotes = () => {
 
   async function replaceImageTag(temp, ...group) {
     const src = group[1];
-    console.log(src);
     const response = await fetch(src);
     const blob = await response.blob();
     const type = src.substring(5, src.indexOf(";"));
@@ -291,7 +290,6 @@ const useNotes = () => {
         tempState
       );
       tempState.content = sourceReplacedContent;
-
       tempState.content = tempState.content.replace(
         // /<p\b[^>]*>(<strong>|<i>|<em>|<u>)*(<img\b[^>]*>)(<\/strong>|<\/i>|<\/em>|<\/u>)*<\/p>/g,
         /<p[^>]*>([^\/]*?)(<img[^>]*?src="([^>]+)"[^>]*>).*?<\/p>/g,
@@ -300,7 +298,6 @@ const useNotes = () => {
           return match[2];
         }
       );
-      console.log(tempState.content);
     } catch (error) {
       setLoading(false);
       console.error(error);

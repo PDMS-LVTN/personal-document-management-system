@@ -18,7 +18,7 @@ export class ImageContentService {
     private readonly imageContentRepository: Repository<ImageContent>,
     // private readonly searchService: SearchService,
     private readonly httpService: HttpService,
-  ) {}
+  ) { }
 
   async uploadImage(files, req, note_ID) {
     const response = [];
@@ -82,7 +82,7 @@ export class ImageContentService {
       rel.push(relFile);
     });
 
-    console.log(rel);
+    // console.log(rel);
 
     // Save image and text in database
     return this.updateImageContent(rel);
@@ -148,7 +148,7 @@ export class ImageContentService {
   }
 
   async extractText(req) {
-    console.log(req.note_ID, req.path);
+    // console.log(req.note_ID, req.path);
     return await this.imageContentRepository.find({
       select: {
         content: true,

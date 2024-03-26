@@ -1,4 +1,4 @@
-import { SimpleTree } from "@/data/tree";
+import { SimpleTree } from "@/lib/data/tree";
 import { useMemo, useState } from "react";
 import {
     CreateHandler,
@@ -44,7 +44,7 @@ export function useTree<T>(initialData: T[], actions?) {
         // const response = await actions.createNote(parentId)
         const id = parentId.split(',')[1]
         const title = parentId.split(',')[2]
-        parentId = parentId.split(',')[0]=== 'null' ? null : parentId.split(',')[0]
+        parentId = parentId.split(',')[0] === 'null' ? null : parentId.split(',')[0]
         console.log(id, title, parentId)
         const data = { id: id, title: title } as any;
         if (type === "internal") data.childNotes = [];
