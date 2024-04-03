@@ -41,7 +41,7 @@ export const EditorInfo = memo(
         </div>
         <img
           className="w-8 h-8 border border-white rounded-full dark:border-black"
-          src={auth.avatar}
+          src={auth?.avatar || "\\brand-icon-purple.png"}
           alt="avatar"
         />
         {/* {collabState === "connected" && (

@@ -2,7 +2,7 @@
 
 import { Editor as CoreEditor } from "@tiptap/core";
 import { memo, useEffect, useState } from "react";
-// import { TableOfContentsStorage } from "@tiptap-pro/extension-table-of-contents";
+import { TableOfContentsStorage } from "@tiptap-pro/extension-table-of-contents";
 import { cn } from "@/editor/lib/utils";
 
 export type TableOfContentsProps = {
@@ -12,8 +12,7 @@ export type TableOfContentsProps = {
 
 export const TableOfContents = memo(
   ({ editor, onItemClick }: TableOfContentsProps) => {
-    // const [data, setData] = useState<TableOfContentsStorage | null>(null);
-    const [data, setData] = useState(null);
+    const [data, setData] = useState<TableOfContentsStorage | null>(null);
 
     useEffect(() => {
       const handler = ({ editor: currentEditor }: { editor: CoreEditor }) => {
@@ -36,7 +35,7 @@ export const TableOfContents = memo(
         <div className="mb-2 text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400">
           Table of contents
         </div>
-        {data && data.content.length > 0 ? (
+        {data && data.content?.length > 0 ? (
           <div className="flex flex-col gap-1">
             {data.content.map((item) => (
               <a

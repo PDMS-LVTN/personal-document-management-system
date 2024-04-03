@@ -18,17 +18,27 @@ import { Search } from "../pages/Search.tsx";
 import { Help } from "../pages/Help.tsx";
 import TagContainer from "../pages/Tags/TagContainer.tsx";
 import NotesInTag from "../pages/Tags/NotesInTag.tsx";
+// import SharedNotes from "@/pages/Notes/SharedNotes.tsx";
+import SharedNote from "@/pages/Notes/SharedNote.tsx";
+import { Unauthorized } from "@/pages/Unauthorized.tsx";
+import { ErrorBoundary } from "@/pages/ErrorBoundary.tsx";
 
 export const router = () => {
   return createBrowserRouter(
     createRoutesFromElements(
       <>
-        <Route path="/" element={<RootLayout />}>
+        <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route
+          path="/"
+          element={<RootLayout />}
+          errorElement={<ErrorBoundary />}
+        >
           <Route index element={<SignUp />} />
           <Route path="login" element={<Login />} />
           <Route path="password" element={<Password />} />
         </Route>
-        <Route element={<RequireAuth />}>
+        <Route element={<RequireAuth />} errorElement={<ErrorBoundary />}>
+          <Route path="note/:noteId" element={<SharedNote />} />
           <Route element={<HomeLayout />}>
             <Route element={<TreeAndEditorContainer />}>
               <Route path="/notes" element={<NoteContainer />} />
@@ -36,6 +46,9 @@ export const router = () => {
               <Route path="/tags" element={<TagContainer />}>
                 <Route path=":tagId" element={<NotesInTag />} />
               </Route>
+              {/* <Route path="/shared/note" element={<SharedNotes />}> */}
+              {/* <Route path="note/:noteId" element={<SharedNote />} /> */}
+              {/* </Route> */}
               <Route path="/search" element={<Search />} />
               <Route path="/help" element={<Help />} />
             </Route>

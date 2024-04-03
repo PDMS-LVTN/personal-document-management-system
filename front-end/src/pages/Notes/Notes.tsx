@@ -29,6 +29,7 @@ import {
   ChevronsUpDown,
   SlidersHorizontal,
 } from "lucide-react";
+import { FaPlus } from "react-icons/fa6";
 
 declare global {
   interface Window {
@@ -130,7 +131,7 @@ const Notes = ({
             gap={4}
           >
             <Text fontSize="xl" fontWeight="50" color="brand.300">
-              Importing...
+              Processing...
             </Text>
             <Spinner
               thickness="4px"
@@ -150,18 +151,25 @@ const Notes = ({
           </ModalBody>
         </ModalContent>
       </Modal>
-      <Flex justify="space-between" mb="1em" pl="2em" pr="2em" id="notes">
+      <Flex
+        justify="space-between"
+        alignItems="center"
+        mb="1em"
+        pl="2em"
+        pr="2em"
+        id="notes"
+      >
         <Text fontSize="2xl" fontWeight="600">
           Notes
         </Text>
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <Tooltip label={toggle ? "Collapse all" : "Expand all"}>
             <Button
               variant="ghost"
               // mr="0.5em"
               style={{
-                height: "32px",
-                width: "32px",
+                height: "40px",
+                width: "40px",
                 padding: "8px",
                 borderRadius: "50%",
               }}
@@ -183,11 +191,10 @@ const Notes = ({
               variant="ghost"
               mr="0.5em"
               style={{
-                height: "32px",
-                width: "32px",
+                height: "40px",
+                width: "40px",
                 padding: "7px",
                 borderRadius: "50%",
-                background: "var(--brand50)",
               }}
               onClick={onOpen}
             >
@@ -200,7 +207,6 @@ const Notes = ({
               height="32px"
               width="32px"
               padding="10px"
-              // transition="all 0.2s"
               borderRadius="50%"
               background="var(--brand400)"
             >
@@ -297,9 +303,7 @@ const Notes = ({
           controller.onMove(args);
           await actions.moveNote(args.dragIds, args.parentId);
         }}
-        // paddingTop={30}
         paddingBottom={10}
-        // padding={25 /* sets both */}
         searchTerm={term}
         searchMatch={(node, term) =>
           node.data.title.toLowerCase().includes(term.toLowerCase())

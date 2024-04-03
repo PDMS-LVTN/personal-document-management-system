@@ -1,7 +1,7 @@
 import { cn } from "@/editor/lib/utils";
 import { memo, useCallback } from "react";
 import { Editor } from "@tiptap/react";
-// import { TableOfContents } from "../TableOfContents";
+import { TableOfContents } from "../TableOfContents";
 
 export const Sidebar = memo(
   ({
@@ -30,11 +30,10 @@ export const Sidebar = memo(
       <div className={windowClassName}>
         <div className="w-full h-full overflow-hidden">
           <div className="w-full h-full p-6 overflow-auto">
-            {/* <TableOfContents
+            <TableOfContents
               onItemClick={handlePotentialClose}
               editor={editor}
-            /> */}
-            table of content here
+            />
           </div>
         </div>
       </div>

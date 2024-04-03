@@ -11,4 +11,4 @@ import { User } from '../user/entities/user.entity';
   controllers: [NoteCollaboratorController],
   providers: [NoteCollaboratorService],
 })
-export class NoteCollaboratorModule {}
+export class NoteCollaboratorModule { }

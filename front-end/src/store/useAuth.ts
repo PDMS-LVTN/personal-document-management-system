@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist, devtools } from 'zustand/middleware'
+import { persist, devtools, createJSONStorage } from 'zustand/middleware'
 
 interface User {
     email: string;
@@ -15,4 +15,4 @@ interface AuthStore {
 export const useAuthentication = create<AuthStore>()(devtools(persist((set) => ({
     auth: undefined,
     setAuth: (newAuth) => set({ auth: newAuth })
-}), { name: "user store" })))
+}), { name: "user store", storage: createJSONStorage(() => sessionStorage) })))

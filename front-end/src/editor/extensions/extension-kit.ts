@@ -45,12 +45,14 @@ import {
 } from '.'
 import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight'
 import { ImageUpload } from './ImageUpload'
-// import { TableOfContentsNode } from './TableOfContentsNode'
+import { TableOfContentsNode } from './TableOfContentsNode'
 // import { lowlight } from 'lowlight/lib/core';
 // https://stackoverflow.com/questions/77573628/how-do-you-highlight-codeblock-with-tiptap
 import { common, createLowlight } from 'lowlight';
 import { FileBlock } from './FileBlock';
 import { FileUpload } from './FileUpload';
+import TableOfContents from '@tiptap-pro/extension-table-of-contents';
+import { Mathematics } from '@tiptap-pro/extension-mathematics'
 
 // interface ExtensionKitProps {
 //   provider?: HocuspocusProvider | null
@@ -105,8 +107,8 @@ export const ExtensionKit = () => [
   Highlight.configure({ multicolor: true }),
   Underline,
   CharacterCount.configure({ limit: 50000 }),
-  // TableOfContents,
-  // TableOfContentsNode,
+  TableOfContents,
+  TableOfContentsNode,
   // ImageUpload.configure({
   //   clientId: provider?.document?.clientID,
   // }),
@@ -166,6 +168,7 @@ export const ExtensionKit = () => [
     width: 2,
     class: 'ProseMirror-dropcursor border-black',
   }),
+  Mathematics
 ]
 
 export default ExtensionKit

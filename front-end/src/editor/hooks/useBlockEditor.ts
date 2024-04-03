@@ -16,8 +16,7 @@ import History from '@tiptap/extension-history'
 import { useSidebar } from './useSidebar'
 // import { initialContent } from '@/editor/lib/data/initialContent'
 import { useApp } from '@/store/useApp'
-import API, { tempState } from '../lib/api'
-import { images } from 'mammoth'
+import { tempState } from '../lib/api'
 
 // const TIPTAP_AI_APP_ID = process.env.NEXT_PUBLIC_TIPTAP_AI_APP_ID
 // const TIPTAP_AI_BASE_URL = process.env.NEXT_PUBLIC_TIPTAP_AI_BASE_URL || 'https://api.tiptap.dev/v1/ai'
@@ -37,7 +36,7 @@ declare global {
 //   ydoc: Y.Doc
 //   provider?: TiptapCollabProvider | null | undefined
 // }) => {
-export const useBlockEditor = () => {
+export const useBlockEditor = (initialContent?) => {
     const leftSidebar = useSidebar()
     const currentNote = useApp((state) => state.currentNote);
     //   const [collabState, setCollabState] = useState<WebSocketStatus>(WebSocketStatus.Connecting)
@@ -53,12 +52,15 @@ export const useBlockEditor = () => {
                 //     }
                 // })
                 if (editor.isEmpty) {
-                    editor.commands.setContent(currentNote?.content || '<p> Hello world </p>')
+                    if (initialContent)
+                        editor.commands.setContent(initialContent)
+                    else
+                        editor.commands.setContent(currentNote?.content || '<p> Hello world </p>')
                 }
             },
             extensions: [
                 ...ExtensionKit(),
-                History
+                History,
                 // Collaboration.configure({
                 //   document: ydoc,
                 // }),
@@ -99,7 +101,6 @@ export const useBlockEditor = () => {
                     const items = Array.from(event.clipboardData?.files || []);
                     for (const item of items) {
                         if (item.type.indexOf("image") === 0) {
-                            // let img = new Image(); /* global Image */
                             const ext = item.name.substring(item.name.indexOf("."));
                             const url = URL.createObjectURL(item);
                             console.log(url)

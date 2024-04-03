@@ -1,6 +1,6 @@
 // import { WebSocketStatus } from "@hocuspocus/provider";
 import { EditorContent, PureEditorContent } from "@tiptap/react";
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { LinkMenu } from "@/editor/components/menus";
 
@@ -20,17 +20,31 @@ import { TableColumnMenu, TableRowMenu } from "@/editor/extensions/Table/menus";
 import { EditorHeader } from "./components/EditorHeader";
 import { TextMenu } from "../menus/TextMenu";
 import useModal from "@/hooks/useModal";
-// import { ContentItemMenu } from "../menus/ContentItemMenu";
+import { ContentItemMenu } from "../menus/ContentItemMenu";
+import { cn } from "@/editor/lib/utils";
 
+type TipTapProps = {
+  editorRef;
+  isEditable;
+  initialContent?;
+  className?;
+};
 // export const BlockEditor = ({ aiToken, ydoc, provider }: TiptapProps) => {
-export const BlockEditor = ({ editorRef }) => {
+export const BlockEditor = ({
+  editorRef,
+  isEditable,
+  initialContent,
+  className,
+}: TipTapProps) => {
   // const aiState = useAIState()
   const menuContainerRef = useRef(null);
   const [modal, showModal] = useModal();
+  const [editable, setEditable] = useState(isEditable);
   // const editorRef = useRef<PureEditorContent | null>(null);
 
   // const { editor, users, characterCount, collabState, leftSidebar } = useBlockEditor({ aiToken, ydoc, provider })
-  const { editor, leftSidebar, characterCount } = useBlockEditor();
+  const { editor, leftSidebar, characterCount } =
+    useBlockEditor(initialContent);
 
   // const displayedUsers = users.slice(0, 3)
 
@@ -43,6 +57,14 @@ export const BlockEditor = ({ editorRef }) => {
   //   }
   // }, [aiState])
 
+  useEffect(() => {
+    if (!editor) {
+      return undefined;
+    }
+
+    editor.setEditable(editable);
+  }, [editor, editable]);
+
   if (!editor) {
     return null;
   }
@@ -51,7 +73,7 @@ export const BlockEditor = ({ editorRef }) => {
 
   return (
     // <EditorContext.Provider value={providerValue}>
-    <div className="flex" ref={menuContainerRef}>
+    <div className={cn("flex", className)} ref={menuContainerRef}>
       {modal}
       <Sidebar
         isOpen={leftSidebar.isOpen}
@@ -77,13 +99,12 @@ export const BlockEditor = ({ editorRef }) => {
           appendTo={menuContainerRef}
           showModal={showModal}
         />
+        {/* <ContentItemMenu editor={editor} /> */}
         <EditorContent
           editor={editor}
           ref={editorRef}
-          // className="flex-1 overflow-y-auto inside-editor"
           className="inside-editor"
         />
-        {/* <ContentItemMenu editor={editor} /> */}
       </div>
     </div>
     //  {aiState.isAiLoading && aiLoaderPortal}

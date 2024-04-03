@@ -8,7 +8,7 @@ import {
   AlertTitle,
   AlertDescription,
 } from "@chakra-ui/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ControlledInput } from "../components/ControlledInput";
 import { useRef, useState, useEffect } from "react";
 import axios from "../api/axios";
@@ -20,6 +20,10 @@ const REGISTER_URL = "/user/sign_up";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname;
+  const isShared = location.state?.isShared;
 
   const userRef = useRef<HTMLDivElement>(null);
   const errRef = useRef<HTMLDivElement>(null);
@@ -83,7 +87,7 @@ const SignUp = () => {
       setUser("");
       setPwd("");
       setMatchPwd("");
-      navigate("/login");
+      navigate("/login", { state: { from, isShared } });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");

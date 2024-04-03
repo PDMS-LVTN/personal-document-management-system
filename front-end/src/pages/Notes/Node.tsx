@@ -6,12 +6,14 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  ModalCloseButton,
+  ModalHeader,
   Spinner,
   Text,
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CSSProperties } from "react";
+import { CSSProperties, useState } from "react";
 import { NodeApi, TreeApi } from "react-arborist";
 import { RxCaretDown, RxCaretRight } from "react-icons/rx";
 import { LuPlus } from "react-icons/lu";
@@ -20,6 +22,8 @@ import { AiFillFile } from "react-icons/ai";
 import { FaFileCirclePlus } from "react-icons/fa6";
 import useNotes from "@/hooks/useNotes";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
+import useModal from "@/hooks/useModal";
+import SharedModal from "@/components/SharedModal";
 
 const Node = ({
   node,
@@ -32,33 +36,42 @@ const Node = ({
   tree: TreeApi<Note>;
   dragHandle?: (el: HTMLDivElement | null) => void;
 }) => {
-  //   const CustomIcon = node.data.icon;
-  //   const iconColor = node.data.iconColor;
-  // node.handleClick = () => {
-  //   console.log("click");
-  //   node.select();
-  // };
   const setCurrentNote = useApp((state) => state.setCurrentNote);
   const currentNote = useApp((state) => state.currentNote);
   const setIsMerge = useApp((state) => state.setIsMerge);
   const { isLoading, actions } = useNotes();
+  // const [modal, showModal] = useModal("lg");
 
   const handleInputChange = async (e) => {
     const res = await actions.importNote(node.id, e.target.files[0]);
-    res && tree.create({
-      type: "internal",
-      parentId: node.id +','+ res.id + ','+ res.title,
-      index: node.childIndex + 1,
-    });
+    res &&
+      tree.create({
+        type: "internal",
+        parentId: node.id + "," + res.id + "," + res.title,
+        index: node.childIndex + 1,
+      });
   };
 
   const handleCreateNote = async () => {
     const res = await actions.createNote(node.id);
     tree.create({
       type: "internal",
-      parentId: node.id + ','+ res.id + ','+ res.title,
+      parentId: node.id + "," + res.id + "," + res.title,
       index: node.childIndex + 1,
     });
+  };
+
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const handleShare = () => {
+    // showModal(
+    //   `Share "${node.data.title}"`,
+    //   (onClose) => {
+    //     return <SharedModal actions={actions} node={node} onClose={onClose} />;
+    //   },
+    //   true
+    // );
+    setIsOpen(true);
   };
 
   const { onClose } = useDisclosure();
@@ -69,6 +82,28 @@ const Node = ({
       style={style}
       ref={dragHandle}
     >
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+        }}
+        size="lg"
+      >
+        <ModalOverlay />
+        <ModalContent pb={5}>
+          <ModalHeader>{`Share "${node.data.title}"`}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <SharedModal
+              actions={actions}
+              noteId={node.id}
+              onClose={() => {
+                setIsOpen(false);
+              }}
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
       <Modal isOpen={isLoading} onClose={onClose} size="sm">
         <ModalOverlay />
         <ModalContent>
@@ -79,7 +114,7 @@ const Node = ({
             gap={4}
           >
             <Text fontSize="xl" fontWeight="50" color="brand.300">
-              Importing...
+              Processing...
             </Text>
             <Spinner
               thickness="4px"
@@ -99,7 +134,7 @@ const Node = ({
       >
         {!node.data.childNotes.length ? (
           <>
-            <span className="arrow" style={{width:'16px'}}></span>
+            <span className="arrow" style={{ width: "16px" }}></span>
             <span className="mr-3">
               <AiFillFile color="var(--brand300)" size="20px" />
             </span>
@@ -125,7 +160,10 @@ const Node = ({
                 if (e.key === "Escape") node.reset();
                 if (e.key === "Enter") {
                   node.submit(e.currentTarget.value);
-                  setCurrentNote({...currentNote, title: e.currentTarget.value});
+                  setCurrentNote({
+                    ...currentNote,
+                    title: e.currentTarget.value,
+                  });
                   actions.updateNote(e.currentTarget.value);
                 }
               }}
@@ -156,7 +194,7 @@ const Node = ({
           <MenuList>
             <MenuItem
               onClick={() => {
-                setIsMerge(true)
+                setIsMerge(true);
                 tree.delete(node.id);
               }}
             >
@@ -179,22 +217,21 @@ const Node = ({
                 onChange={handleInputChange}
               />
             </MenuItem>
-            {/* <MenuItem
+            <MenuItem
+              onClick={() => {
+                node.edit();
+              }}
+            >
+              Rename
+            </MenuItem>
+            <MenuItem
               onClick={(e) => {
                 e.stopPropagation();
-                node.edit();
+                handleShare();
               }}
             >
-              Rename Note
-            </MenuItem> */}
-            <MenuItem
-              onClick = {() => {
-                node.edit();
-              }}
-            >
-            Rename
+              Share
             </MenuItem>
-            <MenuItem>Share</MenuItem>
             <MenuDivider />
             <MenuItem
               onClick={async (e) => {

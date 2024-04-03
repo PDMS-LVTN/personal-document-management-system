@@ -12,18 +12,20 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/modal";
 import { useCallback, useMemo, useState } from "react";
-// import Modal from '../ui/Modal';
 
 export default function useModal(
   size?: string
 ): [
   JSX.Element | null,
-  (title: string, showModal: (onClose: () => void) => JSX.Element) => void
+  (
+    title: string,
+    getContent: (onClose: () => void) => JSX.Element,
+    closeOnClickOutside?: boolean
+  ) => void
 ] {
   const [modalContent, setModalContent] = useState<null | {
     closeOnClickOutside: boolean;
@@ -59,12 +61,6 @@ export default function useModal(
           <ModalHeader>{title}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{content}</ModalBody>
-
-          {/* <ModalFooter>
-            <Button colorScheme="brand" onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter> */}
         </ModalContent>
       </Modal>
     );

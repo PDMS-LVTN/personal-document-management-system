@@ -6,17 +6,10 @@ import {
   InputLeftElement,
   Text,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
-// import { TreeView } from "../components/TreeView";
-// import { useApp } from "../store/useApp";
-// import { useOutletContext } from "react-router-dom";
-// import { ContextType } from "../layouts/TreeAndEditorContainer";
+import { useEffect, useState } from "react";
 import { useFavorite } from "../hooks/useFavorite";
-// import { useTree } from "@/hooks/useTree";
 import { Note, useApp } from "@/store/useApp";
-// import { Tree, TreeApi } from "react-arborist";
 import useNotes from "@/hooks/useNotes";
-// import Node from "./Notes/Node";
 import { IoSearch } from "react-icons/io5";
 
 function Favorite() {

@@ -6,7 +6,6 @@
  *
  */
 
-import { Button } from "@chakra-ui/button";
 import {
   Drawer,
   DrawerBody,
@@ -15,7 +14,6 @@ import {
   DrawerOverlay,
 } from "@chakra-ui/modal";
 import { useCallback, useMemo, useState } from "react";
-// import Modal from '../ui/Modal';
 
 export default function useDrawer(
   size?: string
@@ -61,7 +59,7 @@ export default function useDrawer(
       title: string,
       // eslint-disable-next-line no-shadow
       getContent: (onClose: () => void) => JSX.Element,
-      closeOnClickOutside = false
+      closeOnClickOutside = true
     ) => {
       setDrawerContent({
         closeOnClickOutside,

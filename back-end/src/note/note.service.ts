@@ -1,4 +1,4 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import {
@@ -29,8 +29,10 @@ export class NoteService {
     private readonly imageContentService: ImageContentService,
     private readonly uploadFileService: FileUploadService,
     @InjectRepository(Tag)
-    private readonly tagRepository: Repository<Tag>,
-  ) {}
+    private readonly tagRepository: Repository<Tag>
+  ) { }
+  private readonly logger = new Logger(NoteService.name);
+
 
   async createNote(createNoteDto: CreateNoteDto) {
     // const user = new User({ id: createNoteDto.user_id });
@@ -49,7 +51,6 @@ export class NoteService {
         },
       });
       newNote.parentNote = parent;
-      console.log(newNote);
     }
     return await this.noteRepository.save(newNote);
   }
@@ -61,7 +62,7 @@ export class NoteService {
     const notes = Promise.all(
       roots.map((root) => this.noteRepository.findDescendantsTree(root)),
     );
-    console.log(await notes);
+    // console.log(await notes);
     return await notes;
     // return this.noteRepository.find(); //Display without relations
   }
@@ -281,7 +282,7 @@ export class NoteService {
       );
     }
 
-    console.log(req.body);
+    // console.log(req.body);
     // Update a note with title and content
     const updateNoteDto: UpdateNoteDto = req.body;
     await this.noteRepository.update(id, updateNoteDto);
@@ -373,8 +374,8 @@ export class NoteService {
     return await this.findOneNote(req.merged_note_id);
   }
 
-  async updateIsAnyone(id, req) {
-    return await this.noteRepository.update(id, { is_anyone: req.is_anyone });
+  async updateIsAnyone(id: string, is_anyone: boolean) {
+    return await this.noteRepository.update(id, { is_anyone });
   }
 
   async findAttachmentsOfNote(id: string) {
@@ -420,7 +421,7 @@ export class NoteService {
       },
     });
     if (!note) {
-      return false;
+      throw new UnauthorizedException();
     }
     return note;
   }

@@ -3,6 +3,7 @@ import { RouterProvider } from "react-router-dom";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import "./globals.css";
+import "katex/dist/katex.min.css";
 // import "@mdxeditor/editor/style.css";
 import "./index.css";
 import { router } from "./navigation/routerConfig.tsx";

@@ -1,10 +1,10 @@
-import { Fragment, Suspense } from "react";
+import { Fragment } from "react";
 // import { MDXEditor } from "@mdxeditor/editor";
 // import { ALL_PLUGINS } from "./_boilerplate";
 // import { useEditor, EditorContent } from "@tiptap/react";
 // import StarterKit from "@tiptap/starter-kit";
 import { useApp } from "../store/useApp";
-import { Skeleton, Text } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 // import { CustomImage } from "./extension-image/image";
 // import Toolbar from "./toolbar/Toolbar";
 import { BlockEditor } from "./components/BlockEditor";
@@ -50,7 +50,6 @@ import { BlockEditor } from "./components/BlockEditor";
 
 function Editor({ editorRef }) {
   const currentNote = useApp((state) => state.currentNote);
-  // console.log(currentNote);
 
   if (!currentNote)
     return (
@@ -60,19 +59,7 @@ function Editor({ editorRef }) {
     );
   return (
     <Fragment>
-      {/* There is only one editor instance.       */}
-      {/* This editor is shared between all notes. */}
-      {/* <Suspense fallback={<Skeleton />}> */}
-      {/* <MDXEditor
-            ref={editorRef}
-            markdown={currentNote.content}
-            // onChange={() => {}}
-            plugins={ALL_PLUGINS}
-            contentEditableClassName="prose prose-lg inside-editor max-w-full"
-          /> */}
-      {/* <Tiptap editorRef={editorRef} /> */}
-      <BlockEditor editorRef={editorRef} />
-      {/* </Suspense> */}
+      <BlockEditor editorRef={editorRef} isEditable={true} />
     </Fragment>
   );
 }
