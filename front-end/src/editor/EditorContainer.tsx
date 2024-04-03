@@ -270,47 +270,7 @@ function EditorContainer({ editorRef }) {
       />
       {currentNote && !location.pathname.includes("shared") && (
         <div className="flex justify-between">
-          <div className="flex justify-start items-center ml-8">
-            <Menu>
-              <MenuButton
-                as={Button}
-                rightIcon={<ChevronDownIcon size={15} />}
-                colorScheme="brand"
-                style={{ backgroundColor: "var(--brand400)" }}
-                size="sm"
-              >
-                Share
-              </MenuButton>
-              <MenuList>
-                <MenuItem
-                  icon={<Share2 size={20} color="var(--brand400)" />}
-                  onClick={() =>
-                    showModal(
-                      `Share "${currentNote.title}"`,
-                      (onClose) => {
-                        return (
-                          <SharedModal
-                            actions={actions}
-                            noteId={currentNote.id}
-                            onClose={onClose}
-                          />
-                        );
-                      },
-                      true
-                    )
-                  }
-                >
-                  Share
-                </MenuItem>
-                <MenuItem
-                  icon={<Link size={20} color="var(--brand400)" />}
-                  onClick={handleCopyLink}
-                >
-                  Copy link
-                </MenuItem>
-              </MenuList>
-            </Menu>
-          </div>
+          <div className="flex justify-start items-center ml-8"></div>
           <Flex justifyContent="right">
             <Tooltip label="Delete note">
               <Button
@@ -407,6 +367,32 @@ function EditorContainer({ editorRef }) {
                   icon={<TbFileExport size={21} color="var(--brand400)" />}
                 >
                   Export note
+                </MenuItem>
+                <MenuItem
+                  icon={<Share2 size={20} color="var(--brand400)" />}
+                  onClick={() =>
+                    showModal(
+                      `Share "${currentNote.title}"`,
+                      (onClose) => {
+                        return (
+                          <SharedModal
+                            actions={actions}
+                            noteId={currentNote.id}
+                            onClose={onClose}
+                          />
+                        );
+                      },
+                      true
+                    )
+                  }
+                >
+                  Share
+                </MenuItem>
+                <MenuItem
+                  icon={<Link size={20} color="var(--brand400)" />}
+                  onClick={handleCopyLink}
+                >
+                  Copy link
                 </MenuItem>
                 <MenuItem
                   icon={<LockKeyhole size={20} color="var(--brand400)" />}

@@ -7,6 +7,13 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronDownIcon, Link } from "lucide-react";
 import { ShareMode } from "@/lib/data/constant";
 import { Spinner } from "@chakra-ui/spinner";
+import { HiUserCircle } from "react-icons/hi";
+import {
+  Table,
+  Tbody,
+  Td,
+  Tr,
+} from "@chakra-ui/react";
 
 const SharedModal = ({ noteId, onClose, actions }) => {
   const [peopleWithAccess, setPeopleWithAccess] = useState([]);
@@ -51,7 +58,7 @@ const SharedModal = ({ noteId, onClose, actions }) => {
           //   onChange={(e) => setValue(e.target.value)}
           ref={ref}
           placeholder="Add people to send the link to"
-          size="md"
+          size="sm"
           onKeyDown={async (e) => {
             e.stopPropagation();
             if (e.key === "Enter") {
@@ -69,69 +76,79 @@ const SharedModal = ({ noteId, onClose, actions }) => {
           isRound={true}
           colorScheme="brand"
           aria-label="Copy link"
-          icon={<Link />}
+          icon={<Link size="16px" />}
+          size={"sm"}
           onClick={() => handleCopyLink(onClose)}
         />
       </div>
-      <Text fontSize="md" fontWeight="bold" mt={3}>
+      <Text fontSize="16px" fontWeight="600" mt={3}>
         People with access
       </Text>
       {!peopleWithAccess.length && (
-        <Text mt={2} color="text.inactive">
+        <Text mt={2} color="text.inactive" fontSize="13px">
           Your document is not shared with anyone
         </Text>
       )}
-      {peopleWithAccess.map((email, id) => {
-        return (
-          <div key={id} className="flex justify-start mt-3">
-            <div className="flex items-center gap-3">
-              <img
-                className="w-8 h-8 border border-white rounded-full"
-                src="/placeholder-image.jpg"
-                alt=""
-              />
-              <Text>{email}</Text>
-            </div>
-            <div className="ml-auto">
-              {/* <Menu>
-              <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-                {person.permission}
-              </MenuButton>
-              <MenuList>
-                {permissions
-                  .filter((item) => item != person.permission)
-                  .map((item, id) => {
-                    return <MenuItem key={id}>{item}</MenuItem>;
-                  })}
-              </MenuList>
-            </Menu> */}
-              <Tag
-                size={"lg"}
-                borderRadius="full"
-                variant="solid"
-                colorScheme="brand"
-              >
-                <TagLabel>Viewer</TagLabel>
-                <TagCloseButton
-                  onClick={() => removeCollaboratorPermission(email)}
-                />
-              </Tag>
-            </div>
-          </div>
-        );
-      })}
-      <Text fontSize="md" fontWeight="bold" mt={5}>
+      <Table mt={3} size="sm" variant="striped" colorScheme="gray">
+        <Tbody>
+          {peopleWithAccess.map((email, id) => {
+            return (
+              // <div key={id} className="flex justify-start mt-3">
+              <Tr key={id}>
+                <Td>
+                  <div className="flex items-center gap-3">
+                    <HiUserCircle size="40px" color="var(--brand500)" backgroundColor="white"/>
+                    <Text fontSize="13px">{email}</Text>
+                  </div>
+                </Td>
+                <Td>
+                  <div className="ml-auto" style={{ textAlign: "end" }}>
+                    {/* <Menu>
+                          <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                            {person.permission}
+                          </MenuButton>
+                          <MenuList>
+                            {permissions
+                              .filter((item) => item != person.permission)
+                              .map((item, id) => {
+                                return <MenuItem key={id}>{item}</MenuItem>;
+                              })}
+                          </MenuList>
+                        </Menu> */}
+                    <Tag
+                      size={"md"}
+                      borderRadius="6px"
+                      variant="solid"
+                      colorScheme="brand"
+                    >
+                      <TagLabel fontSize="12px" fontWeight="300">
+                        Viewer
+                      </TagLabel>
+                      <TagCloseButton
+                        onClick={() => removeCollaboratorPermission(email)}
+                      />
+                    </Tag>
+                  </div>
+                </Td>
+              </Tr>
+            );
+          })}
+        </Tbody>
+      </Table>
+
+      <Text fontSize="md" fontWeight="600" mt={7}>
         General access
       </Text>
-      <div className="flex justify-start mt-3 items-center">
+      <div className="flex justify-start mt-3 items-center" style={{paddingLeft: "16px", paddingRight: "16px"}}>
         <div className="flex items-center gap-3">
-          <img
-            className="w-8 h-8 border border-white rounded-full"
-            src="\placeholder-image.jpg"
-            alt=""
-          />
+        <HiUserCircle size="40px" color="var(--brand500)"/>
           <Menu>
-            <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+            <MenuButton
+              width="14rem"
+              fontSize="13px"
+              as={Button}
+              rightIcon={<ChevronDownIcon size="16px" />}
+            >
               {generalAccessMode(allowGeneralAccess)}
             </MenuButton>
             <MenuList>
@@ -141,6 +158,7 @@ const SharedModal = ({ noteId, onClose, actions }) => {
                   return ;
                 })} */}
               <MenuItem
+                fontSize="13px"
                 onClick={async () => {
                   actions.updateGeneralPermission(noteId, !allowGeneralAccess);
                   setAllowGeneralAccess(!allowGeneralAccess);
@@ -168,12 +186,15 @@ const SharedModal = ({ noteId, onClose, actions }) => {
             </MenuList>
           </Menu> */}
             <Tag
-              size={"lg"}
-              borderRadius="full"
+              size={"md"}
+              borderRadius="6px"
               variant="solid"
               colorScheme="brand"
+              px={5}
             >
-              <TagLabel>Viewer</TagLabel>
+              <TagLabel fontSize="12px" fontWeight="300">
+                Viewer
+              </TagLabel>
             </Tag>
           </div>
         ) : null}
