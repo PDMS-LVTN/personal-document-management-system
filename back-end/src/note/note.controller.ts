@@ -28,7 +28,6 @@ export class NoteController {
   constructor(private readonly noteService: NoteService) { }
   private readonly logger = new Logger(NoteController.name);
 
-
   @Post('add_note')
   async createNote(@Body() createNoteDto: CreateNoteDto) {
     return await this.noteService.createNote(createNoteDto);
@@ -170,5 +169,21 @@ export class NoteController {
   @Get('is_anyone/:id')
   async findOneNoteForAnyone(@Param('id') id: string) {
     return await this.noteService.findOneNoteForAnyone(id);
+  }
+
+  @Post('/link_note/:id')
+  async linkNote(
+    @Param('id') headlink_id: string,
+    @Body() req: { backlink_id: string },
+  ) {
+    return await this.noteService.linkNote(headlink_id, req);
+  }
+
+  @Delete('/link_note/:id')
+  async removeLinkNote(
+    @Param('id') headlink_id: string,
+    @Body() req: { backlink_id: string },
+  ) {
+    return this.noteService.removeLinkNote(headlink_id, req);
   }
 }

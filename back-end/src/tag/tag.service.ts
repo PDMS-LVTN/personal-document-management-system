@@ -76,7 +76,7 @@ export class TagService {
       return note.id !== req.note_id;
     });
     try {
-      await this.tagRepository.save(tag);
+      return await this.tagRepository.save(tag);
     } catch (e) {
       return 'Error when removing a tag from note';
     }
