@@ -26,9 +26,7 @@ export const ImageUploader = ({
   );
 
   const handleUnsplash = () => {
-    showModal("Unsplash Image", (onClose) => (
-      <UnsplashDialog onUpload={onUpload} />
-    ));
+    showModal("Unsplash Image", (_) => <UnsplashDialog onUpload={onUpload} />);
   };
 
   const handleGoogleImage = () => {};

@@ -24,12 +24,12 @@ export class NoteService {
   constructor(
     @InjectRepository(Note)
     private readonly noteRepository: TreeRepository<Note>,
-    @InjectRepository(ImageContent)
-    private readonly imageContentRepository: Repository<ImageContent>,
+    // @InjectRepository(ImageContent)
+    // private readonly imageContentRepository: Repository<ImageContent>,
     private readonly imageContentService: ImageContentService,
     private readonly uploadFileService: FileUploadService,
-    @InjectRepository(Tag)
-    private readonly tagRepository: Repository<Tag>
+    // @InjectRepository(Tag)
+    // private readonly tagRepository: Repository<Tag>
   ) { }
   private readonly logger = new Logger(NoteService.name);
 
@@ -445,5 +445,108 @@ export class NoteService {
     } catch (e) {
       return 'Error when removing a note link from a note';
     }
+  }
+
+  async getHeadlinks(noteId: string, name: string) {
+    const note = await this.noteRepository
+      .findOne({
+        where: {
+          id: Equal(noteId),
+        },
+        relations: {
+          headlinks: true
+        }
+      });
+    const maxLength = 50
+    const mappedResults = note.headlinks.map((linkedNote, _) => {
+      const strippedContent = this.stripHTML(linkedNote.content)
+      const subContent = strippedContent.substring(0, maxLength)
+      const content = subContent.length < strippedContent.length ? subContent + '...' : subContent
+      return { ...linkedNote, content: [{ content, index: 0 }] }
+    })
+    return mappedResults
+  }
+
+  async getBacklinks(noteId: string, name: string) {
+    const note = await this.noteRepository
+      .findOne({
+        where: {
+          id: Equal(noteId),
+        },
+        relations: {
+          backlinks: true
+        }
+      });
+    const mappedResults = note.backlinks.map((linkedNote, _) => {
+      const strippedContent = this.stripHTML(linkedNote.content)
+      const content = this.createSearchTermContext(strippedContent, name)
+      return { ...linkedNote, content }
+    })
+    return mappedResults
+  }
+
+  stripHTML(content: string) {
+    return content.replace(/<[^>]*>/g, ' ');
+  }
+
+  createSearchTermContext(content: string, term: string) {
+    const max_length = 400; // Max length in characters
+    const min_padding = 30; // Min length in characters of the context to place around found search terms
+
+    // Search content for terms
+    const regexPattern = new RegExp(term, 'gi');
+    const matches = content.match(regexPattern);
+    let output = [];
+    let index = 0
+    if (matches) {
+      const padding = Math.max(min_padding, Math.floor(max_length / (2 * matches.length)));
+
+      // Construct extract containing context for each term
+      let last_offset = 0;
+      for (const match of matches) {
+        const offset = content.indexOf(match, last_offset);
+        let start = offset - padding;
+        let end = offset + match.length + padding;
+
+        while (start > 1 && content[start - 1].match(/[A-Za-z0-9'"-]/)) {
+          start--;
+        }
+
+        while (end < content.length - 1 && content[end].match(/[A-Za-z0-9'"-]/)) {
+          end++;
+        }
+
+        start = Math.max(start, 0);
+        let context = content.substring(start, end)
+        context = context.replaceAll(term, `<span class="reference-term"">${term}</span>`);
+
+        if (start > 0) {
+          context = "..." + context;
+        }
+
+        // output += context;
+        last_offset = offset + match.length;
+        if (end < content.length - 1) {
+          context += '...';
+        }
+        output.push({ content: context, index })
+        index++;
+      }
+
+      // if (last_offset !== content.length - 1) {
+      //   output += '...';
+      // }
+    } else {
+      output = [{ content: content.substring(0, max_length) + '...', index }];
+    }
+
+    // if (output.length > max_length) {
+    //   let end = max_length - 3;
+    //   while (end > 1 && output[end - 1].match(/[A-Za-z0-9'"-]/)) {
+    //     end--;
+    //   }
+    //   output = output.substring(0, end) + '...';
+    // }
+    return output
   }
 }

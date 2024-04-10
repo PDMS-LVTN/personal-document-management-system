@@ -13,8 +13,6 @@ export type SimpleTreeData = {
     childNotes?: SimpleTreeData[];
 };
 
-let tempId = "temp"
-
 export function useTree<T>(initialData: T[], actions?) {
     const [data, setData] = useState(initialData);
     const tree = useMemo(

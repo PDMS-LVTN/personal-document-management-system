@@ -204,7 +204,7 @@ function EditorContainer({ editorRef }) {
     };
   }, [escFunction]);
 
-  const [drawer, showDrawer] = useDrawer("sm");
+  const [drawer, showDrawer] = useDrawer("xs");
   const [modal, showModal] = useModal("xl");
 
   const handleCopyLink = () => {
@@ -405,7 +405,7 @@ function EditorContainer({ editorRef }) {
                     showDrawer("Attachments", (onClose) => (
                       <AttachmentsDrawer
                         actions={actions}
-                        noteId={currentNote.id}
+                        // noteId={currentNote.id}
                       />
                     ));
                   }}

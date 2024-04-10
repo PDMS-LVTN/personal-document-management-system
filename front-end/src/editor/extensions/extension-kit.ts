@@ -28,7 +28,7 @@ import {
   Subscript,
   Superscript,
   Table,
-  // TableOfContents,
+  TableOfContents,
   TableCell,
   TableHeader,
   TableRow,
@@ -51,8 +51,9 @@ import { TableOfContentsNode } from './TableOfContentsNode'
 import { common, createLowlight } from 'lowlight';
 import { FileBlock } from './FileBlock';
 import { FileUpload } from './FileUpload';
-import TableOfContents from '@tiptap-pro/extension-table-of-contents';
 import { Mathematics } from '@tiptap-pro/extension-mathematics'
+import { useSuggestion } from './InternalLink/suggestion'
+import { InternalLink } from './InternalLink/InternalLink';
 
 // interface ExtensionKitProps {
 //   provider?: HocuspocusProvider | null
@@ -168,7 +169,13 @@ export const ExtensionKit = () => [
     width: 2,
     class: 'ProseMirror-dropcursor border-black',
   }),
-  Mathematics
+  Mathematics,
+  InternalLink.configure({
+    HTMLAttributes: {
+      class: 'mention',
+    },
+    suggestion: useSuggestion(),
+  }),
 ]
 
 export default ExtensionKit

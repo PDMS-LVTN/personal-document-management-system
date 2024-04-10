@@ -19,7 +19,6 @@ const SearchTag = ({ renderResults }) => {
 
   const handleInputOnchange = (e) => {
     const { value } = e.target;
-    console.log(value == "");
     setKeyword(value.target);
     debouncedHandleSearch(value);
   };

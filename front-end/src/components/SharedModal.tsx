@@ -8,12 +8,7 @@ import { ChevronDownIcon, Link } from "lucide-react";
 import { ShareMode } from "@/lib/data/constant";
 import { Spinner } from "@chakra-ui/spinner";
 import { HiUserCircle } from "react-icons/hi";
-import {
-  Table,
-  Tbody,
-  Td,
-  Tr,
-} from "@chakra-ui/react";
+import { Table, Tbody, Td, Tr } from "@chakra-ui/react";
 
 const SharedModal = ({ noteId, onClose, actions }) => {
   const [peopleWithAccess, setPeopleWithAccess] = useState([]);
@@ -54,8 +49,6 @@ const SharedModal = ({ noteId, onClose, actions }) => {
     <>
       <div className="flex gap-3">
         <Input
-          //   value={value}
-          //   onChange={(e) => setValue(e.target.value)}
           ref={ref}
           placeholder="Add people to send the link to"
           size="sm"
@@ -97,7 +90,7 @@ const SharedModal = ({ noteId, onClose, actions }) => {
               <Tr key={id}>
                 <Td>
                   <div className="flex items-center gap-3">
-                    <HiUserCircle size="40px" color="var(--brand500)" backgroundColor="white"/>
+                    <HiUserCircle size="40px" color="var(--brand500)" />
                     <Text fontSize="13px">{email}</Text>
                   </div>
                 </Td>
@@ -139,9 +132,12 @@ const SharedModal = ({ noteId, onClose, actions }) => {
       <Text fontSize="md" fontWeight="600" mt={7}>
         General access
       </Text>
-      <div className="flex justify-start mt-3 items-center" style={{paddingLeft: "16px", paddingRight: "16px"}}>
+      <div
+        className="flex justify-start mt-3 items-center"
+        style={{ paddingLeft: "16px", paddingRight: "16px" }}
+      >
         <div className="flex items-center gap-3">
-        <HiUserCircle size="40px" color="var(--brand500)"/>
+          <HiUserCircle size="40px" color="var(--brand500)" />
           <Menu>
             <MenuButton
               width="14rem"

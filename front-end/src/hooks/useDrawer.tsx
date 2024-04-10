@@ -16,8 +16,8 @@ import {
 import { useCallback, useMemo, useState } from "react";
 
 export default function useDrawer(
-  size?: string
-  //   placement: DrawerPlacement = "right"
+  size?: string,
+  styles?
 ): [
   JSX.Element | null,
   (title: string, showDrawer: (onClose: () => void) => JSX.Element) => void
@@ -48,7 +48,7 @@ export default function useDrawer(
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>
-          <DrawerBody>{content}</DrawerBody>
+          <DrawerBody className={styles}>{content}</DrawerBody>
         </DrawerContent>
       </Drawer>
     );

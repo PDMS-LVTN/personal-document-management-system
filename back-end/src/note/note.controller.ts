@@ -10,6 +10,7 @@ import {
   Req,
   UseInterceptors,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { NoteService } from './note.service';
 import { CreateNoteDto } from './dto/create-note.dto';
@@ -185,5 +186,21 @@ export class NoteController {
     @Body() req: { backlink_id: string },
   ) {
     return this.noteService.removeLinkNote(headlink_id, req);
+  }
+
+  @Get('/link_note/head/:id')
+  async getHeadlinks(
+    @Param('id') noteId: string,
+    @Query() req: { name: string }
+  ) {
+    return await this.noteService.getHeadlinks(noteId, req.name)
+  }
+
+  @Get('/link_note/back/:id')
+  async getBacklink(
+    @Param('id') noteId: string,
+    @Query() req: { name: string }
+  ) {
+    return await this.noteService.getBacklinks(noteId, req.name)
   }
 }

@@ -7,7 +7,7 @@ export const useUploader = ({ onUpload }: { onUpload: (url: string) => void }) =
   const [loading, setLoading] = useState(false)
   const toast = useToast();
 
-  const uploadFile = useCallback(async (file: File, mode: string = 'image') => {
+  const uploadFile = useCallback(async (file: File) => {
     setLoading(true)
     try {
       let url: string

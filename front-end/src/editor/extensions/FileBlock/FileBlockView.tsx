@@ -1,4 +1,3 @@
-import { Icon } from "@/editor/components/ui/Icon";
 import { Node } from "@tiptap/pm/model";
 import { Editor, NodeViewWrapper } from "@tiptap/react";
 import { FileText } from "lucide-react";

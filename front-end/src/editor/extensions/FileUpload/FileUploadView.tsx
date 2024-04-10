@@ -1,6 +1,5 @@
 import { Editor, NodeViewWrapper } from "@tiptap/react";
 import { ChangeEvent, useCallback } from "react";
-import { Icon } from "@/editor/components/ui/Icon";
 import { useFileUpload, useUploader } from "../ImageUpload/view/hooks";
 import { Spinner } from "@/editor/components/ui/Spinner";
 import { ArrowUpFromLine } from "lucide-react";

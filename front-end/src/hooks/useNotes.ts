@@ -10,7 +10,6 @@ import { convertToHtml } from "mammoth";
 import { ShareMode } from "@/lib/data/constant";
 
 const useNotes = () => {
-  // console.log("use notes")
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const clean = useApp((state) => state.clean);
@@ -203,7 +202,6 @@ const useNotes = () => {
 
   const clickANoteHandler = async (id) => {
     const noteItem = await getANote(id);
-    console.log(noteItem);
     setCurrentNoteHandler(noteItem);
   };
 
@@ -220,10 +218,10 @@ const useNotes = () => {
     const tags = noteItem.tags.map((tag) => {
       return { value: tag.description, label: tag.description, id: tag.id };
     });
-    console.log("current_tag", tags);
     setCurrentTags(tags);
     // ref?.current?.setMarkdown(noteItem.content);
     window.editor?.commands.setContent(noteItem.content);
+    window.note_tree?.select(noteItem?.id)
     return noteItem;
   };
 
@@ -250,7 +248,6 @@ const useNotes = () => {
       )
     );
     let i = 0;
-    console.log(replacements);
     return string.replace(regexp, () => replacements[i++]);
   }
 
@@ -291,10 +288,9 @@ const useNotes = () => {
       );
       tempState.content = sourceReplacedContent;
       tempState.content = tempState.content.replace(
-        // /<p\b[^>]*>(<strong>|<i>|<em>|<u>)*(<img\b[^>]*>)(<\/strong>|<\/i>|<\/em>|<\/u>)*<\/p>/g,
         /<p[^>]*>([^\/]*?)(<img[^>]*?src="([^>]+)"[^>]*>).*?<\/p>/g,
         (...match) => {
-          console.log(match[1]);
+          // console.log(match[1]);
           return match[2];
         }
       );
@@ -335,7 +331,6 @@ const useNotes = () => {
       setCurrentNote(currentNote);
       window.editor.commands.setContent(tempState.content);
       setLoading(false);
-      console.log(currentNote);
       return currentNote;
     } catch (error) {
       setLoading(false);
