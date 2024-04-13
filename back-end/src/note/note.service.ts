@@ -244,36 +244,36 @@ export class NoteService {
     const data = JSON.parse(req.body.data);
     req.body = data;
 
-    const image_files = [];
-    const other_files = [];
-    files.map((e) => {
-      if (e.mimetype.includes('image')) {
-        image_files.push(e);
-      } else {
-        other_files.push(e);
-      }
-    });
+    // const image_files = [];
+    // const other_files = [];
+    // files.map((e) => {
+    //   if (e.mimetype.includes('image')) {
+    //     image_files.push(e);
+    //   } else {
+    //     other_files.push(e);
+    //   }
+    // });
 
-    // Upload images to upload folder and save in image_content table. Similar to other file uploads
-    if (image_files.length > 0) {
-      try {
-        await this.imageContentService.uploadImage(image_files, req, id);
-        // await this.imageContentService.uploadImage(other_files, req, id);
-      } catch (err) {
-        console.log(err);
-        throw err;
-      }
-    }
+    // // Upload images to upload folder and save in image_content table. Similar to other file uploads
+    // if (image_files.length > 0) {
+    //   try {
+    //     await this.imageContentService.uploadImage(image_files, req, id);
+    //     // await this.imageContentService.uploadImage(other_files, req, id);
+    //   } catch (err) {
+    //     console.log(err);
+    //     throw err;
+    //   }
+    // }
 
-    if (other_files.length > 0) {
-      try {
-        await this.uploadFileService.uploadFile(other_files, req, id);
-      } catch (err) {
-        console.log(err);
-        throw err;
-      }
-    }
-
+    // if (other_files.length > 0) {
+    //   try {
+    //     await this.uploadFileService.uploadFile(other_files, req, id);
+    //   } catch (err) {
+    //     console.log(err);
+    //     throw err;
+    //   }
+    // }
+    this.uploadAttachments(id, files, req)
     // Retrieve note's content and edit image's url (replace blob by localhost)
     if (req.body.content) {
       req.body.content = req.body.content.replaceAll(
@@ -548,5 +548,40 @@ export class NoteService {
     //   output = output.substring(0, end) + '...';
     // }
     return output
+  }
+
+  async uploadAttachments(id: string, files, req, direct = false) {
+    console.log(files)
+    const image_files = [];
+    const other_files = [];
+    let urls = []
+    files.map((e) => {
+      if (e.mimetype.includes('image')) {
+        image_files.push(e);
+      } else {
+        other_files.push(e);
+      }
+    });
+
+    // Upload images to upload folder and save in image_content table. Similar to other file uploads
+    if (image_files.length > 0) {
+      try {
+        urls = await this.imageContentService.uploadImage(image_files, req, id, direct);
+        // await this.imageContentService.uploadImage(other_files, req, id);
+      } catch (err) {
+        console.log(err);
+        throw err;
+      }
+    }
+
+    if (other_files.length > 0) {
+      try {
+        urls = await this.uploadFileService.uploadFile(other_files, req, id, direct);
+      } catch (err) {
+        console.log(err);
+        throw err;
+      }
+    }
+    return urls
   }
 }

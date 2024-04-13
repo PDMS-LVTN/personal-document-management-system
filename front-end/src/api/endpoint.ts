@@ -6,5 +6,7 @@ export const APIEndPoints = {
     SEARCH: "note/search",
     CREATE_TAG: "tag/create_tag",
     ALL_TAG: "tag/all_tag",
-    INTERNAL_LINK: "note/link_note"
+    INTERNAL_LINK: "note/link_note",
+    IMAGE_CONTENT: "image_content",
+    FILE_UPLOAD: "file_upload"
 }

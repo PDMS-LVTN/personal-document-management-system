@@ -203,4 +203,29 @@ export class NoteController {
   ) {
     return await this.noteService.getBacklinks(noteId, req.name)
   }
+
+  @Post('/upload/:id')
+  @UseInterceptors(
+    FilesInterceptor('files[]', 20, {
+      storage: diskStorage({
+        destination: process.env.UPLOAD_PATH,
+        filename: (req, file, cb) => {
+          const fileName: string = path
+            .parse(file.originalname)
+            .name.replace(/\s/g, '');
+          const extension: string = path.parse(file.originalname).ext;
+          cb(null, `${fileName}${extension}`);
+        },
+      }),
+    }),
+  )
+  async uploadAttachments(
+    @Param('id') id: string,
+    @UploadedFiles() files,
+    @Req() req,
+  ) {
+    return await this.noteService.uploadAttachments(id, files, req, true).catch((err) => {
+      throw err;
+    });
+  }
 }

@@ -8,6 +8,7 @@ import { tempState } from "@/editor/lib/api";
 import { useApi } from "./useApi";
 import { convertToHtml } from "mammoth";
 import { ShareMode } from "@/lib/data/constant";
+import { EditorState } from "@tiptap/pm/state";
 
 const useNotes = () => {
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -203,6 +204,7 @@ const useNotes = () => {
   const clickANoteHandler = async (id) => {
     const noteItem = await getANote(id);
     setCurrentNoteHandler(noteItem);
+    resetContentAndSelection(noteItem)
   };
 
   const setCurrentNoteHandler = (noteItem) => {
@@ -220,10 +222,28 @@ const useNotes = () => {
     });
     setCurrentTags(tags);
     // ref?.current?.setMarkdown(noteItem.content);
-    window.editor?.commands.setContent(noteItem.content);
-    window.note_tree?.select(noteItem?.id)
+    // window.editor?.commands.setContent(noteItem.content);
     return noteItem;
   };
+
+  function resetContentAndSelection(noteItem) {
+    // Capture the current selection
+    const currentSelection = window.editor?.state?.selection;
+
+    // Reset the content
+    window.editor.chain().setMeta('addToHistory', false).setContent(noteItem.content).run;
+
+    // Create a new editor state while preserving the old selection
+    const newEditorState = EditorState.create({
+      doc: window.editor.state.doc,
+      plugins: window.editor.state.plugins,
+      selection: currentSelection
+    });
+
+    // Update the editor state
+    window.editor.view.updateState(newEditorState);
+    window.note_tree?.select(noteItem?.id)
+  }
 
   const handleSearch = async (keyword) => {
     setLoading(true);

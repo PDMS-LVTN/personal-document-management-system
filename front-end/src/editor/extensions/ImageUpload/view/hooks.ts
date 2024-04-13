@@ -2,16 +2,18 @@ import { DragEvent, useCallback, useEffect, useRef, useState } from 'react'
 // import toast from 'react-hot-toast'
 import { API } from '@/editor/lib/api'
 import { useToast } from '@chakra-ui/toast';
+import { useUpload } from '@/hooks/useUpload';
 
 export const useUploader = ({ onUpload }: { onUpload: (url: string) => void }) => {
   const [loading, setLoading] = useState(false)
   const toast = useToast();
+  const { upload } = useUpload()
 
   const uploadFile = useCallback(async (file: File) => {
     setLoading(true)
     try {
       let url: string
-      url = await API.uploadImage(file)
+      url = await API.uploadFileDirect(file, upload)
 
       onUpload(url)
     } catch (errPayload: any) {

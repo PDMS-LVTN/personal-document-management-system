@@ -54,6 +54,7 @@ import { FileUpload } from './FileUpload';
 import { Mathematics } from '@tiptap-pro/extension-mathematics'
 import { useSuggestion } from './InternalLink/suggestion'
 import { InternalLink } from './InternalLink/InternalLink';
+import { DeletionTracking } from './DeletionTracking';
 
 // interface ExtensionKitProps {
 //   provider?: HocuspocusProvider | null
@@ -176,6 +177,7 @@ export const ExtensionKit = () => [
     },
     suggestion: useSuggestion(),
   }),
+  DeletionTracking()
 ]
 
 export default ExtensionKit

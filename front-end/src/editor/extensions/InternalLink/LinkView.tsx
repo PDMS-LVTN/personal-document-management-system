@@ -25,7 +25,13 @@ const LinkView = (props: Props) => {
         variant="outline"
         size="xs"
         onClick={() => {
-          actions.clickANoteHandler(props.node.attrs.id);
+          if (window.editor.isEditable)
+            actions.clickANoteHandler(props.node.attrs.id);
+          else
+            window.open(
+              `${import.meta.env.VITE_CLIENT_PATH}/note/${props.node.attrs.id}`,
+              "_blank"
+            );
         }}
         gap={2}
       >

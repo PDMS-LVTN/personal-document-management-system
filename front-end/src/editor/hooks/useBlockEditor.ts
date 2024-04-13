@@ -60,7 +60,7 @@ export const useBlockEditor = (initialContent?) => {
             },
             extensions: [
                 ...ExtensionKit(),
-                History,
+                // History,
                 // Collaboration.configure({
                 //   document: ydoc,
                 // }),

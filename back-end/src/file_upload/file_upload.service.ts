@@ -14,17 +14,19 @@ export class FileUploadService {
     private readonly fileUploadRepository: Repository<FileUpload>,
   ) { }
 
-  async uploadFile(files, req, note_ID: string) {
+  async uploadFile(files, req, note_ID: string, direct = false) {
+    let urls = []
     files.map((file: any) => {
       const fileName = file.originalname;
       // Find matching file name between content and response array. Add right extension at the end of all urls
-      req.body = {
-        ...req.body,
-        content: req.body.content.replace(
-          fileName.substring(0, fileName.indexOf('.')),
-          fileName,
-        ),
-      };
+      if (!direct)
+        req.body = {
+          ...req.body,
+          content: req.body.content.replace(
+            fileName.substring(0, fileName.indexOf('.')),
+            fileName,
+          ),
+        };
 
       const relFile: CreateFileUploadDto = {
         note_ID: '',
@@ -32,11 +34,13 @@ export class FileUploadService {
       };
       relFile.note_ID = note_ID.toString();
       relFile.path = fileName;
+      urls.push(`${process.env.IMAGE_SERVER_PATH}/${relFile.path}`)
 
       // Save file path in database
       const newFileUpload = this.fileUploadRepository.create(relFile);
       this.fileUploadRepository.save(newFileUpload);
     });
+    return urls
   }
 
   async findOneFileUpload(id: number) {

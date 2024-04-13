@@ -34,7 +34,7 @@ export const ImageBlock = Image.extend({
         }),
       },
       width: {
-        default: '100%',
+        default: '50%',
         parseHTML: element => element.getAttribute('data-width'),
         renderHTML: attributes => ({
           'data-width': attributes.width,

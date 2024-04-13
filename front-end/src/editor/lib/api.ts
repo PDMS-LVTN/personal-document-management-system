@@ -1,13 +1,12 @@
+import { useApp } from '@/store/useApp';
 import { v4 as uuidv4 } from 'uuid'
 
 export const tempState = { waitingImage: [], waitingFile: [] };
 
 export class API {
   public static uploadImage = async (file) => {
-    console.log(file)
     const ext = file.name.substring(file.name.indexOf("."));
     const url = URL.createObjectURL(file);
-    console.log(url)
     const pos = url.lastIndexOf("/");
     const fileName = url.substring(pos + 1);
 
@@ -16,12 +15,12 @@ export class API {
     return Promise.resolve(url);
   }
 
-  public static uploadFile = (file: File) => {
+  public static uploadFileDirect = async (file: File, upload) => {
     const ext = file.name.substring(file.name.indexOf("."));
     const id = uuidv4()
     const newFile = new File([file], id + ext, { type: file.type });
-    tempState.waitingImage.push(newFile);
-    return Promise.resolve(id + ext);
+    const { responseData } = await upload(useApp.getState().currentNote.id, newFile)
+    return responseData[0]
 
     // Always return a Promise
     // return new Promise<string>((resolve, reject) => {
