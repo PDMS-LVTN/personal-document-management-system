@@ -31,7 +31,9 @@ export const DeletionTracking = () => {
                         for (let i = 0; i < content.childCount; i++) {
                             if (content.child(i).type.name === 'imageBlock') {
                                 nodes.imageBlock.push(content.child(i))
-                                deleteImage(getPath(content.child(i).attrs.src))
+                                if (content.child(i).attrs.src.startsWith(`${import.meta.env.VITE_SERVER_PATH}`)) {
+                                    deleteImage(getPath(content.child(i).attrs.src))
+                                }
                             }
                             else if (content.child(i).type.name === 'fileBlock') {
                                 nodes.fileBlock.push(content.child(i))
@@ -62,8 +64,10 @@ export const DeletionTracking = () => {
                             if (selection.$from.index(-1) > 0) {
                                 node = selection.$from.node(-1).child(selection.$from.index(-1) - 1)
                                 if (node.type.name === 'imageBlock') {
-                                    deleteImage(getPath(node.attrs.src))
-                                    skip = true
+                                    if (node.attrs.src.startsWith(`${import.meta.env.VITE_SERVER_PATH}`)) {
+                                        deleteImage(getPath(node.attrs.src))
+                                        skip = true
+                                    }
                                 }
                                 else if (node.type.name === 'fileBlock') {
                                     deleteFile(getPath(node.attrs.src))
