@@ -43,7 +43,7 @@ export const BlockEditor = ({
   // const editorRef = useRef<PureEditorContent | null>(null);
 
   // const { editor, users, characterCount, collabState, leftSidebar } = useBlockEditor({ aiToken, ydoc, provider })
-  const { editor, leftSidebar, characterCount } =
+  const { editor, leftSidebar, characterCount, isSaving } =
     useBlockEditor(initialContent);
 
   // const displayedUsers = users.slice(0, 3)
@@ -88,6 +88,7 @@ export const BlockEditor = ({
           words={characterCount.words()}
           isSidebarOpen={leftSidebar.isOpen}
           toggleSidebar={leftSidebar.toggle}
+          isSaving={isSaving}
         />
         <LinkMenu editor={editor} appendTo={menuContainerRef} />
         <TextMenu editor={editor} />

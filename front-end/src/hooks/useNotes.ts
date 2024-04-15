@@ -228,20 +228,20 @@ const useNotes = () => {
 
   function resetContentAndSelection(noteItem) {
     // Capture the current selection
-    const currentSelection = window.editor?.state?.selection;
+    // const currentSelection = window.editor?.state?.selection;
 
     // Reset the content
-    window.editor.chain().setMeta('addToHistory', false).setContent(noteItem.content).run;
+    window.editor?.commands.setContent(noteItem.content);
 
     // Create a new editor state while preserving the old selection
-    const newEditorState = EditorState.create({
-      doc: window.editor.state.doc,
-      plugins: window.editor.state.plugins,
-      selection: currentSelection
-    });
+    // const newEditorState = EditorState.create({
+    //   doc: window.editor.state.doc,
+    //   plugins: window.editor.state.plugins,
+    //   selection: currentSelection
+    // });
 
     // Update the editor state
-    window.editor.view.updateState(newEditorState);
+    // window.editor.view.updateState(newEditorState);
     window.note_tree?.select(noteItem?.id)
   }
 

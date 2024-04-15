@@ -62,7 +62,7 @@ export const useSuggestion = () => {
         data: { user_id: useAuthentication.getState().auth.id, onlyTitle: true, keyword: query },
       };
       const { responseData } = await callApi(APIEndPoints.FILTER, options);
-      return responseData
+      return responseData.filter((item => item.id !== useApp.getState().currentNote.id))
     },
 
 

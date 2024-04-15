@@ -2,6 +2,7 @@ import useNotes from "@/hooks/useNotes";
 import { Button } from "@chakra-ui/react";
 import { Editor, NodeViewWrapper } from "@tiptap/react";
 import { FileText } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface Props {
   editor: Editor;
@@ -17,6 +18,15 @@ interface Props {
 
 const LinkView = (props: Props) => {
   const { actions } = useNotes();
+  const [label, setLabel] = useState("");
+  useEffect(() => {
+    const loadData = async () => {
+      const responseData = await actions.getANote(props.node.attrs.id);
+      setLabel(responseData.title);
+    };
+
+    loadData();
+  }, []);
 
   return (
     <NodeViewWrapper as="span">
@@ -36,7 +46,7 @@ const LinkView = (props: Props) => {
         gap={2}
       >
         <FileText size={15} style={{ color: "var(--brand400)" }} />
-        <span data-id={props.node.attrs.id}>{props.node.attrs.label}</span>
+        <span data-id={props.node.attrs.id}>{label}</span>
       </Button>
     </NodeViewWrapper>
   );

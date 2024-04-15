@@ -8,7 +8,7 @@ import { Editor, useEditor } from '@tiptap/react'
 // import * as Y from 'yjs'
 
 import { ExtensionKit } from '@/editor/extensions/extension-kit'
-import History from '@tiptap/extension-history'
+// import History from '@tiptap/extension-history'
 // import { EditorContext } from '../context/EditorContext'
 // import { userColors, userNames } from '../lib/constants'
 // import { randomElement } from '../lib/utils'
@@ -17,6 +17,9 @@ import { useSidebar } from './useSidebar'
 // import { initialContent } from '@/editor/lib/data/initialContent'
 import { useApp } from '@/store/useApp'
 import { tempState } from '../lib/api'
+import useNotes from '@/hooks/useNotes'
+import { useCallback, useState } from 'react'
+import { debounce } from 'lodash'
 
 // const TIPTAP_AI_APP_ID = process.env.NEXT_PUBLIC_TIPTAP_AI_APP_ID
 // const TIPTAP_AI_BASE_URL = process.env.NEXT_PUBLIC_TIPTAP_AI_BASE_URL || 'https://api.tiptap.dev/v1/ai'
@@ -39,8 +42,19 @@ declare global {
 export const useBlockEditor = (initialContent?) => {
     const leftSidebar = useSidebar()
     const currentNote = useApp((state) => state.currentNote);
+    const { actions } = useNotes()
+    const [isSaving, setIsSaving] = useState(false)
     //   const [collabState, setCollabState] = useState<WebSocketStatus>(WebSocketStatus.Connecting)
     //   const { setIsAiLoading, setAiError } = useContext(EditorContext)
+
+    const debouncedHandle = useCallback(
+        debounce(async () => {
+            setIsSaving(true)
+            await actions.updateNote()
+            setIsSaving(false)
+        }, 2000),
+        [currentNote.id]
+    );
 
     const editor = useEditor(
         {
@@ -57,6 +71,10 @@ export const useBlockEditor = (initialContent?) => {
                     else
                         editor.commands.setContent(currentNote?.content || '<p> Hello world </p>')
                 }
+            },
+            onUpdate({ editor }) {
+                // The content has changed.
+                debouncedHandle()
             },
             extensions: [
                 ...ExtensionKit(),
@@ -148,5 +166,5 @@ export const useBlockEditor = (initialContent?) => {
     window.editor = editor
 
     // return { editor, users, characterCount, collabState, leftSidebar }
-    return { editor, leftSidebar, characterCount }
+    return { editor, leftSidebar, characterCount, isSaving }
 }
