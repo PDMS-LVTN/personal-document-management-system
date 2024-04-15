@@ -85,7 +85,7 @@ const Links = ({ items, type, actions, ...props }) => {
       );
       setSearchResults(res);
     }, 500),
-    []
+    [items]
   );
 
   const handleInputOnchange = (e) => {
