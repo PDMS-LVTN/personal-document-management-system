@@ -79,10 +79,6 @@ const SignUp = () => {
         }
       );
 
-      // TODO: remove console.logs before deployment
-      console.log(response);
-      console.log(JSON.stringify(response?.data));
-
       //clear state and controlled inputs
       setUser("");
       setPwd("");

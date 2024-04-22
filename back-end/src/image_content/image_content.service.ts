@@ -20,7 +20,7 @@ export class ImageContentService {
     private readonly httpService: HttpService,
   ) { }
 
-  async uploadImage(files, req, note_ID) {
+  async uploadImage(files, req, note_ID, direct = false) {
     const response = [];
     files.map((file: any) => {
       const fileName: string = file.originalname;
@@ -33,13 +33,14 @@ export class ImageContentService {
       // }
       response.push(fileName);
       // Find matching file name between content and response array. Add right extension at the end of all urls
-      req.body = {
-        ...req.body,
-        content: req.body.content.replace(
-          fileName.substring(0, fileName.indexOf('.')),
-          fileName,
-        ),
-      };
+      if (!direct)
+        req.body = {
+          ...req.body,
+          content: req.body.content.replace(
+            fileName.substring(0, fileName.indexOf('.')),
+            fileName,
+          ),
+        };
     });
 
     // Call api OCR extract text. Only images that OCR extracts text will be returned. Pass array of image's name
@@ -82,10 +83,12 @@ export class ImageContentService {
       rel.push(relFile);
     });
 
-    // console.log(rel);
-
     // Save image and text in database
-    return this.updateImageContent(rel);
+    this.updateImageContent(rel);
+
+    // Upload a single image
+    const urls = rel.map((item) => `${process.env.IMAGE_SERVER_PATH}/${item.path}`)
+    return urls
   }
 
   async updateImageContent(createImageContentDtos: CreateImageContentDto[]) {

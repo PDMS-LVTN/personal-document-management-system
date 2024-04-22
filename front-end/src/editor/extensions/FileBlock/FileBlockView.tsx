@@ -1,4 +1,3 @@
-import { Icon } from "@/editor/components/ui/Icon";
 import { Node } from "@tiptap/pm/model";
 import { Editor, NodeViewWrapper } from "@tiptap/react";
 import { FileText } from "lucide-react";
@@ -84,6 +83,7 @@ export const FileBlockView = (props: FileBlockViewProps) => {
           className="w-0 h-0 overflow-hidden opacity-0"
           href={`${src}`}
           ref={ref}
+          target="_blank"
         ></a>
       </div>
     </NodeViewWrapper>

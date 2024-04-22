@@ -29,7 +29,6 @@ import {
   ChevronsUpDown,
   SlidersHorizontal,
 } from "lucide-react";
-import { FaPlus } from "react-icons/fa6";
 
 declare global {
   interface Window {
@@ -38,12 +37,10 @@ declare global {
 }
 
 const Notes = ({
-  editorRef,
   notes,
   actions,
   isLoading,
 }: {
-  editorRef;
   notes: Note[];
   actions;
   isLoading;

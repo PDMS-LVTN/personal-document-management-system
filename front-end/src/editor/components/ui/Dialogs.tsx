@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 export const UnsplashDialog = ({ onUpload }) => {
   const [images, setImages] = useState(null);
-  //   console.log(process.env.UNSPLASH_ACCESS_KEY);
   useEffect(() => {
     const fetchImages = async () => {
       const response = await fetch(
@@ -12,7 +11,6 @@ export const UnsplashDialog = ({ onUpload }) => {
         }`
       );
       const data = await response.json();
-      console.log(data);
       setImages(data);
     };
 
@@ -23,15 +21,18 @@ export const UnsplashDialog = ({ onUpload }) => {
     <>
       <Input placeholder="Search for an image" mb={3} />
       {!images ? (
-        <Spinner />
+        <div className="flex justify-center items-center">
+          <Spinner />
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 lg:container">
           {images.map((image) => (
             <div className="flex flex-col gap-1" key={image.id}>
+              {/* BUG: these images are not uploaded to our server */}
               <img
                 src={image.urls.thumb}
                 alt={image.alt_description}
-                className="object-cover h-[125px] rounded-2xl hover:cursor-pointer"
+                className="object-cover h-[125px] rounded-md hover:cursor-pointer"
                 loading="lazy"
                 onClick={() => {
                   onUpload(image.urls.regular);

@@ -8,9 +8,9 @@ import { tempState } from "@/editor/lib/api";
 import { useApi } from "./useApi";
 import { convertToHtml } from "mammoth";
 import { ShareMode } from "@/lib/data/constant";
+import { EditorState } from "@tiptap/pm/state";
 
 const useNotes = () => {
-  // console.log("use notes")
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const clean = useApp((state) => state.clean);
@@ -203,8 +203,8 @@ const useNotes = () => {
 
   const clickANoteHandler = async (id) => {
     const noteItem = await getANote(id);
-    console.log(noteItem);
     setCurrentNoteHandler(noteItem);
+    resetContentAndSelection(noteItem)
   };
 
   const setCurrentNoteHandler = (noteItem) => {
@@ -220,12 +220,30 @@ const useNotes = () => {
     const tags = noteItem.tags.map((tag) => {
       return { value: tag.description, label: tag.description, id: tag.id };
     });
-    console.log("current_tag", tags);
     setCurrentTags(tags);
     // ref?.current?.setMarkdown(noteItem.content);
-    window.editor?.commands.setContent(noteItem.content);
+    // window.editor?.commands.setContent(noteItem.content);
     return noteItem;
   };
+
+  function resetContentAndSelection(noteItem) {
+    // Capture the current selection
+    // const currentSelection = window.editor?.state?.selection;
+
+    // Reset the content
+    window.editor?.commands.setContent(noteItem.content);
+
+    // Create a new editor state while preserving the old selection
+    // const newEditorState = EditorState.create({
+    //   doc: window.editor.state.doc,
+    //   plugins: window.editor.state.plugins,
+    //   selection: currentSelection
+    // });
+
+    // Update the editor state
+    // window.editor.view.updateState(newEditorState);
+    window.note_tree?.select(noteItem?.id)
+  }
 
   const handleSearch = async (keyword) => {
     setLoading(true);
@@ -250,7 +268,6 @@ const useNotes = () => {
       )
     );
     let i = 0;
-    console.log(replacements);
     return string.replace(regexp, () => replacements[i++]);
   }
 
@@ -291,10 +308,9 @@ const useNotes = () => {
       );
       tempState.content = sourceReplacedContent;
       tempState.content = tempState.content.replace(
-        // /<p\b[^>]*>(<strong>|<i>|<em>|<u>)*(<img\b[^>]*>)(<\/strong>|<\/i>|<\/em>|<\/u>)*<\/p>/g,
         /<p[^>]*>([^\/]*?)(<img[^>]*?src="([^>]+)"[^>]*>).*?<\/p>/g,
         (...match) => {
-          console.log(match[1]);
+          // console.log(match[1]);
           return match[2];
         }
       );
@@ -335,7 +351,6 @@ const useNotes = () => {
       setCurrentNote(currentNote);
       window.editor.commands.setContent(tempState.content);
       setLoading(false);
-      console.log(currentNote);
       return currentNote;
     } catch (error) {
       setLoading(false);

@@ -93,6 +93,11 @@ input[type="range"] {
   display: none;
 }
 
-.tippy-box {
+#text-menu {
   margin-left: 60px;
+}
+
+.reference-term {
+  background-color: var(--brand100);
+  font-weight: 600;
 }

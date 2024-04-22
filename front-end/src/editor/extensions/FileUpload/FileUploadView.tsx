@@ -1,6 +1,5 @@
 import { Editor, NodeViewWrapper } from "@tiptap/react";
 import { ChangeEvent, useCallback } from "react";
-import { Icon } from "@/editor/components/ui/Icon";
 import { useFileUpload, useUploader } from "../ImageUpload/view/hooks";
 import { Spinner } from "@/editor/components/ui/Spinner";
 import { ArrowUpFromLine } from "lucide-react";
@@ -40,14 +39,6 @@ export const FileUploadView = ({
     [uploadFile]
   );
 
-  //   if (loading) {
-  //     return (
-  //       <div className="flex items-center justify-center p-8 rounded-lg min-h-[10rem] bg-opacity-80">
-
-  //       </div>
-  //     );
-  //   }
-
   return (
     <NodeViewWrapper>
       <div className="p-0 m-0" data-drag-handle>
@@ -82,12 +73,12 @@ export const FileUploadView = ({
           </div>
 
           <div
-            className="flex flex-col justify-center pl-1 py-1"
+            className="flex items-center gap-3 pl-1 py-1"
             style={{ marginLeft: "50px" }}
           >
             <div className="text-xs line-clamp-1">Upload a file</div>
+            {loading && <Spinner className="text-neutral-500" size={1.5} />}
           </div>
-          {loading && <Spinner className="text-neutral-500" size={1.5} />}
         </div>
         <input
           className="w-0 h-0 overflow-hidden opacity-0"

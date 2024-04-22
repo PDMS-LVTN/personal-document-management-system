@@ -10,6 +10,7 @@ import {
   Req,
   UseInterceptors,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { NoteService } from './note.service';
 import { CreateNoteDto } from './dto/create-note.dto';
@@ -185,5 +186,46 @@ export class NoteController {
     @Body() req: { backlink_id: string },
   ) {
     return this.noteService.removeLinkNote(headlink_id, req);
+  }
+
+  @Get('/link_note/head/:id')
+  async getHeadlinks(
+    @Param('id') noteId: string,
+    @Query() req: { name: string }
+  ) {
+    return await this.noteService.getHeadlinks(noteId, req.name)
+  }
+
+  @Get('/link_note/back/:id')
+  async getBacklink(
+    @Param('id') noteId: string,
+    @Query() req: { name: string }
+  ) {
+    return await this.noteService.getBacklinks(noteId, req.name)
+  }
+
+  @Post('/upload/:id')
+  @UseInterceptors(
+    FilesInterceptor('files[]', 20, {
+      storage: diskStorage({
+        destination: process.env.UPLOAD_PATH,
+        filename: (req, file, cb) => {
+          const fileName: string = path
+            .parse(file.originalname)
+            .name.replace(/\s/g, '');
+          const extension: string = path.parse(file.originalname).ext;
+          cb(null, `${fileName}${extension}`);
+        },
+      }),
+    }),
+  )
+  async uploadAttachments(
+    @Param('id') id: string,
+    @UploadedFiles() files,
+    @Req() req,
+  ) {
+    return await this.noteService.uploadAttachments(id, files, req, true).catch((err) => {
+      throw err;
+    });
   }
 }
