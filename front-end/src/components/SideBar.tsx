@@ -19,21 +19,21 @@ const SideBar = () => {
       text: "Notes",
       path: "/notes",
       leftIcon: (
-        <StickyNote color="var(--chakra-colors-text-inactive)" size={25} />
+        <StickyNote color="var(--chakra-colors-text-inactive)" size={22} />
       ),
-      leftIconColor: <StickyNote color="var(--brand600)" size={25} />,
+      leftIconColor: <StickyNote color="var(--brand600)" size={22} />,
     },
     {
       text: "Favorites",
       path: "/favorite",
-      leftIcon: <Star color="var(--chakra-colors-text-inactive)" size={25} />,
-      leftIconColor: <Star color="var(--brand600)" size={25} />,
+      leftIcon: <Star color="var(--chakra-colors-text-inactive)" size={22} />,
+      leftIconColor: <Star color="var(--brand600)" size={22} />,
     },
     {
       text: "Tags",
       path: "/tags",
-      leftIcon: <Tag color="var(--chakra-colors-text-inactive)" size={25} />,
-      leftIconColor: <Tag color="var(--brand600)" size={25} />,
+      leftIcon: <Tag color="var(--chakra-colors-text-inactive)" size={22} />,
+      leftIconColor: <Tag color="var(--brand600)" size={22} />,
     },
     // {
     //   text: "Shared with me",
@@ -50,11 +50,12 @@ const SideBar = () => {
   ];
 
   return (
-    <Stack direction="column" mt="4.5em" spacing={2}>
+    <Stack direction="column" mt="5.75em" spacing={0}>
       {sideBarList.map((e, idx) => {
         return (
           <Button
             key={idx}
+            fontSize={"15px"}
             leftIcon={
               selectedItem.includes(e.path) ? e.leftIconColor : e.leftIcon
             }

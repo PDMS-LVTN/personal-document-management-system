@@ -11,6 +11,7 @@ import { useFavorite } from "../hooks/useFavorite";
 import { Note, useApp } from "@/store/useApp";
 import useNotes from "@/hooks/useNotes";
 import { IoSearch } from "react-icons/io5";
+import { AiFillFile } from "react-icons/ai";
 
 function Favorite() {
   // const { ref } = useOutletContext<ContextType>();
@@ -109,6 +110,7 @@ function Favorite() {
           notes.map((note, idx) => {
             return (
               <Button
+                fontSize={"14px"}
                 key={idx}
                 variant="ghost"
                 borderRadius={0}
@@ -117,8 +119,8 @@ function Favorite() {
                 pb={3}
                 pl="2em"
                 pr="2em"
-                borderTop={idx == 0 ? "1px" : "0px"}
-                borderBottom="1px"
+                // borderTop={idx == 0 ? "1px" : "0px"}
+                // borderBottom="1px"
                 borderColor="gray.200"
                 display="flex"
                 justifyContent="flex-start"
@@ -128,6 +130,9 @@ function Favorite() {
                   actions.clickANoteHandler(note.id);
                 }}
               >
+                <span className="mr-3">
+                  <AiFillFile color="var(--brand300)" size="20px" />
+                </span>
                 <Text fontWeight="normal">
                   {currentNote?.id === note?.id
                     ? currentNote.title

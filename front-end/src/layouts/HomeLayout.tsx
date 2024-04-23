@@ -38,7 +38,7 @@ function HomeLayout() {
       h="100%"
       templateRows="60px 1fr"
       templateColumns="repeat(10, 1fr)"
-      gap="2px"
+      gap="1px"
       bg="#E9E9E9"
     >
       <GridItem

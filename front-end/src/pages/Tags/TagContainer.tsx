@@ -84,9 +84,9 @@ const TagContainer = () => {
             pb={3}
             pl="2em"
             pr="2em"
-            borderTop={idx == 0 ? "1px" : "0px"}
-            borderBottom="1px"
-            borderColor="gray.200"
+            // borderTop={idx == 0 ? "1px" : "0px"}
+            // borderBottom="1px"
+            // borderColor="gray.200"
             display="flex"
             justifyContent="flex-start"
             height="40px"
@@ -97,15 +97,22 @@ const TagContainer = () => {
               setIsShowNotes(true);
             }}
           >
-            <IoMdPricetag size={30} color="#7540EE" />
-            <Text fontWeight="normal">{item.label}</Text>
-          </Button>
-          <IconButton
+            <span className="mr-3">
+              <IoMdPricetag color="var(--brand300)" size="24px" />
+            </span>
+            {/* <IoMdPricetag size={30} color="#7540EE" /> */}
+            <Text fontWeight="normal" fontSize={"14px"}>{item.label}</Text>
+            <IconButton
+            marginLeft={"auto"}
             isRound
             aria-label="Delete tag"
+            size="sm"
+            alignSelf={"revert"}
             icon={<IoClose />}
             onClick={() => handleDeleteTag(item.id)}
           />
+          </Button>
+          
         </Flex>
       );
     });

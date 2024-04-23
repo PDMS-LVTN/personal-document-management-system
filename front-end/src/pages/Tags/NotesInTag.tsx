@@ -2,6 +2,7 @@ import { Button, Flex, IconButton, Text } from "@chakra-ui/react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 import { IoMdPricetag } from "react-icons/io";
+import { AiFillFile } from "react-icons/ai";
 import { useParams, useOutletContext, useNavigate } from "react-router-dom";
 import { useTags } from "../../hooks/useTags";
 import useNotes from "../../hooks/useNotes";
@@ -79,9 +80,9 @@ const NotesInTag = () => {
               pb={3}
               pl="2em"
               pr="2em"
-              borderTop={idx == 0 ? "1px" : "0px"}
-              borderBottom="1px"
-              borderColor="gray.200"
+              // borderTop={idx == 0 ? "1px" : "0px"}
+              // borderBottom="1px"
+              // borderColor="gray.200"
               display="flex"
               justifyContent="flex-start"
               height="40px"
@@ -89,7 +90,10 @@ const NotesInTag = () => {
                 actions.clickANoteHandler(item.id);
               }}
             >
-              <Text fontWeight="normal">
+              <span className="mr-3">
+                <AiFillFile color="var(--brand300)" size="20px" />
+              </span>
+              <Text fontWeight="normal" fontSize={"14px"}>
                 {currentNote?.id === item?.id ? currentNote.title : item.title}
               </Text>
             </Button>
