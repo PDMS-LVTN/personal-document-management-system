@@ -73,11 +73,8 @@ export const ImageBlockMenu = ({
   const axiosJWT = useAxiosJWT();
 
   const onGetText = async () => {
-    // TODO: fetch image text
     let text;
     const src: string = editor.getAttributes("imageBlock").src;
-    console.log(src.substring(src.lastIndexOf("/") + 1), currentNote.id);
-    console.log(currentNote);
     try {
       const response = await axiosJWT.post(
         "image_content/extract_text",
@@ -89,7 +86,6 @@ export const ImageBlockMenu = ({
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log(response.data);
       text = response.data[0].content;
     } catch (e) {
       console.log(e);

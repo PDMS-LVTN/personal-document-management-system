@@ -12,7 +12,7 @@ export type EditorHeaderProps = {
   words: number;
   // collabState: WebSocketStatus
   // users: EditorUser[]
-  isSaving: boolean;
+  isSaving?: boolean;
 };
 
 export const EditorHeader = ({
@@ -38,7 +38,7 @@ export const EditorHeader = ({
           </Toolbar.Button>
         </div>
         <div className="text-gray-400">
-          {isSaving ? (
+          {isSaving === undefined ? null : isSaving ? (
             <div className="flex items-center gap-2">
               <Spinner color="gray.400" size="xs" /> <div>Saving...</div>
             </div>

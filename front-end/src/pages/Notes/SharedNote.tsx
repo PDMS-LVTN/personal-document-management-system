@@ -1,6 +1,6 @@
 import { BlockEditor } from "@/editor/components/BlockEditor";
-import { Button } from "@chakra-ui/button";
 import { Input } from "@chakra-ui/input";
+import { IconButton } from "@chakra-ui/react";
 import { Tag, TagLabel } from "@chakra-ui/tag";
 import { Home } from "lucide-react";
 import { useRef } from "react";
@@ -30,30 +30,20 @@ const SharedNote = () => {
           border={0}
           disabled
         />
-        <Tag
-          size={"lg"}
-          ml="auto"
-          borderRadius="full"
-          variant="solid"
-          colorScheme="brand"
-        >
+        <Tag size="lg" ml="auto" variant="solid" backgroundColor="brand.400">
           <TagLabel>Viewer</TagLabel>
         </Tag>
-        <Button
+        <IconButton
+          size="sm"
           onClick={() => {
             navigate("/notes", { replace: true });
           }}
-          style={{
-            marginLeft: "10px",
-            height: "40px",
-            width: "40px",
-            padding: "11px",
-            background: "var(--brand400)",
-            borderRadius: "50%",
-          }}
-        >
-          <Home color="white" />
-        </Button>
+          ml={2}
+          backgroundColor="brand.400"
+          _hover={{ bg: "brand.500" }}
+          aria-label="Home"
+          icon={<Home color="white" size={17} />}
+        />
       </div>
       <BlockEditor
         editorRef={editorRef}

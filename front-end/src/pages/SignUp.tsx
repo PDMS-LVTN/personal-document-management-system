@@ -22,8 +22,9 @@ const SignUp = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname;
+  const from = location.state?.from;
   const isShared = location.state?.isShared;
+  const noteId = location.state?.noteId;
 
   const userRef = useRef<HTMLDivElement>(null);
   const errRef = useRef<HTMLDivElement>(null);
@@ -83,7 +84,7 @@ const SignUp = () => {
       setUser("");
       setPwd("");
       setMatchPwd("");
-      navigate("/login", { state: { from, isShared } });
+      navigate("/login", { state: { from, isShared, noteId } });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");

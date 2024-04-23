@@ -22,6 +22,7 @@ import { TextMenu } from "../menus/TextMenu";
 import useModal from "@/hooks/useModal";
 import { ContentItemMenu } from "../menus/ContentItemMenu";
 import { cn } from "@/editor/lib/utils";
+import { useReadOnlyEditor } from "@/editor/hooks/useReadOnlyEditor";
 
 type TipTapProps = {
   editorRef;
@@ -39,12 +40,21 @@ export const BlockEditor = ({
   // const aiState = useAIState()
   const menuContainerRef = useRef(null);
   const [modal, showModal] = useModal();
-  const [editable, setEditable] = useState(isEditable);
+  const [editable, _] = useState(isEditable);
   // const editorRef = useRef<PureEditorContent | null>(null);
 
   // const { editor, users, characterCount, collabState, leftSidebar } = useBlockEditor({ aiToken, ydoc, provider })
-  const { editor, leftSidebar, characterCount, isSaving } =
-    useBlockEditor(initialContent);
+  let editor, leftSidebar, characterCount, isSaving;
+  if (editable) {
+    ({ editor, leftSidebar, characterCount, isSaving } =
+      useBlockEditor(initialContent));
+  } else {
+    ({ editor, leftSidebar, characterCount } =
+      useReadOnlyEditor(initialContent));
+  }
+
+  // const { editor, leftSidebar, characterCount, isSaving } =
+  //   useBlockEditor(initialContent);
 
   // const displayedUsers = users.slice(0, 3)
 
