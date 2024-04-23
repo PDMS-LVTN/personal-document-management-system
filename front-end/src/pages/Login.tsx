@@ -148,7 +148,6 @@ const Login = () => {
         avatar: userObject.picture,
       });
       if (isShared) {
-        console.log("here");
         handleShareNavigation(userObject.email);
       } else {
         navigate(from, { replace: true });
@@ -197,7 +196,11 @@ const Login = () => {
               onClick={() =>
                 navigate("/", {
                   replace: true,
-                  state: { isShared: isShared, from },
+                  state: {
+                    isShared: isShared,
+                    from,
+                    noteId: location.state.noteId,
+                  },
                 })
               }
             >
