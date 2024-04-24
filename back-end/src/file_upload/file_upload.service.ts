@@ -1,22 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFileUploadDto } from './dto/create-file_upload.dto';
-import { UpdateFileUploadDto } from './dto/update-file_upload.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FileUpload } from './entities/file_upload.entity';
 import { Equal, Repository } from 'typeorm';
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  PutObjectCommandInput,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { ConfigService } from '@nestjs/config';
+import { S3 } from 'aws-sdk';
 
 require('dotenv').config();
 const fs = require('fs');
 @Injectable()
 export class FileUploadService {
+  private readonly s3Client = new S3({
+    region: this.configService.get('AWS_S3_REGION'),
+    accessKeyId: this.configService.get('AWS_S3_ACCESS_KEY_ID'),
+    secretAccessKey: this.configService.get('AWS_S3_SECRET_ACCESS_KEY'),
+  });
+
   constructor(
     @InjectRepository(FileUpload)
     private readonly fileUploadRepository: Repository<FileUpload>,
-  ) { }
+    private readonly configService: ConfigService,
+  ) {}
 
   async uploadFile(files, req, note_ID: string, direct = false) {
-    let urls = []
-    files.map((file: any) => {
+    let urls = [];
+    files.map(async (file: any) => {
       const fileName = file.originalname;
       // Find matching file name between content and response array. Add right extension at the end of all urls
       if (!direct)
@@ -28,19 +42,35 @@ export class FileUploadService {
           ),
         };
 
+      if (process.env.DEBUG === '1') {
+        const bucket = this.configService.get('AWS_S3_BUCKET');
+        const inputUpload = {
+          Body: file.buffer,
+          Bucket: bucket,
+          Key: fileName,
+          ContentType: file.mimetype,
+          // ACL: 'public-read',
+        };
+        try {
+          await this.s3Client.upload(inputUpload).promise();
+        } catch (err) {
+          throw err;
+        }
+      }
+
       const relFile: CreateFileUploadDto = {
         note_ID: '',
         path: '',
       };
       relFile.note_ID = note_ID.toString();
       relFile.path = fileName;
-      urls.push(`${process.env.IMAGE_SERVER_PATH}/${relFile.path}`)
+      urls.push(`${process.env.IMAGE_SERVER_PATH}/${relFile.path}`);
 
       // Save file path in database
       const newFileUpload = this.fileUploadRepository.create(relFile);
       this.fileUploadRepository.save(newFileUpload);
     });
-    return urls
+    return urls;
   }
 
   async findOneFileUpload(id: number) {
@@ -54,7 +84,19 @@ export class FileUploadService {
 
   async removeFileUpload(path: string) {
     // Remove image file from destination folder
-    fs.unlinkSync(`${process.env.UPLOAD_PATH}/${path}`);
+    if (process.env.DEBUG === '0') {
+      fs.unlinkSync(`${process.env.UPLOAD_PATH}/${path}`);
+    } else {
+      const params = {
+        Bucket: this.configService.get('AWS_S3_BUCKET'),
+        Key: path,
+      };
+      try {
+        await this.s3Client.deleteObject(params).promise();
+      } catch (err) {
+        throw err;
+      }
+    }
 
     // Remove image_content item from database
     const file_upload = await this.fileUploadRepository.findOneBy({ path });

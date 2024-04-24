@@ -26,7 +26,7 @@ import { Public } from '../auth/auth.decorator';
 @ApiTags('note')
 @Controller('api/note/')
 export class NoteController {
-  constructor(private readonly noteService: NoteService) { }
+  constructor(private readonly noteService: NoteService) {}
   private readonly logger = new Logger(NoteController.name);
 
   @Post('add_note')
@@ -102,22 +102,22 @@ export class NoteController {
 
   @Patch(':id')
   @UseInterceptors(
-    FilesInterceptor('files[]', 20, {
-      storage: diskStorage({
-        destination: process.env.UPLOAD_PATH,
-        filename: (req, file, cb) => {
-          const fileName: string = path
-            .parse(file.originalname)
-            .name.replace(/\s/g, '');
-          const extension: string = path.parse(file.originalname).ext;
-          cb(null, `${fileName}${extension}`);
-        },
-      }),
-    }),
-    // FileFieldsInterceptor([
-    //   { name: 'images', maxCount: 20 },
-    //   { name: 'others', maxCount: 20 },
-    // ],)
+    FilesInterceptor(
+      'files[]',
+      20,
+      process.env.DEBUG === '0' && {
+        storage: diskStorage({
+          destination: process.env.UPLOAD_PATH,
+          filename: (req, file, cb) => {
+            const fileName: string = path
+              .parse(file.originalname)
+              .name.replace(/\s/g, '');
+            const extension: string = path.parse(file.originalname).ext;
+            cb(null, `${fileName}${extension}`);
+          },
+        }),
+      },
+    ),
   )
   async updateNote(
     @Param('id') id: string,
@@ -136,18 +136,22 @@ export class NoteController {
 
   @Post('import')
   @UseInterceptors(
-    FilesInterceptor('files[]', 20, {
-      storage: diskStorage({
-        destination: process.env.UPLOAD_PATH,
-        filename: (req, file, cb) => {
-          const fileName: string = path
-            .parse(file.originalname)
-            .name.replace(/\s/g, '');
-          const extension: string = path.parse(file.originalname).ext;
-          cb(null, `${fileName}${extension}`);
-        },
-      }),
-    }),
+    FilesInterceptor(
+      'files[]',
+      20,
+      process.env.DEBUG === '0' && {
+        storage: diskStorage({
+          destination: process.env.UPLOAD_PATH,
+          filename: (req, file, cb) => {
+            const fileName: string = path
+              .parse(file.originalname)
+              .name.replace(/\s/g, '');
+            const extension: string = path.parse(file.originalname).ext;
+            cb(null, `${fileName}${extension}`);
+          },
+        }),
+      },
+    ),
   )
   async importNote(@UploadedFiles() files, @Req() req) {
     return await this.noteService.importNote(files, req);
@@ -191,41 +195,47 @@ export class NoteController {
   @Get('/link_note/head/:id')
   async getHeadlinks(
     @Param('id') noteId: string,
-    @Query() req: { name: string }
+    @Query() req: { name: string },
   ) {
-    return await this.noteService.getHeadlinks(noteId, req.name)
+    return await this.noteService.getHeadlinks(noteId, req.name);
   }
 
   @Get('/link_note/back/:id')
   async getBacklink(
     @Param('id') noteId: string,
-    @Query() req: { name: string }
+    @Query() req: { name: string },
   ) {
-    return await this.noteService.getBacklinks(noteId, req.name)
+    return await this.noteService.getBacklinks(noteId, req.name);
   }
 
   @Post('/upload/:id')
   @UseInterceptors(
-    FilesInterceptor('files[]', 20, {
-      storage: diskStorage({
-        destination: process.env.UPLOAD_PATH,
-        filename: (req, file, cb) => {
-          const fileName: string = path
-            .parse(file.originalname)
-            .name.replace(/\s/g, '');
-          const extension: string = path.parse(file.originalname).ext;
-          cb(null, `${fileName}${extension}`);
-        },
-      }),
-    }),
+    FilesInterceptor(
+      'files[]',
+      20,
+      process.env.DEBUG === '0' && {
+        storage: diskStorage({
+          destination: process.env.UPLOAD_PATH,
+          filename: (req, file, cb) => {
+            const fileName: string = path
+              .parse(file.originalname)
+              .name.replace(/\s/g, '');
+            const extension: string = path.parse(file.originalname).ext;
+            cb(null, `${fileName}${extension}`);
+          },
+        }),
+      },
+    ),
   )
   async uploadAttachments(
     @Param('id') id: string,
     @UploadedFiles() files,
     @Req() req,
   ) {
-    return await this.noteService.uploadAttachments(id, files, req, true).catch((err) => {
-      throw err;
-    });
+    return await this.noteService
+      .uploadAttachments(id, files, req, true)
+      .catch((err) => {
+        throw err;
+      });
   }
 }

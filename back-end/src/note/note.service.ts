@@ -28,11 +28,8 @@ export class NoteService {
     // private readonly imageContentRepository: Repository<ImageContent>,
     private readonly imageContentService: ImageContentService,
     private readonly uploadFileService: FileUploadService,
-    // @InjectRepository(Tag)
-    // private readonly tagRepository: Repository<Tag>
-  ) { }
+  ) {}
   private readonly logger = new Logger(NoteService.name);
-
 
   async createNote(createNoteDto: CreateNoteDto) {
     // const user = new User({ id: createNoteDto.user_id });
@@ -273,7 +270,7 @@ export class NoteService {
     //     throw err;
     //   }
     // }
-    this.uploadAttachments(id, files, req)
+    this.uploadAttachments(id, files, req);
     // Retrieve note's content and edit image's url (replace blob by localhost)
     if (req.body.content) {
       req.body.content = req.body.content.replaceAll(
@@ -448,41 +445,42 @@ export class NoteService {
   }
 
   async getHeadlinks(noteId: string, name: string) {
-    const note = await this.noteRepository
-      .findOne({
-        where: {
-          id: Equal(noteId),
-        },
-        relations: {
-          headlinks: true
-        }
-      });
-    const maxLength = 50
+    const note = await this.noteRepository.findOne({
+      where: {
+        id: Equal(noteId),
+      },
+      relations: {
+        headlinks: true,
+      },
+    });
+    const maxLength = 50;
     const mappedResults = note.headlinks.map((linkedNote, _) => {
-      const strippedContent = this.stripHTML(linkedNote.content)
-      const subContent = strippedContent.substring(0, maxLength)
-      const content = subContent.length < strippedContent.length ? subContent + '...' : subContent
-      return { ...linkedNote, content: [{ content, index: 0 }] }
-    })
-    return mappedResults
+      const strippedContent = this.stripHTML(linkedNote.content);
+      const subContent = strippedContent.substring(0, maxLength);
+      const content =
+        subContent.length < strippedContent.length
+          ? subContent + '...'
+          : subContent;
+      return { ...linkedNote, content: [{ content, index: 0 }] };
+    });
+    return mappedResults;
   }
 
   async getBacklinks(noteId: string, name: string) {
-    const note = await this.noteRepository
-      .findOne({
-        where: {
-          id: Equal(noteId),
-        },
-        relations: {
-          backlinks: true
-        }
-      });
+    const note = await this.noteRepository.findOne({
+      where: {
+        id: Equal(noteId),
+      },
+      relations: {
+        backlinks: true,
+      },
+    });
     const mappedResults = note.backlinks.map((linkedNote, _) => {
-      const strippedContent = this.stripHTML(linkedNote.content)
-      const content = this.createSearchTermContext(strippedContent, name)
-      return { ...linkedNote, content }
-    })
-    return mappedResults
+      const strippedContent = this.stripHTML(linkedNote.content);
+      const content = this.createSearchTermContext(strippedContent, name);
+      return { ...linkedNote, content };
+    });
+    return mappedResults;
   }
 
   stripHTML(content: string) {
@@ -497,9 +495,12 @@ export class NoteService {
     const regexPattern = new RegExp(term, 'gi');
     const matches = content.match(regexPattern);
     let output = [];
-    let index = 0
+    let index = 0;
     if (matches) {
-      const padding = Math.max(min_padding, Math.floor(max_length / (2 * matches.length)));
+      const padding = Math.max(
+        min_padding,
+        Math.floor(max_length / (2 * matches.length)),
+      );
 
       // Construct extract containing context for each term
       let last_offset = 0;
@@ -512,16 +513,22 @@ export class NoteService {
           start--;
         }
 
-        while (end < content.length - 1 && content[end].match(/[A-Za-z0-9'"-]/)) {
+        while (
+          end < content.length - 1 &&
+          content[end].match(/[A-Za-z0-9'"-]/)
+        ) {
           end++;
         }
 
         start = Math.max(start, 0);
-        let context = content.substring(start, end)
-        context = context.replaceAll(term, `<span class="reference-term"">${term}</span>`);
+        let context = content.substring(start, end);
+        context = context.replaceAll(
+          term,
+          `<span class="reference-term"">${term}</span>`,
+        );
 
         if (start > 0) {
-          context = "..." + context;
+          context = '...' + context;
         }
 
         // output += context;
@@ -529,7 +536,7 @@ export class NoteService {
         if (end < content.length - 1) {
           context += '...';
         }
-        output.push({ content: context, index })
+        output.push({ content: context, index });
         index++;
       }
 
@@ -547,14 +554,14 @@ export class NoteService {
     //   }
     //   output = output.substring(0, end) + '...';
     // }
-    return output
+    return output;
   }
 
   async uploadAttachments(id: string, files, req, direct = false) {
-    console.log(files)
+    console.log(files);
     const image_files = [];
     const other_files = [];
-    let urls = []
+    let urls = [];
     files.map((e) => {
       if (e.mimetype.includes('image')) {
         image_files.push(e);
@@ -566,7 +573,12 @@ export class NoteService {
     // Upload images to upload folder and save in image_content table. Similar to other file uploads
     if (image_files.length > 0) {
       try {
-        urls = await this.imageContentService.uploadImage(image_files, req, id, direct);
+        urls = await this.imageContentService.uploadImage(
+          image_files,
+          req,
+          id,
+          direct,
+        );
         // await this.imageContentService.uploadImage(other_files, req, id);
       } catch (err) {
         console.log(err);
@@ -576,12 +588,17 @@ export class NoteService {
 
     if (other_files.length > 0) {
       try {
-        urls = await this.uploadFileService.uploadFile(other_files, req, id, direct);
+        urls = await this.uploadFileService.uploadFile(
+          other_files,
+          req,
+          id,
+          direct,
+        );
       } catch (err) {
         console.log(err);
         throw err;
       }
     }
-    return urls
+    return urls;
   }
 }
