@@ -1,36 +1,49 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateImageContentDto } from './dto/create-image_content.dto';
-import { UpdateImageContentDto } from './dto/update-image_content.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImageContent } from './entities/image_content.entity';
 import { Equal, Repository } from 'typeorm';
-import { Note } from 'src/note/entities/note.entity';
 import { catchError, lastValueFrom, of } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { error } from 'console';
+import {
+  S3Client,
+  PutObjectCommand,
+  PutObjectCommandInput,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
+import { ConfigService } from '@nestjs/config';
+import { S3 } from 'aws-sdk';
 
 require('dotenv').config();
 const fs = require('fs');
 @Injectable()
 export class ImageContentService {
+  // private readonly s3Client = new S3Client({
+  //   region: this.configService.get('AWS_S3_REGION'),
+  //   credentials: {
+  //     accessKeyId: this.configService.get('AWS_S3_ACCESS_KEY_ID'),
+  //     secretAccessKey: this.configService.get('AWS_S3_SECRET_ACCESS_KEY'),
+  //   },
+  // });
+
+  private readonly s3Client = new S3({
+    region: this.configService.get('AWS_S3_REGION'),
+    accessKeyId: this.configService.get('AWS_S3_ACCESS_KEY_ID'),
+    secretAccessKey: this.configService.get('AWS_S3_SECRET_ACCESS_KEY'),
+  });
+
   constructor(
     @InjectRepository(ImageContent)
     private readonly imageContentRepository: Repository<ImageContent>,
     // private readonly searchService: SearchService,
     private readonly httpService: HttpService,
-  ) { }
+    private readonly configService: ConfigService,
+  ) {}
 
   async uploadImage(files, req, note_ID, direct = false) {
     const response = [];
-    files.map((file: any) => {
+    files.map(async (file: any) => {
       const fileName: string = file.originalname;
-      // // if (!fileName) {
-      // //   return of(error, 'File type must be png, jpg, jpeg');
-      // // }
-      // const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
-      // if (!allowedMimeTypes.includes(file.mimetype)) {
-      //   return of(error, 'File type must be png, jpg, jpeg');
-      // }
       response.push(fileName);
       // Find matching file name between content and response array. Add right extension at the end of all urls
       if (!direct)
@@ -41,6 +54,21 @@ export class ImageContentService {
             fileName,
           ),
         };
+      if (process.env.DEBUG === '1') {
+        const bucket = this.configService.get('AWS_S3_BUCKET');
+        const inputUpload = {
+          Body: file.buffer,
+          Bucket: bucket,
+          Key: fileName,
+          ContentType: file.mimetype,
+          // ACL: 'public-read',
+        };
+        try {
+          await this.s3Client.upload(inputUpload).promise();
+        } catch (err) {
+          throw err;
+        }
+      }
     });
 
     // Call api OCR extract text. Only images that OCR extracts text will be returned. Pass array of image's name
@@ -87,8 +115,10 @@ export class ImageContentService {
     this.updateImageContent(rel);
 
     // Upload a single image
-    const urls = rel.map((item) => `${process.env.IMAGE_SERVER_PATH}/${item.path}`)
-    return urls
+    const urls = rel.map(
+      (item) => `${process.env.IMAGE_SERVER_PATH}/${item.path}`,
+    );
+    return urls;
   }
 
   async updateImageContent(createImageContentDtos: CreateImageContentDto[]) {
@@ -143,7 +173,19 @@ export class ImageContentService {
 
   async removeImageContent(path: string) {
     // Remove image file from destination folder
-    fs.unlinkSync(`${process.env.UPLOAD_PATH}/${path}`);
+    if (process.env.DEBUG === '0') {
+      fs.unlinkSync(`${process.env.UPLOAD_PATH}/${path}`);
+    } else {
+      const params = {
+        Bucket: this.configService.get('AWS_S3_BUCKET'),
+        Key: path,
+      };
+      try {
+        await this.s3Client.deleteObject(params).promise();
+      } catch (err) {
+        throw err;
+      }
+    }
 
     // Remove image_content item from database
     const image_content = await this.imageContentRepository.findOneBy({ path });
