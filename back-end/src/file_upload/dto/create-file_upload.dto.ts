@@ -9,4 +9,8 @@ export class CreateFileUploadDto {
   @ApiProperty()
   @IsNotEmpty()
   note_ID: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  name: string;
 }
