@@ -61,9 +61,11 @@ export class FileUploadService {
       const relFile: CreateFileUploadDto = {
         note_ID: '',
         path: '',
+        name: '',
       };
       relFile.note_ID = note_ID.toString();
       relFile.path = fileName;
+      relFile.name = file.name;
       urls.push(`${process.env.IMAGE_SERVER_PATH}/${relFile.path}`);
 
       // Save file path in database

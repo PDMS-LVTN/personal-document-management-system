@@ -19,6 +19,9 @@ export class FileUpload {
   @Column('uuid')
   note_ID: string;
 
+  @Column({ type: 'varchar', width: 255 })
+  name: string;
+
   @ManyToOne(() => Note, (note) => note.id, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
