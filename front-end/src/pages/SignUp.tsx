@@ -25,6 +25,7 @@ const SignUp = () => {
   const from = location.state?.from;
   const isShared = location.state?.isShared;
   const noteId = location.state?.noteId;
+  const isVerified = true;
 
   const userRef = useRef<HTMLDivElement>(null);
   const errRef = useRef<HTMLDivElement>(null);
@@ -73,7 +74,7 @@ const SignUp = () => {
     try {
       const response = await axios.post(
         REGISTER_URL,
-        JSON.stringify({ email: user, password: pwd }),
+        JSON.stringify({ email: user, password: pwd, codeEmailConfirmed: "abc"}),
         {
           headers: { "Content-Type": "application/json" },
           // withCredentials: true,
@@ -84,7 +85,7 @@ const SignUp = () => {
       setUser("");
       setPwd("");
       setMatchPwd("");
-      navigate("/login", { state: { from, isShared, noteId } });
+      navigate("/login", { state: { from, isShared, noteId, isVerified } });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -123,18 +124,18 @@ const SignUp = () => {
               </Text>
             </Link>
           </div>
-        </div>
-        <section>
           <Alert
             status="error"
             ref={errRef}
-            sx={{ display: errMsg ? "flex" : "none", mb: "3em" }}
+            sx={{ display: errMsg ? "flex" : "none", mb: "1em", mt: "1em"}}
             aria-live="assertive"
           >
             <AlertIcon />
             <AlertTitle>Sign up failed</AlertTitle>
             <AlertDescription>{errMsg}</AlertDescription>
           </Alert>
+        </div>
+        <section>
           <form
             style={{
               display: "flex",

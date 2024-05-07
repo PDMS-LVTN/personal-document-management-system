@@ -10,6 +10,7 @@ import { PassportModule } from '@nestjs/passport';
 import { User } from '../user/entities/user.entity';
 import { JwtStrategy } from './jwt.strategy';
 import { RefreshTokenStrategy } from './refreshtoken.strategy';
+import { MailerService } from '../mailer/mailer.service';
 
 require('dotenv').config();
 @Module({
@@ -26,6 +27,7 @@ require('dotenv').config();
   providers: [
     AuthService,
     UserService,
+    MailerService,
     LocalStrategy,
     JwtStrategy,
     RefreshTokenStrategy,

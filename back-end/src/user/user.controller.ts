@@ -44,6 +44,24 @@ export class UserController {
     return this.userService.updateUser(id, updateUserDto);
   }
 
+  @Public()
+  @Post('verify_email')
+  async verifyEmail(@Body() req: { email: string }) {
+    return this.userService.verifyEmail(req);
+  }
+
+  @Public()
+  @Post('forgot_password')
+  async forgotPassword(@Body() req: { email: string }) {
+    return this.userService.forgotPassword(req);
+  }
+
+  @Public()
+  @Post('reset_password')
+  async resetPassword(@Body() req: { email: string; resetPasswordToken: string, password: string}) {
+    return this.userService.resetPassword(req);
+  }
+
   // @Delete(':id')
   // remove(@Param('id') id: string) {
   //   return this.userService.remove(+id);

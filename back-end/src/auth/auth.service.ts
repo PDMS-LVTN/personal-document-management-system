@@ -28,12 +28,12 @@ export class AuthService {
     if (!user) {
       throw new NotAcceptableException('Email is not exist');
     }
+    if (!user.isEmailConfirmed) {
+      throw new NotAcceptableException('Email is not verified');
+    }
     const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {
-      throw new HttpException(
-        'Password is not correct',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new NotAcceptableException('Password is not correct');
     }
     return user;
   }
