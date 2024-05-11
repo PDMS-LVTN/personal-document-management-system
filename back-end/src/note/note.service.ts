@@ -56,8 +56,38 @@ export class NoteService {
     // return this.noteRepository.find(); //Display without relations
   }
 
+  async getParentPath(id: string) {
+    let note = await this.noteRepository.findOne({
+      where: {
+        id: Equal(id),
+      },
+      relations: {
+        parentNote: true,
+      },
+    });
+    let path = [];
+    while (note && note.parentNote) {
+      note = await this.noteRepository.findOne({
+        where: {
+          id: Equal(note.parent_id),
+        },
+        relations: {
+          parentNote: true,
+          childNotes: true,
+        },
+      });
+      path.push({
+        id: note.id,
+        title: note.title,
+        childNotes: note.childNotes,
+      });
+    }
+    return path.reverse();
+  }
+
   async findOneNote(id: string) {
-    return await this.noteRepository.findOne({
+    const parentPath = await this.getParentPath(id);
+    const note = await this.noteRepository.findOne({
       select: {
         id: true,
         title: true,
@@ -78,7 +108,10 @@ export class NoteService {
         tags: true,
       },
     });
-    // return this.noteRepository.findOneBy({ id }); //Display without relations
+    return {
+      ...note,
+      parentPath,
+    };
   }
 
   async findFavoritedNote(req: { user_id: string }) {

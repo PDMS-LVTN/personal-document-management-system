@@ -16,10 +16,11 @@ export class API {
   }
 
   public static uploadFileDirect = async (file: File, upload) => {
+    const fileName = file.name;
     const ext = file.name.substring(file.name.indexOf("."));
     const id = uuidv4()
     const newFile = new File([file], id + ext, { type: file.type });
-    const { responseData } = await upload(useApp.getState().currentNote.id, newFile)
+    const { responseData } = await upload(useApp.getState().currentNote.id, newFile, fileName)
     return responseData[0]
 
     // Always return a Promise

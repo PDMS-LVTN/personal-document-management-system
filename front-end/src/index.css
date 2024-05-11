@@ -192,3 +192,11 @@
 .shared-view {
   height: calc(100vh - 48px);
 }
+
+#parent-path ol {
+  height: 100%;
+}
+
+#parent-path .path-item{
+  font-weight: 500;
+}

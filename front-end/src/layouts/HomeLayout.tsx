@@ -89,7 +89,7 @@ function HomeLayout() {
         alignItems="center"
         justifyContent={currentNote ? "space-between" : "flex-end"}
         pr="2em"
-        pl="2em"
+        pl="1.3em"
         gap="1em"
         id="info-grid-item"
       >

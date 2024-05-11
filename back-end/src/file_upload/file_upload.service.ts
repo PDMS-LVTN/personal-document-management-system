@@ -31,6 +31,7 @@ export class FileUploadService {
   async uploadFile(files, req, note_ID: string, direct = false) {
     let urls = [];
     files.map(async (file: any) => {
+      const data = JSON.parse(req.body.data);
       const fileName = file.originalname;
       // Find matching file name between content and response array. Add right extension at the end of all urls
       if (!direct)
@@ -65,7 +66,7 @@ export class FileUploadService {
       };
       relFile.note_ID = note_ID.toString();
       relFile.path = fileName;
-      relFile.name = file.name;
+      relFile.name = data.fileName;
       urls.push(`${process.env.IMAGE_SERVER_PATH}/${relFile.path}`);
 
       // Save file path in database
@@ -108,6 +109,7 @@ export class FileUploadService {
   async findFilesOfNote(req) {
     return await this.fileUploadRepository.find({
       select: {
+        name: true,
         path: true,
       },
       where: {

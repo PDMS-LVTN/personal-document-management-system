@@ -46,6 +46,14 @@ const CreateTagModal = ({ onClose }) => {
           colorScheme="brand"
           mr={3}
           onClick={async () => {
+            if (!tagName) {
+              toast({
+                title: `Tag name cannot be empty`,
+                status: "error",
+                isClosable: true,
+              });
+              return;
+            }
             const { responseData, responseError } = await createTag(
               tagName,
               null

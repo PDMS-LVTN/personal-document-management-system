@@ -73,20 +73,19 @@ const TagContainer = () => {
           display="flex"
           justifyContent="space-between"
           alignItems="center"
-          pr={3}
+          // pr={3}
           key={idx}
+          _hover={{ backgroundColor: "gray.200" }}
         >
           <Button
-            variant="ghost"
+            // variant="ghost"
             borderRadius={0}
             w="100%"
             pt={3}
             pb={3}
             pl="2em"
             pr="2em"
-            // borderTop={idx == 0 ? "1px" : "0px"}
-            // borderBottom="1px"
-            // borderColor="gray.200"
+            backgroundColor={'transparent'}
             display="flex"
             justifyContent="flex-start"
             height="40px"
@@ -102,16 +101,20 @@ const TagContainer = () => {
             </span>
             {/* <IoMdPricetag size={30} color="#7540EE" /> */}
             <Text fontWeight="normal" fontSize={"14px"}>{item.label}</Text>
-            <IconButton
+            
+          </Button>
+          <IconButton
             marginLeft={"auto"}
+            marginRight={5}
             isRound
             aria-label="Delete tag"
+            backgroundColor={"gray.200"}
+            _hover={{ backgroundColor: "gray.300" }}
             size="sm"
             alignSelf={"revert"}
             icon={<IoClose />}
             onClick={() => handleDeleteTag(item.id)}
           />
-          </Button>
           
         </Flex>
       );
