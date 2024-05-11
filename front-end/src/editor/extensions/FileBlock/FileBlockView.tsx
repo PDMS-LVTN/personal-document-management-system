@@ -80,7 +80,7 @@ export const FileBlockView = (props: FileBlockViewProps) => {
         </div>
         <a
           id="file-node"
-          className="w-0 h-0 overflow-hidden opacity-0"
+          className="w-0 h-0 overflow-hidden hidden"
           href={`${src}`}
           ref={ref}
           target="_blank"

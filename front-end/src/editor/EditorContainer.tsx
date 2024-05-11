@@ -208,7 +208,9 @@ function EditorContainer({ editorRef }) {
   const [modal, showModal] = useModal("xl");
 
   const handleCopyLink = () => {
-    const text = `${import.meta.env.VITE_CLIENT_PATH}/note/${currentNote.id}`;
+    const text = `${import.meta.env.VITE_CLIENT_PATH}/note/${
+      currentNote.id
+    }/shared/public`;
     navigator.clipboard.writeText(text);
   };
 
@@ -221,7 +223,7 @@ function EditorContainer({ editorRef }) {
       <Modal isOpen={isLoading} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalBody display="flex" justifyContent="center">
+          <ModalBody display="flex" justifyContent="center" alignItems="center">
             <Spinner
               thickness="4px"
               speed="0.65s"
@@ -268,7 +270,7 @@ function EditorContainer({ editorRef }) {
         close={handleCloseConfirm}
         action={"delete"}
       />
-      {currentNote && !location.pathname.includes("shared") && (
+      {currentNote && (
         <div className="flex justify-between">
           <div className="flex justify-start items-center ml-8"></div>
           <Flex justifyContent="right">
@@ -332,7 +334,7 @@ function EditorContainer({ editorRef }) {
               <Button
                 isDisabled={
                   currentNote === undefined ||
-                  !location.pathname.includes("notes")
+                  !location.pathname.includes("note")
                 }
                 variant="ghost"
                 style={{

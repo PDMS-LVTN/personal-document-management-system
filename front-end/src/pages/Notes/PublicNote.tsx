@@ -3,8 +3,11 @@ import { Input } from "@chakra-ui/input";
 import { IconButton } from "@chakra-ui/react";
 import { Tag, TagLabel } from "@chakra-ui/tag";
 import { Home } from "lucide-react";
-import { useRef } from "react";
+import * as Y from "yjs";
+import { HocuspocusProvider } from "@hocuspocus/provider";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router";
+import { EditContext } from "@/context/context";
 
 declare global {
   interface Window {
@@ -12,16 +15,34 @@ declare global {
   }
 }
 
-const SharedNote = () => {
+const PublicNote = () => {
   const { data } = useOutletContext();
   console.log(data);
   window.documentData = data;
 
   const editorRef = useRef();
   const navigate = useNavigate();
+  const [editable, setEditable] = useState(true);
+  let ydoc = null;
+  let provider = null;
+
+  if (data.share_mode) {
+    ydoc = new Y.Doc();
+
+    provider = new HocuspocusProvider({
+      url: "ws://127.0.0.1:1234",
+      name: data.note_id,
+      document: ydoc,
+    });
+  }
+
+  useEffect(() => {
+    if (data.share_mode == "view") setEditable(false);
+    else setEditable(true);
+  }, []);
 
   return (
-    <>
+    <EditContext.Provider value={{ editable, setEditable }}>
       <div className="flex items-center justify-start px-4 h-12">
         <Input
           variant="outline"
@@ -31,12 +52,14 @@ const SharedNote = () => {
           disabled
         />
         <Tag size="lg" ml="auto" variant="solid" backgroundColor="brand.400">
-          <TagLabel>Viewer</TagLabel>
+          <TagLabel fontSize="13px">
+            {data.share_mode == "view" ? "Viewer" : "Editor"}
+          </TagLabel>
         </Tag>
         <IconButton
           size="sm"
           onClick={() => {
-            navigate("/notes", { replace: true });
+            navigate(`/shared/${data.note_id}`);
           }}
           ml={2}
           backgroundColor="brand.400"
@@ -47,12 +70,13 @@ const SharedNote = () => {
       </div>
       <BlockEditor
         editorRef={editorRef}
-        initialContent={data.content}
-        isEditable={false}
+        // isEditable={data.share_mode == "view" ? false : true}
         className="shared-view"
+        ydoc={ydoc}
+        provider={provider}
       />
-    </>
+    </EditContext.Provider>
   );
 };
 
-export default SharedNote;
+export default PublicNote;

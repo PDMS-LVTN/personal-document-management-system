@@ -1,6 +1,6 @@
 // import { WebSocketStatus } from "@hocuspocus/provider";
 import { EditorContent, PureEditorContent } from "@tiptap/react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { LinkMenu } from "@/editor/components/menus";
 
@@ -20,38 +20,46 @@ import { TableColumnMenu, TableRowMenu } from "@/editor/extensions/Table/menus";
 import { EditorHeader } from "./components/EditorHeader";
 import { TextMenu } from "../menus/TextMenu";
 import useModal from "@/hooks/useModal";
-import { ContentItemMenu } from "../menus/ContentItemMenu";
+// import { ContentItemMenu } from "../menus/ContentItemMenu";
 import { cn } from "@/editor/lib/utils";
-import { useReadOnlyEditor } from "@/editor/hooks/useReadOnlyEditor";
+import { EditContext } from "@/context/context";
+// import { useReadOnlyEditor } from "@/editor/hooks/useReadOnlyEditor";
 
 type TipTapProps = {
   editorRef;
-  isEditable;
-  initialContent?;
+  // isEditable;
+  // initialContent?;
   className?;
+  ydoc?;
+  provider?;
 };
 // export const BlockEditor = ({ aiToken, ydoc, provider }: TiptapProps) => {
 export const BlockEditor = ({
   editorRef,
-  isEditable,
-  initialContent,
+  // isEditable,
+  // initialContent,
   className,
+  ydoc,
+  provider,
 }: TipTapProps) => {
   // const aiState = useAIState()
   const menuContainerRef = useRef(null);
   const [modal, showModal] = useModal();
-  const [editable, _] = useState(isEditable);
+  const { editable } = useContext(EditContext);
+  // const [editable, _] = useState(isEditable);
   // const editorRef = useRef<PureEditorContent | null>(null);
 
   // const { editor, users, characterCount, collabState, leftSidebar } = useBlockEditor({ aiToken, ydoc, provider })
-  let editor, leftSidebar, characterCount, isSaving;
-  if (editable) {
-    ({ editor, leftSidebar, characterCount, isSaving } =
-      useBlockEditor(initialContent));
-  } else {
-    ({ editor, leftSidebar, characterCount } =
-      useReadOnlyEditor(initialContent));
-  }
+  // let editor, leftSidebar, characterCount, collabState;
+  // if (editable) {
+  const { editor, leftSidebar, characterCount, collabState } = useBlockEditor({
+    ydoc,
+    provider,
+  });
+  // } else {
+  //   ({ editor, leftSidebar, characterCount } =
+  //     useReadOnlyEditor(initialContent));
+  // }
 
   // const { editor, leftSidebar, characterCount, isSaving } =
   //   useBlockEditor(initialContent);
@@ -72,6 +80,7 @@ export const BlockEditor = ({
       return undefined;
     }
 
+    // BUG: editable may not work in list view
     editor.setEditable(editable);
   }, [editor, editable]);
 
@@ -93,12 +102,12 @@ export const BlockEditor = ({
       <div className="relative flex flex-col flex-1 h-full overflow-hidden">
         <EditorHeader
           characters={characterCount.characters()}
-          // collabState={collabState}
+          collabState={collabState}
           // users={displayedUsers}
           words={characterCount.words()}
           isSidebarOpen={leftSidebar.isOpen}
           toggleSidebar={leftSidebar.toggle}
-          isSaving={isSaving}
+          // isSaving={isSaving}
         />
         <LinkMenu editor={editor} appendTo={menuContainerRef} />
         <TextMenu editor={editor} />

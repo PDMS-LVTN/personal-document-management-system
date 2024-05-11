@@ -14,6 +14,7 @@ import { CreateNoteCollaboratorDto } from "./dto/create-note_collaborator.dto";
 import { UpdateNoteCollaboratorDto } from "./dto/update-note_collaborator.dto";
 import { ApiTags } from "@nestjs/swagger";
 import { Public } from '../auth/auth.decorator'
+import { ShareMode } from "./entities/note_collaborator.entity";
 
 @ApiTags('note_collaborator')
 @Controller('api/note_collaborator/')
@@ -56,5 +57,45 @@ export class NoteCollaboratorController {
     @Body() req: { note_id: string; email: string },
   ) {
     return this.noteCollaboratorService.removeNoteCollaborator(req);
+  }
+
+  @Post(':noteId')
+  async updateCollaboratorPermission(
+    @Param("noteId") note_id: string,
+    @Body() req
+      : {
+        email: string;
+        share_mode: ShareMode,
+        date: Date
+      }
+  ) {
+    return await this.noteCollaboratorService.updateCollaboratorPermission(
+      note_id,
+      req.email, req.share_mode,
+      req.date
+    );
+  }
+
+  @Get('permission/:noteId')
+  async getCollaboratorPermission(
+    @Param("noteId") note_id: string,
+    @Body() req
+      : {
+        email: string;
+      }
+  ) {
+    return await this.noteCollaboratorService.getCollaboratorPermission(
+      note_id,
+      req.email
+    );
+  }
+
+  @Get('get_all_notes/:email')
+  async getAllSharedNotes(
+    @Param("email") email: string,
+  ) {
+    return await this.noteCollaboratorService.getAllSharedNotes(
+      email
+    );
   }
 }

@@ -81,7 +81,7 @@ export const FileUploadView = ({
           </div>
         </div>
         <input
-          className="w-0 h-0 overflow-hidden opacity-0"
+          className="w-0 h-0 overflow-hidden hidden"
           ref={ref}
           type="file"
           //   accept=".jpg,.jpeg,.png,.webp,.gif"
