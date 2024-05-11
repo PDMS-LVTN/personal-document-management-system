@@ -22,6 +22,7 @@ import NotesInTag from "../pages/Tags/NotesInTag.tsx";
 import SharedNote from "@/pages/Notes/SharedNote.tsx";
 import { Unauthorized } from "@/pages/Unauthorized.tsx";
 import { ErrorBoundary } from "@/pages/ErrorBoundary.tsx";
+import { ResetPassword } from "../pages/ResetPassword.tsx";
 
 export const router = () => {
   return createBrowserRouter(
@@ -36,6 +37,7 @@ export const router = () => {
           <Route index element={<SignUp />} />
           <Route path="login" element={<Login />} />
           <Route path="password" element={<Password />} />
+          <Route path="reset-password" element={<ResetPassword />} />
         </Route>
         <Route element={<RequireAuth />} errorElement={<ErrorBoundary />}>
           <Route path="note/:noteId" element={<SharedNote />} />

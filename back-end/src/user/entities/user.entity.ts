@@ -15,6 +15,15 @@ export class User {
   @Column({ type: 'varchar', width: 255 })
   password: string;
 
+  @Column({ type: 'tinyint', default: false })
+  isEmailConfirmed: boolean;
+
+  @Column({ type: 'varchar', width: 255, default: null })
+  codeEmailConfirmed: string;
+
+  @Column({ type: 'varchar', width: 255, default: null })
+  resetPasswordToken: string;
+
   @OneToMany(() => Note, (note) => note.user, { eager: true})
   notes: Note[];
 

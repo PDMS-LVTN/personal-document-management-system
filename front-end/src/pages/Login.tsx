@@ -21,6 +21,7 @@ import { useAuthentication } from "../store/useAuth";
 import { useApi } from "@/hooks/useApi";
 
 const LOGIN_URL = "/auth/login";
+const VERIFIED_EMAIL_URL = "/user/verify_email";
 const GGLOGIN_URL = "/auth/loginGoogle";
 
 interface JwtPayload {
@@ -32,9 +33,14 @@ interface JwtPayload {
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const codeEmailConfirmed = queryParams.get('codeEmailConfirmed');
+  const emailVerify = queryParams.get('email');
 
   const from = location.state?.from || "/notes";
   const isShared = location.state?.isShared;
+  const isVerified = location.state?.isVerified;
+  const isResetPassword = location.state?.isResetPassword;
 
   // const { auth, setAuth } = useContext(AuthContext);
   const setAuth = useAuthentication((state) => state.setAuth);
@@ -45,8 +51,29 @@ const Login = () => {
   const [user, setUser] = useState("");
   const [pwd, setPwd] = useState("");
   const [errMsg, setErrMsg] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
 
   useEffect(() => {
+    if (codeEmailConfirmed) {
+      const verify_email = async () => {
+        try {
+          const response = await axios.post(
+            VERIFIED_EMAIL_URL,
+            JSON.stringify({ codeEmailConfirmed: codeEmailConfirmed, email: emailVerify }),
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+          if (response.data) {
+            setIsEmailVerified(true);
+          }
+        } catch (err) {
+          handleResponseError(err);
+        }
+      };
+
+      verify_email();
+    }
     userRef.current?.focus();
   }, []);
 
@@ -93,7 +120,7 @@ const Login = () => {
     if (!err?.response) {
       setErrMsg("No Server Response");
     } else if (err.response?.status === 406) {
-      setErrMsg("Wrong Username or Password");
+      setErrMsg(err.response?.data?.message);
     } else if (err.response?.status === 401) {
       setErrMsg("Unauthorized");
     } else {
@@ -199,7 +226,7 @@ const Login = () => {
                   state: {
                     isShared: isShared,
                     from,
-                    noteId: location.state.noteId,
+                    noteId: location.state?.noteId,
                   },
                 })
               }
@@ -208,24 +235,42 @@ const Login = () => {
             </Text>
             {/* </Link> */}
           </div>
-        </div>
-        <section>
           {isShared && (
-            <Alert status="info" sx={{ mb: "1em" }}>
+            <Alert status="info" sx={{ mb: "1em", mt: "1em" }}>
               <AlertIcon />
               Sign in to open this document
+            </Alert>
+          )}
+          {!isShared && isVerified && (
+            <Alert status="info" sx={{ mb: "1em", mt: "1em" }}>
+              <AlertIcon />
+              Check mail to login
+            </Alert>
+          )}
+          {isEmailVerified && (
+            <Alert status="success" sx={{ mb: "1em", mt: "1em" }}>
+              <AlertIcon />
+              Email {emailVerify} is verified
+            </Alert>
+          )}
+          {isResetPassword && (
+            <Alert status="success" sx={{ mb: "1em", mt: "1em" }}>
+              <AlertIcon />
+              Reset password successful
             </Alert>
           )}
           <Alert
             status="error"
             ref={errRef}
-            sx={{ display: errMsg ? "flex" : "none", mb: "1em" }}
+            sx={{ display: errMsg ? "flex" : "none", mb: "1em", mt: "1em" }}
             aria-live="assertive"
           >
             <AlertIcon />
-            <AlertTitle>Login failed</AlertTitle>
+            {/* <AlertTitle>Login failed</AlertTitle> */}
             <AlertDescription>{errMsg}</AlertDescription>
           </Alert>
+        </div>
+        <section>
           <form
             style={{
               display: "flex",

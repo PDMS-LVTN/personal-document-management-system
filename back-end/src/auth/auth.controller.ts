@@ -31,6 +31,7 @@ export class AuthController {
       return this.userService.createUser({
         email: auth.body.email,
         password: auth.body.password,
+        codeEmailConfirmed: ""
       });
     }
     return await this.authService.login(userExists);
