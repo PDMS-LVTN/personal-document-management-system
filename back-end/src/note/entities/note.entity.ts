@@ -1,4 +1,4 @@
-import { NoteCollaborator } from "../../note_collaborator/entities/note_collaborator.entity";
+import { NoteCollaborator, ShareMode } from "../../note_collaborator/entities/note_collaborator.entity";
 import { FileUpload } from "../../file_upload/entities/file_upload.entity";
 import { ImageContent } from "../../image_content/entities/image_content.entity";
 import { Tag } from "../../tag/entities/tag.entity";
@@ -20,6 +20,7 @@ import {
   TreeChildren,
   TreeParent,
 } from "typeorm";
+import { PublicCollaborator } from "../../public_collaborator/entities/public_collaborator.entity";
 
 @Entity()
 @Tree("closure-table")
@@ -35,6 +36,9 @@ export class Note {
   @Column({ type: "longtext", nullable: true })
   content: string;
 
+  @Column({ type: "blob", nullable: true })
+  binary_update_data: Buffer;
+
   @Column({ type: "int", default: 0 })
   size: number;
 
@@ -47,14 +51,22 @@ export class Note {
   @Column({ type: "tinyint", nullable: true })
   is_favorited: boolean;
 
-  @Column({ type: "tinyint", nullable: true })
-  is_anyone: boolean;
+  // @Column({ type: "tinyint", nullable: true })
+  @Column({
+    type: "enum",
+    enum: ShareMode,
+    nullable: true,
+  })
+  is_anyone: ShareMode;
 
   @Column("uuid", { nullable: true })
   parent_id: string;
 
   @Column("uuid")
   user_id: string;
+
+  @Column({ type: "timestamp", nullable: true })
+  shared_date: Date;
 
   @CreateDateColumn({
     type: "timestamp",
@@ -146,4 +158,15 @@ export class Note {
     },
   )
   note_collaborators?: NoteCollaborator[];
+
+  @OneToMany(
+    () => PublicCollaborator,
+    (public_collaborator) => public_collaborator.note,
+    {
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+      nullable: true,
+    },
+  )
+  public_collaborators?: PublicCollaborator[];
 }

@@ -8,7 +8,13 @@ import { tempState } from "@/editor/lib/api";
 import { useApi } from "./useApi";
 import { convertToHtml } from "mammoth";
 import { ShareMode } from "@/lib/data/constant";
-import { EditorState } from "@tiptap/pm/state";
+// import { EditorState } from "@tiptap/pm/state";
+// import { TiptapTransformer } from "@hocuspocus/transformer";
+import { useLocation, useNavigate } from "react-router-dom";
+import ExtensionKit from "@/editor/extensions/extension-kit";
+// import * as Y from "yjs";
+import { generateJSON } from "@tiptap/react";
+
 
 const useNotes = () => {
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -25,16 +31,20 @@ const useNotes = () => {
   const setCurrentTags = useApp((state) => state.setCurrentTags);
 
   const callApi = useApi();
+  const navigate = useNavigate();
+  const location = useLocation()
+
+  const extensions = ExtensionKit()
 
   const createNote = async (id: string, title?: string) => {
-    const initialContent = "<p>Start writing your notes</p>";
+    // const initialContent = "<p>Start writing your notes</p>";
     try {
       const response = await axiosJWT.post(
         APIEndPoints.CREATE_NOTE,
         JSON.stringify({
           user_id: auth.id,
           title: title || "Untitled",
-          content: initialContent,
+          // content: initialContent,
           read_only: false,
           size: 0,
           parent_id: id,
@@ -43,20 +53,21 @@ const useNotes = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log(response.data);
-      const currentNote = {
-        id: response.data.id,
-        title: response.data.title,
-        content: response.data.content,
-        parent_id: response.data.parent_id,
-        is_favorited: false,
-        is_pinned: false,
-        childrenNotes: null,
-      };
-      setCurrentNote(currentNote);
+      // console.log(response.data);
+      // const currentNote = {
+      //   id: response.data.id,
+      //   title: response.data.title,
+      //   content: response.data.content,
+      //   parent_id: response.data.parent_id,
+      //   is_favorited: false,
+      //   is_pinned: false,
+      //   childrenNotes: null,
+      // };
+      // setCurrentNote(currentNote);
       // ref?.current?.setMarkdown(markdown);
-      window.editor?.commands.setContent(response.data.content);
-      return currentNote;
+      // window.editor?.commands.setContent(response.data.content);
+      navigate(`${response.data.id}`)
+      // return currentNote;
     } catch (error) {
       console.log(error);
       if (error.response?.status === 403 || error.response?.status === 401) {
@@ -69,7 +80,7 @@ const useNotes = () => {
   const updateNote = async (title?) => {
     setLoading(true);
     console.log(tempState.waitingImage);
-    const editorContent = window.editor.getHTML();
+    // const editorContent = window.editor.getHTML();
     const formData = new FormData();
     // Append each of the files
     tempState.waitingImage.forEach((file) => {
@@ -78,7 +89,7 @@ const useNotes = () => {
     formData.append(
       "data",
       JSON.stringify({
-        content: editorContent,
+        // content: editorContent,
         title: title ? title : currentNote?.title,
       })
     );
@@ -140,7 +151,7 @@ const useNotes = () => {
           signal: controller.signal,
         }
       );
-      console.log(response.data);
+      // console.log(response.data);
       // setLoading(false);
       return response.data;
     } catch (error) {
@@ -202,9 +213,9 @@ const useNotes = () => {
   };
 
   const clickANoteHandler = async (id) => {
-    const noteItem = await getANote(id);
-    setCurrentNoteHandler(noteItem);
-    resetContentAndSelection(noteItem)
+    // const noteItem = await getANote(id);
+    // setCurrentNoteHandler(noteItem);
+    resetContentAndSelection(id)
   };
 
   const setCurrentNoteHandler = (noteItem) => {
@@ -223,15 +234,15 @@ const useNotes = () => {
     setCurrentTags(tags);
     // ref?.current?.setMarkdown(noteItem.content);
     // window.editor?.commands.setContent(noteItem.content);
-    return noteItem;
+    // return noteItem;
   };
 
-  function resetContentAndSelection(noteItem) {
+  function resetContentAndSelection(id) {
     // Capture the current selection
     // const currentSelection = window.editor?.state?.selection;
 
     // Reset the content
-    window.editor?.commands.setContent(noteItem.content);
+    // window.editor?.commands.setContent(noteItem.content);
 
     // Create a new editor state while preserving the old selection
     // const newEditorState = EditorState.create({
@@ -242,7 +253,10 @@ const useNotes = () => {
 
     // Update the editor state
     // window.editor.view.updateState(newEditorState);
-    window.note_tree?.select(noteItem?.id)
+    // window.note_tree?.select(noteItem?.id)
+
+    // /search needs location.state.data
+    navigate(`${id}`, { state: { data: location.state?.data } })
   }
 
   const handleSearch = async (keyword) => {
@@ -289,6 +303,8 @@ const useNotes = () => {
     temp.waitingImages.push(newFile);
     return group[0].replace(/src="[^"]+"/, `src="${url}"`);
   }
+
+  // BUG: rename and import
 
   const importNote = async (parentId, file) => {
     setLoading(true);
@@ -340,18 +356,24 @@ const useNotes = () => {
       const response = await axiosJWT.post(`note/import`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      const currentNote = {
-        id: response.data.id,
-        title: title,
-        content: response.data.content,
-        parent_id: response.data.parent_id,
-        is_favorited: false,
-        is_pinned: false,
-      };
-      setCurrentNote(currentNote);
-      window.editor.commands.setContent(tempState.content);
+      await axiosJWT.post(`note/import/update_binary_data`, {
+        id: response.data.id, data: generateJSON(response.data.content, extensions)
+      }, {
+        headers: { "Content-Type": "application/json" },
+      });
+      // const currentNote = {
+      //   id: response.data.id,
+      //   title: title,
+      //   content: response.data.content,
+      //   parent_id: response.data.parent_id,
+      //   is_favorited: false,
+      //   is_pinned: false,
+      // };
+      // setCurrentNote(currentNote);
+      // window.editor.commands.setContent(tempState.content);
       setLoading(false);
-      return currentNote;
+      navigate(`${response.data.id}`)
+      // return currentNote;
     } catch (error) {
       setLoading(false);
       if (error.response?.status === 403 || error.response?.status === 401) {
@@ -382,18 +404,6 @@ const useNotes = () => {
     setLoading(false);
     return responseData;
   };
-
-  const getAllSharedNotes = async () => {
-    setLoading(true);
-    // const options = {
-    //   method: "POST",
-    //   data: { user_id: auth.id, keyword: keyword },
-    // };
-    // const { responseData } = await callApi(APIEndPoints.SEARCH, options);
-    setLoading(false);
-    // return responseData;
-    return []
-  }
 
   const getAttachments = async (noteId: string) => {
     const options = {
@@ -436,10 +446,24 @@ const useNotes = () => {
     const options = {
       method: "PATCH",
       data: {
-        is_anyone
+        is_anyone,
+        date: new Date()
       }
     }
     const { responseData } = await callApi(`note/is_anyone/${noteId}`, options);
+    return responseData
+  }
+
+  const updateCollaboratorPermission = async (noteId: string, email: string, mode: ShareMode) => {
+    const options = {
+      method: "POST",
+      data: {
+        share_mode: mode,
+        email,
+        date: new Date()
+      }
+    }
+    const { responseData } = await callApi(`note_collaborator/${noteId}`, options);
     return responseData
   }
 
@@ -457,12 +481,13 @@ const useNotes = () => {
       handelFilterNotes,
       mergeNotes,
       moveNote,
-      getAllSharedNotes,
       getAttachments,
       removeNoteCollaborator,
       findCollaboratorsOfNote,
       addCollaborator,
-      updateGeneralPermission
+      updateGeneralPermission,
+      updateCollaboratorPermission,
+      setCurrentNoteHandler
     },
   };
 };

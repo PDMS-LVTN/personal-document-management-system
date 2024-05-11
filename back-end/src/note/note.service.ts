@@ -2,20 +2,24 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import {
-  Between,
+  // Between,
   Brackets,
   Equal,
-  In,
+  // In,
   IsNull,
-  Repository,
+  Not,
+  // Repository,
   TreeRepository,
 } from 'typeorm';
 import { Note } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ImageContent } from '../image_content/entities/image_content.entity';
+// import { ImageContent } from '../image_content/entities/image_content.entity';
 import { ImageContentService } from '../image_content/image_content.service';
-import { Tag } from '../tag/entities/tag.entity';
+// import { Tag } from '../tag/entities/tag.entity';
 import { FileUploadService } from '../file_upload/file_upload.service';
+import { TiptapTransformer } from '@hocuspocus/transformer';
+import * as Y from "yjs";
+import { ShareMode } from 'src/note_collaborator/entities/note_collaborator.entity';
 
 require('dotenv').config();
 
@@ -299,6 +303,7 @@ export class NoteService {
 
   async importNote(files, req) {
     const data = JSON.parse(req.body.data);
+    // this.logger.debug(data)
     const newNote: CreateNoteDto = {
       title: data.title ? data.title : 'Untitled',
       user_id: data.user_id,
@@ -310,6 +315,13 @@ export class NoteService {
       throw err;
     });
     return await this.findOneNote(note.id);
+  }
+
+  async updateBinaryData(req) {
+    await this.noteRepository.update({ id: req.id }, {
+      binary_update_data: Buffer.from(
+        Y.encodeStateAsUpdate(TiptapTransformer.toYdoc(req.data)))
+    })
   }
 
   async moveNote(req) {
@@ -374,8 +386,8 @@ export class NoteService {
     return await this.findOneNote(req.merged_note_id);
   }
 
-  async updateIsAnyone(id: string, is_anyone: boolean) {
-    return await this.noteRepository.update(id, { is_anyone });
+  async updateIsAnyone(id: string, is_anyone: ShareMode, date: Date) {
+    return await this.noteRepository.update(id, { is_anyone, shared_date: date });
   }
 
   async findAttachmentsOfNote(id: string) {
@@ -400,30 +412,32 @@ export class NoteService {
       select: {
         id: true,
         title: true,
-        content: true,
-        childNotes: {
-          id: true,
-          title: true,
-        },
-        parent_id: true,
-        is_favorited: true,
-        is_pinned: true,
+        is_anyone: true
+        // content: true,
+        // childNotes: {
+        //   id: true,
+        //   title: true,
+        // },
+        // parent_id: true,
+        // is_favorited: true,
+        // is_pinned: true,
       },
       where: {
         id: Equal(id),
-        is_anyone: true,
-      },
-      relations: {
-        childNotes: true,
-        headlinks: true,
-        backlinks: true,
-        tags: true,
-      },
+        is_anyone: Not(IsNull()),
+      }
+      // },
+      // relations: {
+      //   childNotes: true,
+      //   headlinks: true,
+      //   backlinks: true,
+      //   tags: true,
+      // },
     });
     if (!note) {
       throw new UnauthorizedException();
     }
-    return note;
+    return { title: note.title, share_mode: note.is_anyone, note_id: note.id };
   }
 
   async linkNote(headlink_id: string, req) {

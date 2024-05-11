@@ -22,6 +22,7 @@ import {
 } from '@nestjs/platform-express';
 import path = require('path');
 import { Public } from '../auth/auth.decorator';
+import { ShareMode } from '../note_collaborator/entities/note_collaborator.entity';
 
 @ApiTags('note')
 @Controller('api/note/')
@@ -95,9 +96,9 @@ export class NoteController {
   @Patch('is_anyone/:id')
   async updateIsAnyone(
     @Param('id') id: string,
-    @Body() req: { is_anyone: boolean },
+    @Body() req: { is_anyone: ShareMode, date: Date },
   ) {
-    return await this.noteService.updateIsAnyone(id, req.is_anyone);
+    return await this.noteService.updateIsAnyone(id, req.is_anyone, req.date);
   }
 
   @Patch(':id')
@@ -152,6 +153,13 @@ export class NoteController {
   async importNote(@UploadedFiles() files, @Req() req) {
     return await this.noteService.importNote(files, req);
   }
+
+  @Post('import/update_binary_data')
+  async updateBinaryData(@Body() req) {
+    console.log("hello", req)
+    return await this.noteService.updateBinaryData(req);
+  }
+
 
   @Patch('merge_note/:id')
   async mergeNote(

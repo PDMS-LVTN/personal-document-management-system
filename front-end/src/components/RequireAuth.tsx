@@ -1,41 +1,17 @@
 import { useLocation, Navigate, Outlet, useParams } from "react-router-dom";
 import { useAuthentication } from "../store/useAuth";
-import { useApi } from "@/hooks/useApi";
 import { useEffect, useState } from "react";
-import axios from "@/api/axios";
+import { usePermission } from "@/hooks/usePermission";
 
 const RequireAuth = () => {
   const auth = useAuthentication((state) => state.auth);
   const location = useLocation();
   const { noteId } = useParams();
   const hash = location.hash;
-  const callApi = useApi();
+  const { checkGeneralPermission, checkPermissionWithEmail } = usePermission();
   const [hasPermission, setHasPermission] = useState(false);
   const [data, setData] = useState();
   const [error, setError] = useState();
-
-  const checkGeneralPermission = async (noteId: string) => {
-    let responseData;
-    try {
-      const response = await axios.get(`note/is_anyone/${noteId}`);
-      responseData = response.data;
-    } catch (error) {
-      console.error(error);
-    }
-    return responseData;
-  };
-
-  const checkPermissionWithEmail = async (noteId: string, email: string) => {
-    const options = {
-      method: "GET",
-      params: { email },
-    };
-    const { responseData, responseError } = await callApi(
-      `note_collaborator/${noteId}`,
-      options
-    );
-    return { responseData, responseError };
-  };
 
   useEffect(() => {
     const checkPermission = async () => {

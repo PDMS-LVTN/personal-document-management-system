@@ -1,7 +1,8 @@
 import { GridItem } from "@chakra-ui/react";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Outlet, useOutletContext } from "react-router-dom";
 import EditorContainer from "../editor/EditorContainer";
+import { EditContext } from "@/context/context";
 // import { MDXEditorMethods } from "@mdxeditor/editor";
 export type ContextType = { ref: any | null };
 
@@ -56,8 +57,10 @@ function TreeAndEditorContainer() {
     };
   }, []);
 
+  const [editable, setEditable] = useState(true);
+
   return (
-    <Fragment>
+    <EditContext.Provider value={{ editable, setEditable }}>
       <GridItem
         id="structure-grid-item"
         rowSpan={1}
@@ -79,7 +82,7 @@ function TreeAndEditorContainer() {
       >
         <EditorContainer editorRef={ref} />
       </GridItem>
-    </Fragment>
+    </EditContext.Provider>
   );
 }
 

@@ -15,6 +15,7 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { FileUploadModule } from './file_upload/file_upload.module';
 import { NoteCollaboratorModule } from './note_collaborator/note_collaborator.module';
+import { PublicCollaboratorModule } from './public_collaborator/public_collaborator.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { NoteCollaboratorModule } from './note_collaborator/note_collaborator.mo
     }),
     FileUploadModule,
     NoteCollaboratorModule,
+    PublicCollaboratorModule,
   ],
   controllers: [AppController],
   providers: [
