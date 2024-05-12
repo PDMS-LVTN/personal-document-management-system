@@ -107,6 +107,7 @@ const Notes = ({
   }, []);
 
   const { onOpen, isOpen, onClose } = useDisclosure();
+  const [inputValue, setInputValue] = useState("");
 
   return (
     <>
@@ -238,6 +239,8 @@ const Notes = ({
                   type="file"
                   className="upload-file"
                   name="upload_file"
+                  value={inputValue}
+                  onClick={() => setInputValue("")}
                   onChange={handleInputChange}
                 />
               </MenuItem>

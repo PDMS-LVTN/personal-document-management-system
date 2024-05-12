@@ -135,6 +135,7 @@ export class NoteCollaboratorService {
       .innerJoin(User, "users", "notes.user_id = users.id")
       .where('public_notes.email = :email', { email })
       .andWhere('public_notes.note_id NOT IN (' + subquery.getQuery() + ')')
+      .distinct(true)
       .setParameters(subquery.getParameters())
       .getRawMany();
 
@@ -147,6 +148,7 @@ export class NoteCollaboratorService {
       .addSelect('users.email', 'owner')
       .innerJoin(Note, "notes", "private_notes.note_id = notes.id")
       .innerJoin(User, "users", "notes.user_id = users.id")
+      .distinct(true)
       .getRawMany()
 
     return { private_notes, public_notes }

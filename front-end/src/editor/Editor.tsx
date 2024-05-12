@@ -13,7 +13,7 @@ function Editor({ editorRef }) {
 
   const websocketProvider = new HocuspocusProvider({
     url: "ws://127.0.0.1:1234",
-    name: currentNote?.id || id || "0",
+    name: id || "0",
     document: ydoc,
   });
 

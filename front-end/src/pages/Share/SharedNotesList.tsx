@@ -46,11 +46,13 @@ export const SharedNotesList = ({ data }) => {
                       actions.clickANoteHandler(note.note_id);
                     }}
                   >
-                    <div className="flex">
+                    <div className="flex w-4/5 justify-start">
                       <span className="mr-3">
                         <AiFillFile color="var(--brand300)" size="20px" />
                       </span>
-                      <Text fontWeight="normal">{note.title}</Text>
+                      <Text fontWeight="normal" className="line-clamp-1">
+                        {note.title}
+                      </Text>
                     </div>
                     {note.share_mode == "view" ? (
                       <Eye color="var(--brand300)" size="20px" />
@@ -78,17 +80,26 @@ export const SharedNotesList = ({ data }) => {
                     pb={3}
                     borderColor="gray.200"
                     display="flex"
-                    justifyContent="flex-start"
+                    justifyContent="space-between"
                     height="40px"
                     bgColor={currentNote?.id === note.note_id ? "brand.50" : ""}
                     onClick={() => {
                       actions.clickANoteHandler(note.note_id);
                     }}
                   >
-                    <span className="mr-3">
-                      <AiFillFile color="var(--brand300)" size="20px" />
-                    </span>
-                    <Text fontWeight="normal">{note.title}</Text>
+                    <div className="flex w-4/5 justify-start">
+                      <span className="mr-3">
+                        <AiFillFile color="var(--brand300)" size="20px" />
+                      </span>
+                      <Text fontWeight="normal" className="line-clamp-1">
+                        {note.title}
+                      </Text>
+                    </div>
+                    {note.share_mode == "view" ? (
+                      <Eye color="var(--brand300)" size="20px" />
+                    ) : (
+                      <PencilLine color="var(--brand300)" size="20px" />
+                    )}
                   </Button>
                 );
               })

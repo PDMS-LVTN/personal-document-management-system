@@ -1,4 +1,4 @@
-import { IconButton, Text, Tooltip, background } from "@chakra-ui/react";
+import { IconButton, Text, Tooltip } from "@chakra-ui/react";
 import { SharedNotesList } from "./SharedNotesList";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";

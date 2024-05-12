@@ -53,21 +53,20 @@ const useNotes = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
-      // console.log(response.data);
-      // const currentNote = {
-      //   id: response.data.id,
-      //   title: response.data.title,
-      //   content: response.data.content,
-      //   parent_id: response.data.parent_id,
-      //   is_favorited: false,
-      //   is_pinned: false,
-      //   childrenNotes: null,
-      // };
+      const currentNote = {
+        id: response.data.id,
+        title: response.data.title,
+        // content: response.data.content,
+        parent_id: response.data.parent_id,
+        is_favorited: false,
+        is_pinned: false,
+        childrenNotes: null,
+      };
       // setCurrentNote(currentNote);
       // ref?.current?.setMarkdown(markdown);
       // window.editor?.commands.setContent(response.data.content);
       navigate(`${response.data.id}`)
-      // return currentNote;
+      return currentNote;
     } catch (error) {
       console.log(error);
       if (error.response?.status === 403 || error.response?.status === 401) {
@@ -361,19 +360,19 @@ const useNotes = () => {
       }, {
         headers: { "Content-Type": "application/json" },
       });
-      // const currentNote = {
-      //   id: response.data.id,
-      //   title: title,
-      //   content: response.data.content,
-      //   parent_id: response.data.parent_id,
-      //   is_favorited: false,
-      //   is_pinned: false,
-      // };
+      const currentNote = {
+        id: response.data.id,
+        title: title,
+        // content: response.data.content,
+        parent_id: response.data.parent_id,
+        is_favorited: false,
+        is_pinned: false,
+      };
       // setCurrentNote(currentNote);
       // window.editor.commands.setContent(tempState.content);
       setLoading(false);
       navigate(`${response.data.id}`)
-      // return currentNote;
+      return currentNote;
     } catch (error) {
       setLoading(false);
       if (error.response?.status === 403 || error.response?.status === 401) {
