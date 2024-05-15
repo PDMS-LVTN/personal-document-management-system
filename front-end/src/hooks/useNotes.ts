@@ -57,6 +57,8 @@ const useNotes = () => {
         childrenNotes: null,
       };
       setCurrentNote(currentNote);
+      stackHistory.stackUndo.push(response.data.id);
+      setStackHistory({...stackHistory, stackUndo: stackHistory.stackUndo});
       // ref?.current?.setMarkdown(markdown);
       window.editor?.commands.setContent(response.data.content);
       return currentNote;
@@ -240,7 +242,7 @@ const useNotes = () => {
       childNotes: noteItem.childNotes,
       parentPath: noteItem.parentPath,
     });
-    const tags = noteItem.tags.map((tag) => {
+    const tags = noteItem.tags?.map((tag) => {
       return { value: tag.description, label: tag.description, id: tag.id };
     });
     setCurrentTags(tags);
@@ -372,6 +374,8 @@ const useNotes = () => {
         is_pinned: false,
       };
       setCurrentNote(currentNote);
+      stackHistory.stackUndo.push(response.data.id);
+      setStackHistory({...stackHistory, stackUndo: stackHistory.stackUndo});
       window.editor.commands.setContent(tempState.content);
       setLoading(false);
       return currentNote;

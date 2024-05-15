@@ -38,13 +38,16 @@ const CreateTagModal = ({ onClose }) => {
             setTagName(e.target.value);
           }}
           placeholder="Tag name"
-          size="lg"
+          size="md"
         />
       </ModalBody>
       <ModalFooter>
+        <Button variant="ghost" onClick={onClose} size={'sm'} mr={3}>
+          Cancel
+        </Button>
         <Button
           colorScheme="brand"
-          mr={3}
+          size={'sm'}
           onClick={async () => {
             if (!tagName) {
               toast({
@@ -79,9 +82,6 @@ const CreateTagModal = ({ onClose }) => {
           }}
         >
           Create
-        </Button>
-        <Button variant="ghost" onClick={onClose}>
-          Cancel
         </Button>
       </ModalFooter>
     </ModalContent>

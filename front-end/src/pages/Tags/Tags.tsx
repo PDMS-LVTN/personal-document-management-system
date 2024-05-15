@@ -10,6 +10,8 @@ import {
 import { FaPlus } from "react-icons/fa";
 import SearchTag from "./SearchTag";
 import CreateTagModal from "../../components/CreateTagModal";
+import PlusIcon from "../../assets/plus-icon.svg";
+
 
 // BUG: tags are duplicated => create a relation also create a new tag
 export const Tags = ({ renderResults }) => {
@@ -27,18 +29,18 @@ export const Tags = ({ renderResults }) => {
         </Text>
         <Flex gap={3}>
           <Tooltip label="Create a tag">
-            <Button
+            <button
               style={{
-                height: "40px",
-                width: "40px",
-                padding: "7px",
-                borderRadius: "50%",
+                height: "32px",
+                width: "32px",
+                padding: "10px",
+                borderRadius: "100%",
                 background: "var(--brand400)",
               }}
               onClick={onOpen}
             >
-              <FaPlus color="white" />
-            </Button>
+              <img src={PlusIcon} alt="create" />
+            </button>
           </Tooltip>
         </Flex>
       </Flex>

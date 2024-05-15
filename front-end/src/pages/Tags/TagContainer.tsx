@@ -100,7 +100,7 @@ const TagContainer = () => {
               <IoMdPricetag color="var(--brand300)" size="24px" />
             </span>
             {/* <IoMdPricetag size={30} color="#7540EE" /> */}
-            <Text fontWeight="normal" fontSize={"14px"}>{item.label}</Text>
+            <Text fontWeight="300" fontSize={"14px"}>{item.label}</Text>
             
           </Button>
           <IconButton

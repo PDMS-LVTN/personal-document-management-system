@@ -26,7 +26,11 @@ export class UserService {
 
   async createUser(createUserDto: CreateUserDto) {
     // Check if user exists
-    console.log('sign_up');
+    if (createUserDto.codeEmailConfirmed === 'google') {
+      createUserDto.codeEmailConfirmed == null;
+      const newUser = this.userRepository.create(createUserDto);
+      return await this.userRepository.save(newUser);
+    }
     const userExists = await this.getUserByEmail({
       email: createUserDto.email,
     });
@@ -60,7 +64,6 @@ export class UserService {
 
       <p>Don't hesitate to contact us with your feedback.</p></div>`,
     });
-    console.log(res);
     //Create user
     const newUser = this.userRepository.create(createUserDto);
     return await this.userRepository.save(newUser);

@@ -404,10 +404,10 @@ function EditorContainer({ editorRef }) {
                     alignSelf: "center",
                   }}
                   className="path-item line-clamp-1"
-                  onClick={() => actions.clickANoteHandler(parent.id)}
+                  onClick={() => actions.clickANoteHandler(currentNote.id)}
                 >
                   {currentNote.title}
-                </Link>
+            </Link>
             {currentNote.childNotes?.length > 0 && (
                 <Menu>
                   {({ isOpen }) => (
@@ -616,6 +616,7 @@ function EditorContainer({ editorRef }) {
             <FormControl ml={3}>
               <CreatableSelect
                 id="input-tags"
+                size={'md'}
                 isMulti
                 // name="tags"
                 options={allTags}
