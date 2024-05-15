@@ -97,11 +97,11 @@ const useNotes = () => {
       );
       console.log(response);
       await setCurrentNoteHandler(response.data);
-      toast({
-        title: `Your note has been updated. 🙂`,
-        status: "success",
-        isClosable: true,
-      });
+      // toast({
+      //   title: `Your note has been updated. 🙂`,
+      //   status: "success",
+      //   isClosable: true,
+      // });
       tempState.waitingImage = [];
       setLoading(false);
     } catch (error) {
