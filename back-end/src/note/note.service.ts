@@ -32,14 +32,6 @@ export class NoteService {
   private readonly logger = new Logger(NoteService.name);
 
   async createNote(createNoteDto: CreateNoteDto) {
-    // const user = new User({ id: createNoteDto.user_id });
-    // const parent_note = new Note();
-    // parent_note.id = createNoteDto.parent_id;
-    // const newNote = this.noteRepository.create(createNoteDto);
-    // // user.notes=[newNote]
-    // // await this.userRepository.save(user);
-    // newNote.parentNote = parent_note;
-    // newNote.user = user;
     const newNote = this.noteRepository.create(createNoteDto);
     if (createNoteDto.parent_id) {
       const parent = await this.noteRepository.findOne({
@@ -274,7 +266,7 @@ export class NoteService {
     // Retrieve note's content and edit image's url (replace blob by localhost)
     if (req.body.content) {
       req.body.content = req.body.content.replaceAll(
-        'blob' + ':' + 'http://localhost:5173',
+        'blob' + ':' + process.env.CLIENT_URL,
         process.env.IMAGE_SERVER_PATH,
       );
     }
@@ -291,6 +283,28 @@ export class NoteService {
     // const note = await this.noteRepository.findOneBy({ id });
     // return await this.noteRepository.remove(note);
     // Method 2:
+    const images = await this.imageContentService
+      .findImagesOfNote({ note_ID: id })
+      .catch((err) => {
+        throw err;
+      });
+    const files = await this.uploadFileService
+      .findFilesOfNote({ note_ID: id })
+      .catch((err) => {
+        throw err;
+      });
+    images.map(async (image) => {
+      await this.imageContentService
+        .removeImageContent(image.path)
+        .catch((err) => {
+          throw err;
+        });
+    });
+    files.map(async (file) => {
+      await this.uploadFileService.removeFileUpload(file.path).catch((err) => {
+        throw err;
+      });
+    });
     return await this.noteRepository.delete(id);
   }
 
