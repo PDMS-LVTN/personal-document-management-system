@@ -311,6 +311,7 @@ const Notes = ({
         }
         childrenAccessor={(d) => d.childNotes}
         onActivate={handleActivate}
+        selection={currentNote?.id || "0"}
       >
         {Node}
       </Tree>

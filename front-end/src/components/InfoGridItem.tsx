@@ -31,10 +31,10 @@ export const InfoGridItem = () => {
           maxWidth="60%"
           value={currentNote ? currentNote.title : ""}
           border={0}
-          // BUG: do not use currentNote
           onChange={(e) => {
             setCurrentNote({ ...currentNote, title: e.target.value });
           }}
+          disabled={currentNote.shared}
         />
       )}
       <Flex justifyContent="right" alignItems="center" gap="1em">

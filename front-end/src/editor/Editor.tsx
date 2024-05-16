@@ -1,36 +1,47 @@
 import * as Y from "yjs";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { useLocation, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BlockEditor } from "./components/BlockEditor";
+import { useApp } from "@/store/useApp";
 
 function Editor({ editorRef }) {
   const { id } = useParams();
   const location = useLocation();
+  const currentNote = useApp((state) => state.currentNote);
   const [ydoc, setYdoc] = useState(null);
   const [websocketProvider, setProvider] = useState(null);
+  const providerRef = useRef(null);
 
   useEffect(() => {
+    console.log(location.state);
     if (location.state?.delete) {
-      websocketProvider?.destroy();
+      providerRef.current?.destroy();
       setYdoc(null);
       setProvider(null);
+      providerRef.current = null;
       return;
     }
     if (id) {
-      websocketProvider?.destroy();
+      providerRef.current?.destroy();
       const newdoc = new Y.Doc();
       setYdoc(newdoc);
-      setProvider(
-        new HocuspocusProvider({
-          url: "ws://127.0.0.1:1234",
-          name: id,
-          document: newdoc,
-          preserveConnection: false,
-        })
-      );
+      providerRef.current = new HocuspocusProvider({
+        url: "ws://127.0.0.1:1234",
+        name: id,
+        document: newdoc,
+        preserveConnection: false,
+      });
+      setProvider(providerRef.current);
     }
   }, [id]);
+
+  useEffect(() => {
+    return () => {
+      console.log("here");
+      providerRef.current?.destroy();
+    };
+  }, []);
 
   if (!ydoc || !websocketProvider) return null;
 
@@ -38,6 +49,7 @@ function Editor({ editorRef }) {
     <BlockEditor
       editorRef={editorRef}
       ydoc={ydoc}
+      className={currentNote?.shared && "shared-view"}
       provider={websocketProvider}
     />
   );

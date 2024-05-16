@@ -64,7 +64,8 @@ const useNotes = () => {
         childrenNotes: null,
       };
       // setCurrentNote(currentNote);
-      stackHistory.stackUndo.push(response.data.id);
+      // stackHistory.stackUndo.push(response.data.id);
+      stackHistory.stackUndo.push(location.pathname);
       setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
       // ref?.current?.setMarkdown(markdown);
       // window.editor?.commands.setContent(response.data.content);
@@ -105,7 +106,7 @@ const useNotes = () => {
         }
       );
       console.log(response);
-      await setCurrentNoteHandler(response.data);
+      setCurrentNoteHandler(response.data);
       // toast({
       //   title: `Your note has been updated. 🙂`,
       //   status: "success",
@@ -222,27 +223,30 @@ const useNotes = () => {
 
   const clickANoteUndo = async () => {
     stackHistory.stackRedo.push(stackHistory.stackUndo.pop());
-    const noteItem = await getANote(stackHistory.stackUndo.at(-1));
+    const path = stackHistory.stackUndo.at(-1)
     setStackHistory({ stackUndo: stackHistory.stackUndo, stackRedo: stackHistory.stackRedo });
-    setCurrentNoteHandler(noteItem);
-    resetContentAndSelection(noteItem)
+    navigate(path)
+    // setCurrentNoteHandler(noteItem);
+    // resetContentAndSelection(noteItem)
   };
 
   const clickANoteRedo = async () => {
-    const noteItem = await getANote(stackHistory.stackRedo.at(-1));
+    const path = stackHistory.stackRedo.at(-1)
     stackHistory.stackUndo.push(stackHistory.stackRedo.pop());
     setStackHistory({ stackUndo: stackHistory.stackUndo, stackRedo: stackHistory.stackRedo });
-    setCurrentNoteHandler(noteItem);
-    resetContentAndSelection(noteItem)
+    navigate(path)
+    // setCurrentNoteHandler(noteItem);
+    // resetContentAndSelection(noteItem)
   };
 
-  const clickANoteHandler = async (id) => {
+  const clickANoteHandler = async (id: string, atRoot: boolean = false) => {
     if (currentNote && id === currentNote.id) return;
     // const noteItem = await getANote(id);
-    stackHistory.stackUndo.push(id);
+    // stackHistory.stackUndo.push(id);
+    stackHistory.stackUndo.push(location.pathname);
     setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
     // setCurrentNoteHandler(noteItem);
-    resetContentAndSelection(id)
+    resetContentAndSelection(id, atRoot)
   };
 
   const setCurrentNoteHandler = (noteItem) => {
@@ -255,6 +259,7 @@ const useNotes = () => {
       is_pinned: noteItem.is_pinned,
       childNotes: noteItem.childNotes,
       parentPath: noteItem.parentPath,
+      shared: location.pathname.includes('shared') ? true : false
     });
     const tags = noteItem.tags?.map((tag) => {
       return { value: tag.description, label: tag.description, id: tag.id };
@@ -267,29 +272,12 @@ const useNotes = () => {
 
 
 
-  function resetContentAndSelection(id) {
-    // Capture the current selection
-    // const currentSelection = window.editor?.state?.selection;
-
-    // Reset the content
-    // window.editor?.commands.setContent(noteItem.content);
-
-    // Create a new editor state while preserving the old selection
-    // const newEditorState = EditorState.create({
-    //   doc: window.editor.state.doc,
-    //   plugins: window.editor.state.plugins,
-    //   selection: currentSelection
-    // });
-
-    // Update the editor state
-    // window.editor.view.updateState(newEditorState);
-    // window.note_tree?.select(noteItem?.id)
-
+  function resetContentAndSelection(id: string, atRoot: boolean) {
+    if (atRoot) {
+      navigate(`/notes/${id}`)
+      return
+    }
     // /search needs location.state.data
-    // console.log(ydoc)
-
-    // setYdoc(null)
-    // setProvider(null)
     navigate(`${id}`, { state: { data: location.state?.data } })
   }
 
@@ -398,7 +386,6 @@ const useNotes = () => {
         preserveConnection: false,
       });
       doc.destroy()
-      clickANoteHandler(response.data.id)
 
       const currentNote = {
         id: response.data.id,
@@ -409,11 +396,12 @@ const useNotes = () => {
         is_pinned: false,
       };
       // setCurrentNote(currentNote);
-      stackHistory.stackUndo.push(response.data.id);
+      // stackHistory.stackUndo.push(response.data.id);
+      stackHistory.stackUndo.push(location.pathname);
       setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
       // window.editor.commands.setContent(tempState.content);
       setLoading(false);
-      navigate(`${response.data.id}`)
+      clickANoteHandler(response.data.id)
       return currentNote;
     } catch (error) {
       setLoading(false);

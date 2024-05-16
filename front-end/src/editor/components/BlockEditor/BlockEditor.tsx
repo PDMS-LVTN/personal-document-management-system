@@ -73,9 +73,6 @@ export const BlockEditor = ({
     if (!editor) {
       return undefined;
     }
-
-    // BUG: editable may not work in list view
-    //      and not udated when switching back to notes
     if (location.pathname.includes("shared")) editor.setEditable(editable);
     else if (!editor.isEditable) editor.setEditable(true);
   }, [editor, editable]);

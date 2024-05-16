@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
-import Editor from "./Editor";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import ConfirmModal from "../components/ConfirmModal";
 
 import Montserract from "../assets/fonts/Montserrat/Montserrat-Regular.ttf";
@@ -277,7 +276,7 @@ function EditorContainer({ editorRef }) {
         close={handleCloseConfirm}
         action={"delete"}
       />
-      {currentNote ? (
+      {currentNote && !currentNote.shared ? (
         <div className="flex justify-between ml-7">
           <div className="flex">
             {stackHistory.stackUndo?.length <= 1 ? (
@@ -342,16 +341,15 @@ function EditorContainer({ editorRef }) {
             >
               {currentNote.parentPath?.map((parent, id) => {
                 return (
-                  <>
+                  <Fragment key={id}>
                     <Link
-                      key={id}
                       style={{
                         fontSize: "15px",
                         // maxWidth: "180px",
                         alignSelf: "center",
                       }}
                       className="path-item line-clamp-1"
-                      onClick={() => actions.clickANoteHandler(parent.id)}
+                      onClick={() => actions.clickANoteHandler(parent.id, true)}
                     >
                       {parent.title}
                     </Link>
@@ -386,7 +384,7 @@ function EditorContainer({ editorRef }) {
                                 <MenuItem
                                   key={id}
                                   onClick={() =>
-                                    actions.clickANoteHandler(child.id)
+                                    actions.clickANoteHandler(child.id, true)
                                   }
                                 >
                                   {child.title}
@@ -397,7 +395,7 @@ function EditorContainer({ editorRef }) {
                         </>
                       )}
                     </Menu>
-                  </>
+                  </Fragment>
                 );
               })}
             </Box>
@@ -408,7 +406,7 @@ function EditorContainer({ editorRef }) {
                 alignSelf: "center",
               }}
               className="path-item line-clamp-1"
-              onClick={() => actions.clickANoteHandler(currentNote.id)}
+              onClick={() => actions.clickANoteHandler(currentNote.id, true)}
             >
               {currentNote.title}
             </Link>
@@ -443,7 +441,9 @@ function EditorContainer({ editorRef }) {
                         return (
                           <MenuItem
                             key={id}
-                            onClick={() => actions.clickANoteHandler(child.id)}
+                            onClick={() =>
+                              actions.clickANoteHandler(child.id, true)
+                            }
                           >
                             {child.title}
                           </MenuItem>
@@ -455,7 +455,6 @@ function EditorContainer({ editorRef }) {
               </Menu>
             )}
           </div>
-          <div className="flex justify-start items-center ml-8"></div>
           <Flex justifyContent="right">
             <Tooltip label="Delete note">
               <Button
@@ -668,11 +667,11 @@ function EditorContainer({ editorRef }) {
             </FormControl>
           </Flex>
         </div>
-      ) : (
+      ) : !currentNote ? (
         <Text pl="2em" pr="2em" pt="2em" color="text.inactive">
           <strong>Select</strong> or <strong>Create</strong> a new note to edit
         </Text>
-      )}
+      ) : null}
     </div>
   );
 }

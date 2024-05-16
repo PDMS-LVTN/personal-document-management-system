@@ -25,19 +25,23 @@ const PublicNote = () => {
   const [editable, setEditable] = useState(true);
   const [ydoc, setYdoc] = useState(null);
   const [provider, setProvider] = useState(null);
+  const providerRef = useRef(null);
 
   useEffect(() => {
     if (data.share_mode == "view") setEditable(false);
     else setEditable(true);
     const doc = new Y.Doc();
     setYdoc(doc);
-    setProvider(
-      new HocuspocusProvider({
-        url: "ws://127.0.0.1:1234",
-        name: data.note_id,
-        document: doc,
-      })
-    );
+    providerRef.current = new HocuspocusProvider({
+      url: "ws://127.0.0.1:1234",
+      name: data.note_id,
+      document: doc,
+    });
+    setProvider(providerRef.current);
+
+    return () => {
+      providerRef.current.destroy();
+    };
   }, []);
 
   if (!ydoc || !provider) return null;

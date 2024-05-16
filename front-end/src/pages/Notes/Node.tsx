@@ -193,7 +193,8 @@ const Node = ({
           </MenuButton>
           <MenuList>
             <MenuItem
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setIsMerge(true);
                 tree.delete(node.id);
               }}
@@ -218,7 +219,8 @@ const Node = ({
               />
             </MenuItem>
             <MenuItem
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 node.edit();
               }}
             >
