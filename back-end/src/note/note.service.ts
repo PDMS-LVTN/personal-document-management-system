@@ -32,7 +32,7 @@ export class NoteService {
     // private readonly imageContentRepository: Repository<ImageContent>,
     private readonly imageContentService: ImageContentService,
     private readonly uploadFileService: FileUploadService,
-  ) {}
+  ) { }
   private readonly logger = new Logger(NoteService.name);
 
   async createNote(createNoteDto: CreateNoteDto) {
@@ -314,13 +314,6 @@ export class NoteService {
     return await this.findOneNote(note.id);
   }
 
-  async updateBinaryData(req) {
-    await this.noteRepository.update({ id: req.id }, {
-      binary_update_data: Buffer.from(
-        Y.encodeStateAsUpdate(TiptapTransformer.toYdoc(req.data)))
-    })
-  }
-
   async moveNote(req) {
     let parentNote = null;
     if (req.parent_id) {
@@ -365,6 +358,11 @@ export class NoteService {
         file_uploads: true,
       },
     });
+
+    const ydoc = new Y.Doc()
+    Y.applyUpdate(ydoc, merged_note.binary_update_data)
+    Y.applyUpdate(ydoc, current_note.binary_update_data)
+
     const dto = {
       ...merged_note,
       content: merged_note.content.concat(current_note.content),
@@ -376,6 +374,9 @@ export class NoteService {
       backlinks: merged_note.backlinks.concat(current_note.backlinks),
       headlinks: merged_note.headlinks.concat(current_note.headlinks),
       file_uploads: merged_note.file_uploads.concat(current_note.file_uploads),
+      binary_update_data: Buffer.from(
+        Y.encodeStateAsUpdate(ydoc),
+      )
     };
 
     await this.noteRepository.save(dto);

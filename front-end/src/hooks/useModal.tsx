@@ -6,7 +6,6 @@
  *
  */
 
-import { Button } from "@chakra-ui/button";
 import {
   Modal,
   ModalBody,
@@ -43,12 +42,6 @@ export default function useModal(
     }
     const { title, content, closeOnClickOutside } = modalContent;
     return (
-      //     <Modal
-      // onClose= { onClose }
-      // title = { title }
-      // closeOnClickOutside = { closeOnClickOutside } >
-      //     { content }
-      //     < /Modal>
       <Modal
         isOpen={true}
         onClose={onClose}
@@ -58,7 +51,7 @@ export default function useModal(
       >
         <ModalOverlay />
         <ModalContent pb={5}>
-          <ModalHeader>{title}</ModalHeader>
+          <ModalHeader w="90%">{title}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{content}</ModalBody>
         </ModalContent>

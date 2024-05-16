@@ -1,6 +1,6 @@
 // import { WebSocketStatus } from "@hocuspocus/provider";
 import { EditorContent, PureEditorContent } from "@tiptap/react";
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { LinkMenu } from "@/editor/components/menus";
 
@@ -52,19 +52,13 @@ export const BlockEditor = ({
   // const { editor, users, characterCount, collabState, leftSidebar } = useBlockEditor({ aiToken, ydoc, provider })
   // let editor, leftSidebar, characterCount, collabState;
   // if (editable) {
-  const { editor, leftSidebar, characterCount, collabState } = useBlockEditor({
-    ydoc,
-    provider,
-  });
-  // } else {
-  //   ({ editor, leftSidebar, characterCount } =
-  //     useReadOnlyEditor(initialContent));
-  // }
+  const { editor, leftSidebar, characterCount, collabState, users } =
+    useBlockEditor({
+      ydoc,
+      provider,
+    });
 
-  // const { editor, leftSidebar, characterCount, isSaving } =
-  //   useBlockEditor(initialContent);
-
-  // const displayedUsers = users.slice(0, 3)
+  const displayedUsers = users.slice(0, 3);
 
   // const providerValue = useMemo(() => {
   //   return {
@@ -81,7 +75,9 @@ export const BlockEditor = ({
     }
 
     // BUG: editable may not work in list view
-    editor.setEditable(editable);
+    //      and not udated when switching back to notes
+    if (location.pathname.includes("shared")) editor.setEditable(editable);
+    else if (!editor.isEditable) editor.setEditable(true);
   }, [editor, editable]);
 
   if (!editor) {
@@ -103,7 +99,7 @@ export const BlockEditor = ({
         <EditorHeader
           characters={characterCount.characters()}
           collabState={collabState}
-          // users={displayedUsers}
+          users={displayedUsers}
           words={characterCount.words()}
           isSidebarOpen={leftSidebar.isOpen}
           toggleSidebar={leftSidebar.toggle}

@@ -1,6 +1,6 @@
 import { Icon } from "@/editor/components/ui/Icon";
 import { EditorInfo } from "./EditorInfo";
-// import { EditorUser } from "../types";
+import { EditorUser } from "../types";
 import { WebSocketStatus } from "@hocuspocus/provider";
 import { Toolbar } from "@/editor/components/ui/Toolbar";
 // import { Spinner } from "@chakra-ui/react";
@@ -11,14 +11,14 @@ export type EditorHeaderProps = {
   characters: number;
   words: number;
   collabState: WebSocketStatus;
-  // users: EditorUser[]
+  users: EditorUser[];
   // isSaving?: boolean;
 };
 
 export const EditorHeader = ({
   characters,
   collabState,
-  // users,
+  users,
   words,
   isSidebarOpen,
   toggleSidebar,
@@ -37,19 +37,24 @@ EditorHeaderProps) => {
             <Icon name={isSidebarOpen ? "PanelLeftClose" : "PanelLeft"} />
           </Toolbar.Button>
         </div>
-        <div className="text-gray-400">
-          {/* {isSaving === undefined ? null : isSaving ? (
+        {/* <div className="text-gray-400"> */}
+        {/* {isSaving === undefined ? null : isSaving ? (
             <div className="flex items-center gap-2">
               <Spinner color="gray.400" size="xs" /> <div>Saving...</div>
             </div>
           ) : (
             <div>Saved</div>
           )} */}
-          {collabState}
-        </div>
+        {/* {collabState} */}
+        {/* </div> */}
       </div>
-      {/* <EditorInfo characters={characters} words={words} collabState={collabState} users={users} /> */}
-      <EditorInfo characters={characters} words={words} />
+      <EditorInfo
+        characters={characters}
+        words={words}
+        collabState={collabState}
+        users={users}
+      />
+      {/* <EditorInfo characters={characters} words={words} /> */}
     </div>
   );
 };

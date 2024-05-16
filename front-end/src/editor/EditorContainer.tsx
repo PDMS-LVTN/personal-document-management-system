@@ -270,7 +270,7 @@ function EditorContainer({ editorRef }) {
         close={handleCloseConfirm}
         action={"delete"}
       />
-      {currentNote && (
+      {currentNote ? (
         <div className="flex justify-between">
           <div className="flex justify-start items-center ml-8"></div>
           <Flex justifyContent="right">
@@ -448,8 +448,11 @@ function EditorContainer({ editorRef }) {
             </FormControl>
           </Flex>
         </div>
+      ) : (
+        <Text pl="2em" pr="2em" pt="2em" color="text.inactive">
+          <strong>Select</strong> or <strong>Create</strong> a new note to edit
+        </Text>
       )}
-      <Editor editorRef={editorRef} />
     </div>
   );
 }

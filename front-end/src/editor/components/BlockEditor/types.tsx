@@ -14,6 +14,7 @@ export type EditorUser = {
   name: string;
   color: string;
   initials?: string;
+  avatar?: string;
 };
 
 // export type LanguageOption = {

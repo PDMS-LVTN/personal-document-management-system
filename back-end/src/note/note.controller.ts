@@ -27,7 +27,7 @@ import { ShareMode } from '../note_collaborator/entities/note_collaborator.entit
 @ApiTags('note')
 @Controller('api/note/')
 export class NoteController {
-  constructor(private readonly noteService: NoteService) {}
+  constructor(private readonly noteService: NoteService) { }
   private readonly logger = new Logger(NoteController.name);
 
   @Post('add_note')
@@ -157,13 +157,6 @@ export class NoteController {
   async importNote(@UploadedFiles() files, @Req() req) {
     return await this.noteService.importNote(files, req);
   }
-
-  @Post('import/update_binary_data')
-  async updateBinaryData(@Body() req) {
-    console.log("hello", req)
-    return await this.noteService.updateBinaryData(req);
-  }
-
 
   @Patch('merge_note/:id')
   async mergeNote(

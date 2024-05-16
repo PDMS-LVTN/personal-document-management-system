@@ -144,7 +144,6 @@ export class NoteCollaboratorService {
       .addSelect('private_notes.share_mode', 'share_mode')
       .addSelect('private_notes.shared_date', 'shared_date')
       .addSelect('notes.title', 'title')
-      .addSelect('notes.title', 'title')
       .addSelect('users.email', 'owner')
       .innerJoin(Note, "notes", "private_notes.note_id = notes.id")
       .innerJoin(User, "users", "notes.user_id = users.id")

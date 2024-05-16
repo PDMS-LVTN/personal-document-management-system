@@ -1,9 +1,9 @@
 import { GridItem } from "@chakra-ui/react";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useOutletContext } from "react-router-dom";
 import EditorContainer from "../editor/EditorContainer";
 import { EditContext } from "@/context/context";
-// import { MDXEditorMethods } from "@mdxeditor/editor";
+import Editor from "@/editor/Editor";
 export type ContextType = { ref: any | null };
 
 function TreeAndEditorContainer() {
@@ -81,6 +81,7 @@ function TreeAndEditorContainer() {
         pos="relative"
       >
         <EditorContainer editorRef={ref} />
+        <Editor editorRef={ref} />
       </GridItem>
     </EditContext.Provider>
   );

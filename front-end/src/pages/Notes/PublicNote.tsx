@@ -23,23 +23,24 @@ const PublicNote = () => {
   const editorRef = useRef();
   const navigate = useNavigate();
   const [editable, setEditable] = useState(true);
-  let ydoc = null;
-  let provider = null;
-
-  if (data.share_mode) {
-    ydoc = new Y.Doc();
-
-    provider = new HocuspocusProvider({
-      url: "ws://127.0.0.1:1234",
-      name: data.note_id,
-      document: ydoc,
-    });
-  }
+  const [ydoc, setYdoc] = useState(null);
+  const [provider, setProvider] = useState(null);
 
   useEffect(() => {
     if (data.share_mode == "view") setEditable(false);
     else setEditable(true);
+    const doc = new Y.Doc();
+    setYdoc(doc);
+    setProvider(
+      new HocuspocusProvider({
+        url: "ws://127.0.0.1:1234",
+        name: data.note_id,
+        document: doc,
+      })
+    );
   }, []);
+
+  if (!ydoc || !provider) return null;
 
   return (
     <EditContext.Provider value={{ editable, setEditable }}>
@@ -70,7 +71,6 @@ const PublicNote = () => {
       </div>
       <BlockEditor
         editorRef={editorRef}
-        // isEditable={data.share_mode == "view" ? false : true}
         className="shared-view"
         ydoc={ydoc}
         provider={provider}

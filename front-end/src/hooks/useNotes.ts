@@ -8,13 +8,11 @@ import { tempState } from "@/editor/lib/api";
 import { useApi } from "./useApi";
 import { convertToHtml } from "mammoth";
 import { ShareMode } from "@/lib/data/constant";
-// import { EditorState } from "@tiptap/pm/state";
-// import { TiptapTransformer } from "@hocuspocus/transformer";
+import { TiptapTransformer } from "@hocuspocus/transformer";
 import { useLocation, useNavigate } from "react-router-dom";
 import ExtensionKit from "@/editor/extensions/extension-kit";
-// import * as Y from "yjs";
 import { generateJSON } from "@tiptap/react";
-
+import { HocuspocusProvider } from "@hocuspocus/provider";
 
 const useNotes = () => {
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -65,7 +63,8 @@ const useNotes = () => {
       // setCurrentNote(currentNote);
       // ref?.current?.setMarkdown(markdown);
       // window.editor?.commands.setContent(response.data.content);
-      navigate(`${response.data.id}`)
+      // navigate(`${response.data.id}`)
+      clickANoteHandler(response.data.id)
       return currentNote;
     } catch (error) {
       console.log(error);
@@ -125,12 +124,16 @@ const useNotes = () => {
       await axiosJWT.delete(`note/${id}`, {
         headers: { "Content-Type": "application/json" },
       });
-      setCurrentNote(null);
+      if (id == currentNote.id) {
+        setCurrentNote(null)
+        navigate('.', { state: { delete: true } })
+      }
       toast({
         title: `Your note has been deleted.`,
         status: "success",
         isClosable: true,
       });
+
     } catch (error) {
       if (error.response?.status === 403 || error.response?.status === 401) {
         setAuth(undefined);
@@ -202,9 +205,10 @@ const useNotes = () => {
         }
       );
       console.log(response.data);
-      setCurrentNoteHandler(response.data);
+      // setCurrentNoteHandler(response.data);
+      clickANoteHandler(response.data.id)
       setLoading(false);
-      return response.data;
+      // return response.data;
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -236,6 +240,8 @@ const useNotes = () => {
     // return noteItem;
   };
 
+
+
   function resetContentAndSelection(id) {
     // Capture the current selection
     // const currentSelection = window.editor?.state?.selection;
@@ -255,6 +261,10 @@ const useNotes = () => {
     // window.note_tree?.select(noteItem?.id)
 
     // /search needs location.state.data
+    // console.log(ydoc)
+
+    // setYdoc(null)
+    // setProvider(null)
     navigate(`${id}`, { state: { data: location.state?.data } })
   }
 
@@ -355,11 +365,16 @@ const useNotes = () => {
       const response = await axiosJWT.post(`note/import`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      await axiosJWT.post(`note/import/update_binary_data`, {
-        id: response.data.id, data: generateJSON(response.data.content, extensions)
-      }, {
-        headers: { "Content-Type": "application/json" },
+      const doc = TiptapTransformer.toYdoc(generateJSON(response.data.content, extensions), 'default', extensions)
+      new HocuspocusProvider({
+        url: "ws://127.0.0.1:1234",
+        name: response.data.id,
+        document: doc,
+        preserveConnection: false,
       });
+      doc.destroy()
+      clickANoteHandler(response.data.id)
+
       const currentNote = {
         id: response.data.id,
         title: title,

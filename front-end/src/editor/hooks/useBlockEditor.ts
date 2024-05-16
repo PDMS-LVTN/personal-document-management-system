@@ -5,24 +5,14 @@ import { Editor, useEditor } from '@tiptap/react'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 import { HocuspocusProvider, WebSocketStatus } from '@hocuspocus/provider'
-import * as Y from 'yjs'
-
 import { ExtensionKit } from '@/editor/extensions/extension-kit'
-// import History from '@tiptap/extension-history'
-// import { EditorContext } from '../context/EditorContext'
-// import { userColors, userNames } from '../lib/constants'
-// import { randomElement } from '../lib/utils'
-// import { EditorUser } from '../components/BlockEditor/types'
 import { useSidebar } from './useSidebar'
-// import { initialContent } from '@/editor/lib/data/initialContent'
-// import { useApp } from '@/store/useApp'
 import API from '../lib/api'
-// import useNotes from '@/hooks/useNotes'
-import { useCallback, useEffect, useState } from 'react'
-// import { debounce } from 'lodash'
+import { useEffect, useMemo, useState } from 'react'
 import { useUpload } from '@/hooks/useUpload'
 import { EditorView } from '@tiptap/pm/view'
 import { useAuthentication } from '@/store/useAuth'
+import { EditorUser } from '../components/BlockEditor/types'
 
 // const TIPTAP_AI_APP_ID = process.env.NEXT_PUBLIC_TIPTAP_AI_APP_ID
 // const TIPTAP_AI_BASE_URL = process.env.NEXT_PUBLIC_TIPTAP_AI_BASE_URL || 'https://api.tiptap.dev/v1/ai'
@@ -58,26 +48,16 @@ const getRandomElement = (list) =>
 const getRandomColor = () => getRandomElement(colors);
 
 export const useBlockEditor = ({ ydoc, provider }: {
-    ydoc: Y.Doc
+    ydoc,
     provider?: HocuspocusProvider | null | undefined
 }) => {
+    // export const useBlockEditor = () => {
     const leftSidebar = useSidebar()
-    // const currentNote = useApp((state) => state.currentNote);
-    // const { actions } = useNotes()
-    // const [isSaving, setIsSaving] = useState(false)
     const user = useAuthentication((state) => state.auth)
-    const [currentUser, setCurrentUser] = useState({ ...user, color: getRandomColor(), name: user?.email || "Anonymous" });
+    const currentUser = { ...user, color: getRandomColor(), name: user?.email || "Anonymous" }
     const [collabState, setCollabState] = useState<WebSocketStatus>(WebSocketStatus.Connecting)
     //   const { setIsAiLoading, setAiError } = useContext(EditorContext)
 
-    // const debouncedHandle = useCallback(
-    //     debounce(async () => {
-    //         setIsSaving(true)
-    //         await actions.updateNote()
-    //         setIsSaving(false)
-    //     }, 2000),
-    //     [currentNote.id]
-    // );
     const { upload } = useUpload()
     async function uploadAndReplaceImages(imageUrls: string[], view: EditorView) {
         for (const url of imageUrls) {
@@ -113,23 +93,6 @@ export const useBlockEditor = ({ ydoc, provider }: {
     const editor = useEditor(
         {
             autofocus: true,
-            // onCreate: ({ editor }) => {
-            //     // provider?.on('synced', () => {
-            //     //     if (editor.isEmpty) {
-            //     //         editor.commands.setContent(initialContent)
-            //     //     }
-            //     // })
-            //     if (editor.isEmpty) {
-            //         if (initialContent)
-            //             editor.commands.setContent(initialContent)
-            //         else
-            //             editor.commands.setContent(currentNote?.content || '<p> Hello world </p>')
-            //     }
-            // },
-            // onUpdate({ editor }) {
-            //     // The content has changed.
-            //     debouncedHandle()
-            // },
             extensions: [
                 ...ExtensionKit(),
                 // History,
@@ -142,6 +105,7 @@ export const useBlockEditor = ({ ydoc, provider }: {
                     //     name: randomElement(userNames),
                     //     color: randomElement(userColors),
                     //   },
+                    user: currentUser
                 }),
                 // Ai.configure({
                 //   appId: TIPTAP_AI_APP_ID,
@@ -206,23 +170,19 @@ export const useBlockEditor = ({ ydoc, provider }: {
                     // return false; // not handled use default behaviour
                 },
             },
-        }, [ydoc, provider]
+        },
+        [ydoc, provider]
     )
 
-    //   const users = useMemo(() => {
-    //     if (!editor?.storage.collaborationCursor?.users) {
-    //       return []
-    //     }
+    const users = useMemo(() => {
+        if (!editor?.storage.collaborationCursor?.users) {
+            return []
+        }
 
-    //     return editor.storage.collaborationCursor?.users.map((user: EditorUser) => {
-    //       const names = user.name?.split(' ')
-    //       const firstName = names?.[0]
-    //       const lastName = names?.[names.length - 1]
-    //       const initials = `${firstName?.[0] || '?'}${lastName?.[0] || '?'}`
-
-    //       return { ...user, initials: initials.length ? initials : '?' }
-    //     })
-    //   }, [editor?.storage.collaborationCursor?.users])
+        return editor.storage.collaborationCursor?.users.map((user: EditorUser) => {
+            return { ...user }
+        })
+    }, [editor?.storage.collaborationCursor?.users])
 
     const characterCount = editor?.storage.characterCount || { characters: () => 0, words: () => 0 }
 
@@ -232,14 +192,7 @@ export const useBlockEditor = ({ ydoc, provider }: {
         })
     }, [provider])
 
-    useEffect(() => {
-        if (editor && currentUser) {
-            editor.chain().focus().updateUser(currentUser).run();
-        }
-    }, [editor, currentUser]);
-
     window.editor = editor
 
-    // return { editor, users, characterCount, collabState, leftSidebar }
-    return { editor, leftSidebar, characterCount, collabState }
+    return { editor, users, characterCount, collabState, leftSidebar }
 }

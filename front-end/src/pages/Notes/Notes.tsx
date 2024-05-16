@@ -75,7 +75,7 @@ const Notes = ({
       window.note_tree.delete(currentNote.id);
       await actions.mergeNotes(currentNote.id, id);
       const notes = await actions.getAllNotes(controller);
-      await setData(notes);
+      setData(notes);
       setIsMerge(false);
     }
   };
