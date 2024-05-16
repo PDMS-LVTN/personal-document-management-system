@@ -165,7 +165,7 @@ const SearchFilter = ({ editorRef, close }) => {
     <Box mb={5} pt={5}>
       <Flex>
         <FormControl width="70%">
-          <Text fontWeight="800" fontSize="20px" m={4} mb={7} color="brand.500">
+          <Text fontWeight="700" fontSize="20px" m={4} mb={7} color="brand.500">
             Advanced Filter
           </Text>
           <Box display="flex" alignItems="center" m={4}>
@@ -263,6 +263,7 @@ const SearchFilter = ({ editorRef, close }) => {
               <Select
                 isMulti
                 name="tags"
+                size={"md"}
                 options={allTags}
                 placeholder="Select some tags"
                 onChange={(selected) => {

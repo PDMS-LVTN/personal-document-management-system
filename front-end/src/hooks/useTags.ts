@@ -8,7 +8,6 @@ export const useTags = () => {
     const callApi = useApi()
 
     const createTag = async (newTag: string, note_id: string) => {
-        console.log(newTag, note_id);
         const options: AxiosRequestConfig = {
             method: "POST",
             data: JSON.stringify({

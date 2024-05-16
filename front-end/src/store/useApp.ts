@@ -11,8 +11,13 @@ export interface Note {
     parent_id: string,
     user_id?: string,
     childNotes?: Note[]
+    parentPath?: []
 }
 
+interface stackUndoRedo {
+    stackUndo: string[],
+    stackRedo: string[]
+}
 interface Tag {
     value: string
     label: string
@@ -32,6 +37,8 @@ interface AppStore {
     setCurrentTags: (tags) => void
     isMerge?: boolean
     setIsMerge?: (isMerge: boolean) => void
+    stackHistory?: stackUndoRedo
+    setStackHistory?: (stack: stackUndoRedo) => void
 }
 
 export const useApp = create<AppStore>()(devtools(persist((set) => ({
@@ -42,11 +49,13 @@ export const useApp = create<AppStore>()(devtools(persist((set) => ({
     currentNote: null,
     setCurrentNote: (note) => set((state) => ({ ...state, currentNote: note })),
     // this method need to reset every state when user is logged out
-    clean: () => set({ expired: false, currentNote: null, allTags: [], currentTags: [] }),
+    clean: () => set({ expired: false, currentNote: null, allTags: [], currentTags: [], stackHistory: { stackUndo: [], stackRedo: [] }}),
     allTags: [],
     setAllTags: (tags) => set((state) => ({ ...state, allTags: tags })),
     currentTags: [],
     setCurrentTags: (tags) => set((state) => ({ ...state, currentTags: tags })),
     isMerge: false,
-    setIsMerge: (isMerge) => set((state) => ({ ...state, isMerge: isMerge }))
+    setIsMerge: (isMerge) => set((state) => ({ ...state, isMerge: isMerge })),
+    stackHistory: { stackUndo: [], stackRedo: [] },
+    setStackHistory: (stack) => set((state) => ({ ...state, stackHistory: stack }))
 }), { name: `app store`, storage: createJSONStorage(() => sessionStorage) })))

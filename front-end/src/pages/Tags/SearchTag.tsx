@@ -26,12 +26,14 @@ const SearchTag = ({ renderResults }) => {
     <>
       <InputGroup pl="2em" pr="2em" mb={4} w="100%">
         <InputLeftElement pointerEvents="none" ml="2em">
-          <IoSearch size="24px" color="var(--brand400)" />
+          <IoSearch size="22px" color="var(--brand400)" />
         </InputLeftElement>
         <Input
-          m={0}
           value={keyword}
           onChange={handleInputOnchange}
+          className="search-input"
+          fontSize={"14px"}
+          ml={1}
           placeholder="Search your tag"
         />
       </InputGroup>

@@ -12,9 +12,9 @@ const routerConfig = router();
 
 const theme = extendTheme({
   fonts: {
-    body: "Be Vietnam Pro, sans-serif",
-    heading: "Be Vietnam Pro, serif",
-    mono: "Be Vietnam Pro, monospace",
+    body: "Be VietNam Pro, sans-serif",
+    heading: "Be VietNam Pro, serif",
+    mono: "Be VietNam Pro, monospace",
   },
   colors: {
     brand: {

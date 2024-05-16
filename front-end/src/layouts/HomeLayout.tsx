@@ -75,10 +75,10 @@ function HomeLayout() {
           justifyContent="space-between"
           onClick={onOpen}
         >
-          <Text fontWeight="normal" color="text.inactive">
+          <Text fontWeight="normal" color="text.inactive" fontSize={'15px'}>
             What are you looking for?
           </Text>
-          <IoIosSearch size={25} color="var(--brand400)" />
+          <IoIosSearch size={22} color="var(--brand400)" />
         </Button>
       </GridItem>
       <GridItem
@@ -89,7 +89,7 @@ function HomeLayout() {
         alignItems="center"
         justifyContent={currentNote ? "space-between" : "flex-end"}
         pr="2em"
-        pl="2em"
+        pl="1.3em"
         gap="1em"
         id="info-grid-item"
       >
