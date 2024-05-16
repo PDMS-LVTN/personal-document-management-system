@@ -26,7 +26,11 @@ export class UserService {
 
   async createUser(createUserDto: CreateUserDto) {
     // Check if user exists
-    console.log('sign_up');
+    if (createUserDto.codeEmailConfirmed === 'google') {
+      createUserDto.codeEmailConfirmed == null;
+      const newUser = this.userRepository.create(createUserDto);
+      return await this.userRepository.save(newUser);
+    }
     const userExists = await this.getUserByEmail({
       email: createUserDto.email,
     });
@@ -56,11 +60,10 @@ export class UserService {
       html: `<div><p>Thanks for signing up with SelfNote!</p>
 
       <p>You must follow this link to activate your account:</p>
-      <a href="${process.env.CLIENT_URL}/login?email=${createUserDto.email}&codeEmailConfirmed=${createUserDto.codeEmailConfirmed}">http://localhost:5173/login?email=${createUserDto.email}&codeEmailConfirmed=${createUserDto.codeEmailConfirmed}</a>
+      <a href="${process.env.CLIENT_URL}/login?email=${createUserDto.email}&codeEmailConfirmed=${createUserDto.codeEmailConfirmed}">${process.env.CLIENT_URL}/login?email=${createUserDto.email}&codeEmailConfirmed=${createUserDto.codeEmailConfirmed}</a>
 
       <p>Don't hesitate to contact us with your feedback.</p></div>`,
     });
-    console.log(res);
     //Create user
     const newUser = this.userRepository.create(createUserDto);
     return await this.userRepository.save(newUser);
@@ -130,7 +133,7 @@ export class UserService {
       html: `<div></div><p>You're receiving this e-mail because you or someone else has requested a password reset for your user account at .</p>
 
       <p>Click the link below to reset your password:</p>
-      <a href="${process.env.CLIENT_URL}/reset-password?email=${user.email}&resetPasswordToken=${resetPasswordToken}">http://localhost:5173/reset-password?email=${user.email}&resetPasswordToken=${resetPasswordToken}</a>
+      <a href="${process.env.CLIENT_URL}/reset-password?email=${user.email}&resetPasswordToken=${resetPasswordToken}">${process.env.CLIENT_URL}/reset-password?email=${user.email}&resetPasswordToken=${resetPasswordToken}</a>
 
       <p>If you did not request a password reset you can safely ignore this email.</p></div>`,
     });

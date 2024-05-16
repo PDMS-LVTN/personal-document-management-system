@@ -253,11 +253,12 @@ const Notes = ({
           <IoSearch size="20px" color="var(--brand400)" />
         </InputLeftElement>
         <Input
-          m={0}
           type="text"
           placeholder="Search..."
           className="search-input"
           value={term}
+          fontSize={"14px"}
+          ml={1}
           onChange={(e) => setTerm(e.target.value)}
         />
       </InputGroup>

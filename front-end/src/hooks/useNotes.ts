@@ -19,6 +19,9 @@ const useNotes = () => {
 
   const clean = useApp((state) => state.clean);
   const setCurrentNote = useApp((state) => state.setCurrentNote);
+  const stackHistory = useApp((state) => state.stackHistory);
+  const setStackHistory = useApp((state) => state.setStackHistory);
+
   const axiosJWT = useAxiosJWT();
   const toast = useToast();
 
@@ -61,6 +64,8 @@ const useNotes = () => {
         childrenNotes: null,
       };
       // setCurrentNote(currentNote);
+      stackHistory.stackUndo.push(response.data.id);
+      setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
       // ref?.current?.setMarkdown(markdown);
       // window.editor?.commands.setContent(response.data.content);
       // navigate(`${response.data.id}`)
@@ -101,11 +106,11 @@ const useNotes = () => {
       );
       console.log(response);
       await setCurrentNoteHandler(response.data);
-      toast({
-        title: `Your note has been updated. 🙂`,
-        status: "success",
-        isClosable: true,
-      });
+      // toast({
+      //   title: `Your note has been updated. 🙂`,
+      //   status: "success",
+      //   isClosable: true,
+      // });
       tempState.waitingImage = [];
       setLoading(false);
     } catch (error) {
@@ -215,8 +220,27 @@ const useNotes = () => {
     }
   };
 
+  const clickANoteUndo = async () => {
+    stackHistory.stackRedo.push(stackHistory.stackUndo.pop());
+    const noteItem = await getANote(stackHistory.stackUndo.at(-1));
+    setStackHistory({ stackUndo: stackHistory.stackUndo, stackRedo: stackHistory.stackRedo });
+    setCurrentNoteHandler(noteItem);
+    resetContentAndSelection(noteItem)
+  };
+
+  const clickANoteRedo = async () => {
+    const noteItem = await getANote(stackHistory.stackRedo.at(-1));
+    stackHistory.stackUndo.push(stackHistory.stackRedo.pop());
+    setStackHistory({ stackUndo: stackHistory.stackUndo, stackRedo: stackHistory.stackRedo });
+    setCurrentNoteHandler(noteItem);
+    resetContentAndSelection(noteItem)
+  };
+
   const clickANoteHandler = async (id) => {
+    if (currentNote && id === currentNote.id) return;
     // const noteItem = await getANote(id);
+    stackHistory.stackUndo.push(id);
+    setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
     // setCurrentNoteHandler(noteItem);
     resetContentAndSelection(id)
   };
@@ -230,8 +254,9 @@ const useNotes = () => {
       is_favorited: noteItem.is_favorited,
       is_pinned: noteItem.is_pinned,
       childNotes: noteItem.childNotes,
+      parentPath: noteItem.parentPath,
     });
-    const tags = noteItem.tags.map((tag) => {
+    const tags = noteItem.tags?.map((tag) => {
       return { value: tag.description, label: tag.description, id: tag.id };
     });
     setCurrentTags(tags);
@@ -384,6 +409,8 @@ const useNotes = () => {
         is_pinned: false,
       };
       // setCurrentNote(currentNote);
+      stackHistory.stackUndo.push(response.data.id);
+      setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
       // window.editor.commands.setContent(tempState.content);
       setLoading(false);
       navigate(`${response.data.id}`)
@@ -501,7 +528,9 @@ const useNotes = () => {
       addCollaborator,
       updateGeneralPermission,
       updateCollaboratorPermission,
-      setCurrentNoteHandler
+      setCurrentNoteHandler,
+      clickANoteUndo,
+      clickANoteRedo
     },
   };
 };

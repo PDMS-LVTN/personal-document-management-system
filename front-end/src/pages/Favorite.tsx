@@ -73,14 +73,15 @@ function Favorite() {
       ) : ( */}
       <InputGroup pl="2em" pr="2em" w="100%">
         <InputLeftElement pointerEvents="none" ml="2em">
-          <IoSearch size="24px" color="var(--brand400)" />
+          <IoSearch size="22px" color="var(--brand400)" />
         </InputLeftElement>
         <Input
-          m={0}
           type="text"
           placeholder="Search..."
           className="search-input"
           value={term}
+          fontSize={"14px"}
+          ml={1}
           onChange={(e) => setTerm(e.target.value)}
         />
       </InputGroup>
@@ -133,7 +134,7 @@ function Favorite() {
                 <span className="mr-3">
                   <AiFillFile color="var(--brand300)" size="20px" />
                 </span>
-                <Text fontWeight="normal">
+                <Text fontWeight="300">
                   {currentNote?.id === note?.id
                     ? currentNote.title
                     : note.title}

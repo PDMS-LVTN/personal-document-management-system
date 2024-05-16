@@ -131,6 +131,7 @@ const Links = ({ items, type, actions, ...props }) => {
         mb={3}
         onChange={handleInputOnchange}
         value={value}
+        fontSize={"14px"}
       />
       {searchResults.length ? (
         searchResults.map((link, index) => {

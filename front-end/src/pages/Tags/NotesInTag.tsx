@@ -93,7 +93,7 @@ const NotesInTag = () => {
               <span className="mr-3">
                 <AiFillFile color="var(--brand300)" size="20px" />
               </span>
-              <Text fontWeight="normal" fontSize={"14px"}>
+              <Text fontWeight="normal" fontSize={"13px"}>
                 {currentNote?.id === item?.id ? currentNote.title : item.title}
               </Text>
             </Button>

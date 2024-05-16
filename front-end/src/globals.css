@@ -39,6 +39,7 @@
     @apply antialiased;
 
     font-size: 14px;
+    font-weight: 300;
   }
 }
 
@@ -99,5 +100,5 @@ input[type="range"] {
 
 .reference-term {
   background-color: var(--brand100);
-  font-weight: 600;
+  font-weight: 500;
 }

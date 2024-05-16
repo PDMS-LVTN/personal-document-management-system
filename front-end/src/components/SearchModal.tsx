@@ -108,9 +108,10 @@ const SearchModal = ({ editorRef, close }) => {
           placeholder="What are you looking for?"
           onChange={handleInputOnchange}
           onKeyUp={handleKeyInput}
+          fontSize={'14px'}
         />
         <InputRightElement pos="absolute" top={0}>
-          <IoIosSearch size={25} color="var(--brand400)" />
+          <IoIosSearch size={20} color="var(--brand400)" />
         </InputRightElement>
       </InputGroup>
       <Divider orientation="horizontal" mt={3} mb={3} />
