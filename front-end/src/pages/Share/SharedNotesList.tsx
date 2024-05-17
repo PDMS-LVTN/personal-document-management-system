@@ -66,7 +66,7 @@ export const SharedNotesList = ({ data }) => {
               <Text color="text.inactive">You don't have any notes</Text>
             )}
           </TabPanel>
-          <TabPanel>
+          <TabPanel px={0}>
             {data.public_notes.length ? (
               data.public_notes.map((note) => {
                 return (

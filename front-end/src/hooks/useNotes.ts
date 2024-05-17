@@ -103,8 +103,13 @@ const useNotes = () => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      console.log(response);
-      setCurrentNoteHandler(response.data);
+
+      if (props.id && props.id !== currentNote.id) {
+        clickANoteHandler(props.id)
+      }
+      else {
+        setCurrentNoteHandler(response.data);
+      }
       // toast({
       //   title: `Your note has been updated. 🙂`,
       //   status: "success",
@@ -264,9 +269,6 @@ const useNotes = () => {
       return { value: tag.description, label: tag.description, id: tag.id };
     });
     setCurrentTags(tags);
-    // ref?.current?.setMarkdown(noteItem.content);
-    // window.editor?.commands.setContent(noteItem.content);
-    // return noteItem;
   };
 
 

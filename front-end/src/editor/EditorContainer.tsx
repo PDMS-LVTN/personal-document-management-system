@@ -564,7 +564,7 @@ function EditorContainer({ editorRef }) {
                   }
                   onClick={() => setFullScreen(!isFullScreen)}
                 >
-                  Full screen
+                  Max width
                 </MenuItem>
                 <MenuItem
                   onClick={handelExportFile}
