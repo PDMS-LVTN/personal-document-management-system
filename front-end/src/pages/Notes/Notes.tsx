@@ -100,9 +100,9 @@ const Notes = ({
   };
 
   useEffect(() => {
-    if (currentNote) {
-      treeRef.current.focus(currentNote.id);
-    }
+    // if (currentNote) {
+    //   treeRef.current.focus(currentNote.id);
+    // }
     window.note_tree = treeRef.current;
   }, []);
 

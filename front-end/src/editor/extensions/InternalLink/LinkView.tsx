@@ -36,10 +36,12 @@ const LinkView = (props: Props) => {
         size="xs"
         onClick={() => {
           if (window.editor.isEditable)
-            actions.clickANoteHandler(props.node.attrs.id);
+            actions.clickANoteHandler(props.node.attrs.id, true);
           else
             window.open(
-              `${import.meta.env.VITE_CLIENT_PATH}/note/${props.node.attrs.id}`,
+              `${import.meta.env.VITE_CLIENT_PATH}/notes/${
+                props.node.attrs.id
+              }`,
               "_blank"
             );
         }}
