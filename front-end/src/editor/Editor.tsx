@@ -14,7 +14,6 @@ function Editor({ editorRef }) {
   const providerRef = useRef(null);
 
   useEffect(() => {
-    console.log(location.state);
     if (location.state?.delete) {
       providerRef.current?.destroy();
       setYdoc(null);
@@ -38,7 +37,6 @@ function Editor({ editorRef }) {
 
   useEffect(() => {
     return () => {
-      console.log("here");
       providerRef.current?.destroy();
     };
   }, []);

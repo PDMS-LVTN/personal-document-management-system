@@ -48,7 +48,7 @@ const Notes = ({
   const [term, setTerm] = useState("");
   const [toggle, setToggle] = useState<boolean>(false);
   const treeRef = useRef<TreeApi<Note>>(null);
-  const [data, setData, controller] = useTree(notes, actions);
+  const [data, setData, controller] = useTree(notes);
   const currentNote = useApp((state) => state.currentNote);
   const isMerge = useApp((state) => state.isMerge);
   const setIsMerge = useApp((state) => state.setIsMerge);

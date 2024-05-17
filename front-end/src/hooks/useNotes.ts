@@ -65,12 +65,12 @@ const useNotes = () => {
       };
       // setCurrentNote(currentNote);
       // stackHistory.stackUndo.push(response.data.id);
-      stackHistory.stackUndo.push(location.pathname);
-      setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
+      // stackHistory.stackUndo.push(location.pathname);
+      // setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
       // ref?.current?.setMarkdown(markdown);
       // window.editor?.commands.setContent(response.data.content);
       // navigate(`${response.data.id}`)
-      clickANoteHandler(response.data.id)
+      // clickANoteHandler(response.data.id)
       return currentNote;
     } catch (error) {
       console.log(error);
@@ -81,10 +81,8 @@ const useNotes = () => {
     }
   };
 
-  const updateNote = async (title?) => {
+  const updateNote = async (props: { title?: string, id?: string } = {}) => {
     setLoading(true);
-    console.log(tempState.waitingImage);
-    // const editorContent = window.editor.getHTML();
     const formData = new FormData();
     // Append each of the files
     tempState.waitingImage.forEach((file) => {
@@ -93,13 +91,12 @@ const useNotes = () => {
     formData.append(
       "data",
       JSON.stringify({
-        // content: editorContent,
-        title: title ? title : currentNote?.title,
+        title: props.title || currentNote?.title,
       })
     );
     try {
       const response = await axiosJWT.patch(
-        `note/${currentNote.id}`,
+        `note/${props.id || currentNote?.id}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -397,11 +394,11 @@ const useNotes = () => {
       };
       // setCurrentNote(currentNote);
       // stackHistory.stackUndo.push(response.data.id);
-      stackHistory.stackUndo.push(location.pathname);
-      setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
+      // stackHistory.stackUndo.push(location.pathname);
+      // setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
       // window.editor.commands.setContent(tempState.content);
       setLoading(false);
-      clickANoteHandler(response.data.id)
+      // clickANoteHandler(response.data.id)
       return currentNote;
     } catch (error) {
       setLoading(false);
