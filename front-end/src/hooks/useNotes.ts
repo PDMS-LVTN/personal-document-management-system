@@ -9,7 +9,7 @@ import { useApi } from "./useApi";
 import { convertToHtml } from "mammoth";
 import { ShareMode } from "@/lib/data/constant";
 import { TiptapTransformer } from "@hocuspocus/transformer";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ExtensionKit from "@/editor/extensions/extension-kit";
 import { generateJSON } from "@tiptap/react";
 import { HocuspocusProvider } from "@hocuspocus/provider";
@@ -34,6 +34,7 @@ const useNotes = () => {
   const callApi = useApi();
   const navigate = useNavigate();
   const location = useLocation()
+  const { id } = useParams()
 
   const extensions = ExtensionKit()
 
@@ -236,14 +237,15 @@ const useNotes = () => {
     // resetContentAndSelection(noteItem)
   };
 
-  const clickANoteHandler = async (id: string, atRoot: boolean = false) => {
-    if (currentNote && id === currentNote.id) return;
+  const clickANoteHandler = async (noteId: string, atRoot: boolean = false) => {
+    if (currentNote && noteId === currentNote.id) return;
     // const noteItem = await getANote(id);
     // stackHistory.stackUndo.push(id);
-    stackHistory.stackUndo.push(location.pathname);
+    const pathname = id ? `${location.pathname.substring(0, location.pathname.lastIndexOf('/'))}/${noteId}` : `${location.pathname}/${noteId}`
+    stackHistory.stackUndo.push(pathname);
     setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
     // setCurrentNoteHandler(noteItem);
-    resetContentAndSelection(id, atRoot)
+    resetContentAndSelection(noteId, atRoot)
   };
 
   const setCurrentNoteHandler = (noteItem) => {

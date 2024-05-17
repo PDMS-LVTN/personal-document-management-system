@@ -21,8 +21,8 @@ export const SharedNotesList = ({ data }) => {
     <>
       <Tabs size="md" variant="enclosed">
         <TabList>
-          <Tab>Direct</Tab>
-          <Tab>Public access</Tab>
+          <Tab fontSize={14}>Direct</Tab>
+          <Tab fontSize={14}>Public access</Tab>
         </TabList>
         <TabPanels>
           <TabPanel px={0}>
@@ -50,7 +50,7 @@ export const SharedNotesList = ({ data }) => {
                       <span className="mr-3">
                         <AiFillFile color="var(--brand300)" size="20px" />
                       </span>
-                      <Text fontWeight="normal" className="line-clamp-1">
+                      <Text fontWeight="light" className="line-clamp-1">
                         {note.title}
                       </Text>
                     </div>
@@ -91,7 +91,7 @@ export const SharedNotesList = ({ data }) => {
                       <span className="mr-3">
                         <AiFillFile color="var(--brand300)" size="20px" />
                       </span>
-                      <Text fontWeight="normal" className="line-clamp-1">
+                      <Text fontWeight="light" className="line-clamp-1">
                         {note.title}
                       </Text>
                     </div>

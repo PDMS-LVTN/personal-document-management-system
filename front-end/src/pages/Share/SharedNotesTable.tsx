@@ -16,12 +16,13 @@ import {
   Text,
   Th,
   Thead,
+  Tooltip,
   Tr,
 } from "@chakra-ui/react";
 import { Globe, Users } from "lucide-react";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { FaEllipsisVertical } from "react-icons/fa6";
+import { FaArrowLeftLong, FaEllipsisVertical } from "react-icons/fa6";
 // import { HiUserCircle } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 
@@ -83,6 +84,7 @@ export const SharedNotesTable = () => {
   const { getAllSharedNotes } = usePermission();
   const auth = useAuthentication((state) => state.auth);
   const [notes, setNotes] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadData = async () => {
@@ -104,9 +106,19 @@ export const SharedNotesTable = () => {
       px={7}
       overflowY="hidden"
     >
-      <Text fontSize="2xl" fontWeight="600" mb={4}>
-        Shared with me
-      </Text>
+      <div className="flex items-center justify-between mb-5">
+        <Text fontSize="2xl" fontWeight="600">
+          Shared with me
+        </Text>
+        <Tooltip label="Go back">
+          <IconButton
+            isRound
+            aria-label="Go back"
+            icon={<FaArrowLeftLong />}
+            onClick={() => navigate(-1)}
+          />
+        </Tooltip>
+      </div>
       <TableContainer>
         <Table>
           <Thead>

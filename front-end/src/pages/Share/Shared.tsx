@@ -11,18 +11,11 @@ export const Shared = () => {
   const auth = useAuthentication((state) => state.auth);
   const { checkPermissionWithEmail, createPublicCollaborator } =
     usePermission();
-  // const [permission, setPermission] = useState(null);
   const { setEditable } = useContext(EditContext);
 
   useEffect(() => {
     const checkPermission = async () => {
       const { responseData } = await checkPermissionWithEmail(id, auth.email);
-      console.log(responseData);
-      console.log(responseData.share_mode);
-
-      // if (responseData) {
-      //   setPermission(responseData.share_mode);
-      // }
       if (responseData?.is_public) {
         createPublicCollaborator(id, auth.email);
       }
@@ -31,12 +24,8 @@ export const Shared = () => {
       } else {
         setEditable(true);
       }
-      // console.log(window.editor);
     };
     if (id) checkPermission();
   }, [currentNote]);
-
-  // if (!permission) return null;
-  // return <SharedNotesContainer />;
   return null;
 };

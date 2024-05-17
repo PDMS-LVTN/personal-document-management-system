@@ -47,7 +47,7 @@ function Editor({ editorRef }) {
     <BlockEditor
       editorRef={editorRef}
       ydoc={ydoc}
-      className={currentNote?.shared && "shared-view"}
+      className={currentNote?.shared && "shared"}
       provider={websocketProvider}
     />
   );

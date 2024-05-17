@@ -2,6 +2,7 @@ import { useApp } from "@/store/useApp";
 import { useAuthentication } from "@/store/useAuth";
 import { Button, Flex, GridItem, Input } from "@chakra-ui/react";
 import SignOutIcon from "../assets/sign-out-icon.svg";
+import { useLocation } from "react-router-dom";
 
 export const InfoGridItem = () => {
   const currentNote = useApp((state) => state.currentNote);
@@ -11,6 +12,7 @@ export const InfoGridItem = () => {
   const setAuth = useAuthentication((state) => state.setAuth);
 
   const clean = useApp((state) => state.clean);
+  const location = useLocation();
 
   return (
     <GridItem
@@ -19,13 +21,13 @@ export const InfoGridItem = () => {
       bg="white"
       display="flex"
       alignItems="center"
-      justifyContent={currentNote ? "space-between" : "flex-end"}
+      // justifyContent={currentNote ? "space-between" : "flex-end"}
       pr="2em"
       pl="2em"
       gap="1em"
       id="info-grid-item"
     >
-      {currentNote && (
+      {currentNote && !location.pathname.includes("shared/table") && (
         <Input
           variant="outline"
           maxWidth="60%"
@@ -37,7 +39,7 @@ export const InfoGridItem = () => {
           disabled={currentNote.shared}
         />
       )}
-      <Flex justifyContent="right" alignItems="center" gap="1em">
+      <Flex justifyContent="right" alignItems="center" gap="1em" ml="auto">
         <p>{auth.email}</p>
         <Button
           onClick={() => {
