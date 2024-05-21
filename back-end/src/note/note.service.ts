@@ -18,7 +18,7 @@ import { ImageContentService } from '../image_content/image_content.service';
 // import { Tag } from '../tag/entities/tag.entity';
 import { FileUploadService } from '../file_upload/file_upload.service';
 import { TiptapTransformer } from '@hocuspocus/transformer';
-import * as Y from "yjs";
+import * as Y from 'yjs';
 import { ShareMode } from 'src/note_collaborator/entities/note_collaborator.entity';
 
 require('dotenv').config();
@@ -196,7 +196,7 @@ export class NoteService {
     if (req.keyword) {
       if (req.onlyTitle) {
         queryBuilder.andWhere(
-          `MATCH(note.title) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
+          `MATCH(note.title) AGAINST ('${req.keyword}*' IN BOOLEAN MODE)`,
         );
       } else {
         const others_filter = await queryBuilder
@@ -212,7 +212,7 @@ export class NoteService {
           body: { keyword: req.keyword, user_id: req.user_id },
         });
         const _ = require('lodash');
-        return _.intersectionBy(others_filter, keyword_filter, 'id');
+        return _.intersectionBy(keyword_filter, others_filter, 'id');
       }
     }
     return await queryBuilder
@@ -236,18 +236,13 @@ export class NoteService {
       .andWhere(
         new Brackets((qb) => {
           qb.where(
-            `MATCH(note.title) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
+            `MATCH(note.title) AGAINST ('${searchQuery}*' IN BOOLEAN MODE)`,
           ).orWhere(
-            new Brackets((qb) => {
-              qb.where(
-                `note.content REGEXP '>([^<]*)${searchQuery}([^>]*)<'`,
-              ).andWhere(
-                `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
-              );
-            }),
+            `MATCH(note.content) AGAINST ('${searchQuery}*' IN BOOLEAN MODE)`,
           );
         }),
       )
+      .limit(5)
       .getRawMany();
     const notes_matching_image_content =
       await this.imageContentService.searchImageContent(req);
@@ -255,8 +250,8 @@ export class NoteService {
     console.log(notes_matching_content);
     console.log(notes_matching_image_content);
     return _.unionBy(
-      notes_matching_content,
       notes_matching_image_content,
+      notes_matching_content,
       'id',
     );
   }
@@ -425,9 +420,7 @@ export class NoteService {
       backlinks: merged_note.backlinks.concat(current_note.backlinks),
       headlinks: merged_note.headlinks.concat(current_note.headlinks),
       file_uploads: merged_note.file_uploads.concat(current_note.file_uploads),
-      binary_update_data: Buffer.from(
-        Y.encodeStateAsUpdate(ydoc),
-      )
+      binary_update_data: Buffer.from(Y.encodeStateAsUpdate(ydoc)),
     };
 
     await this.noteRepository.save(dto);
@@ -436,7 +429,10 @@ export class NoteService {
   }
 
   async updateIsAnyone(id: string, is_anyone: ShareMode, date: Date) {
-    return await this.noteRepository.update(id, { is_anyone, shared_date: date });
+    return await this.noteRepository.update(id, {
+      is_anyone,
+      shared_date: date,
+    });
   }
 
   async findAttachmentsOfNote(id: string) {
@@ -461,7 +457,7 @@ export class NoteService {
       select: {
         id: true,
         title: true,
-        is_anyone: true
+        is_anyone: true,
         // content: true,
         // childNotes: {
         //   id: true,
@@ -474,7 +470,7 @@ export class NoteService {
       where: {
         id: Equal(id),
         is_anyone: Not(IsNull()),
-      }
+      },
       // },
       // relations: {
       //   childNotes: true,
