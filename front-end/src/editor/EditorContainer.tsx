@@ -189,7 +189,7 @@ function EditorContainer({ editorRef }) {
       },
       autoPaging: "text",
       margin: [20, 0, 20, 16],
-      html2canvas: { scale: 0.23 },
+      html2canvas: { scale: 0.235 },
     });
     setLoadingExport(false);
   };
