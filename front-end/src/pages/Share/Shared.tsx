@@ -19,7 +19,7 @@ export const Shared = () => {
       if (responseData?.is_public) {
         createPublicCollaborator(id, auth.email);
       }
-      if (responseData.share_mode == "view") {
+      if (responseData?.share_mode == "view") {
         setEditable(false);
       } else {
         setEditable(true);

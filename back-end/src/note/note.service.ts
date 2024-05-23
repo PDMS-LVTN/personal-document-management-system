@@ -407,12 +407,16 @@ export class NoteService {
     });
 
     const ydoc = new Y.Doc()
-    Y.applyUpdate(ydoc, merged_note.binary_update_data)
-    Y.applyUpdate(ydoc, current_note.binary_update_data)
+    if (merged_note.binary_update_data) {
+      Y.applyUpdate(ydoc, merged_note.binary_update_data)
+    }
+    if (current_note.binary_update_data) {
+      Y.applyUpdate(ydoc, current_note.binary_update_data)
+    }
 
     const dto = {
       ...merged_note,
-      content: merged_note.content.concat(current_note.content),
+      content: merged_note.content?.concat(current_note.content || ''),
       tags: merged_note.tags.concat(current_note.tags),
       image_contents: merged_note.image_contents.concat(
         current_note.image_contents,
