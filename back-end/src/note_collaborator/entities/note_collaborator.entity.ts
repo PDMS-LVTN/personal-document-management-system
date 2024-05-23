@@ -29,4 +29,7 @@ export class NoteCollaborator {
   })
   @JoinColumn({ name: 'note_id' })
   note?: Note;
+
+  @Column({ type: "timestamp", nullable: true })
+  shared_date: Date;
 }

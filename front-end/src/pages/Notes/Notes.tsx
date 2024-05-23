@@ -48,7 +48,7 @@ const Notes = ({
   const [term, setTerm] = useState("");
   const [toggle, setToggle] = useState<boolean>(false);
   const treeRef = useRef<TreeApi<Note>>(null);
-  const [data, setData, controller] = useTree(notes, actions);
+  const [data, setData, controller] = useTree(notes);
   const currentNote = useApp((state) => state.currentNote);
   const isMerge = useApp((state) => state.isMerge);
   const setIsMerge = useApp((state) => state.setIsMerge);
@@ -75,7 +75,7 @@ const Notes = ({
       window.note_tree.delete(currentNote.id);
       await actions.mergeNotes(currentNote.id, id);
       const notes = await actions.getAllNotes(controller);
-      await setData(notes);
+      setData(notes);
       setIsMerge(false);
     }
   };
@@ -100,13 +100,14 @@ const Notes = ({
   };
 
   useEffect(() => {
-    if (currentNote) {
-      treeRef.current.focus(currentNote.id);
-    }
+    // if (currentNote) {
+    //   treeRef.current.focus(currentNote.id);
+    // }
     window.note_tree = treeRef.current;
   }, []);
 
   const { onOpen, isOpen, onClose } = useDisclosure();
+  const [inputValue, setInputValue] = useState("");
 
   return (
     <>
@@ -238,6 +239,8 @@ const Notes = ({
                   type="file"
                   className="upload-file"
                   name="upload_file"
+                  value={inputValue}
+                  onClick={() => setInputValue("")}
                   onChange={handleInputChange}
                 />
               </MenuItem>
@@ -308,6 +311,7 @@ const Notes = ({
         }
         childrenAccessor={(d) => d.childNotes}
         onActivate={handleActivate}
+        selection={currentNote?.id || "0"}
       >
         {Node}
       </Tree>

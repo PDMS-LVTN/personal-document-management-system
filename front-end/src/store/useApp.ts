@@ -11,7 +11,8 @@ export interface Note {
     parent_id: string,
     user_id?: string,
     childNotes?: Note[]
-    parentPath?: []
+    parentPath?: [],
+    shared: boolean
 }
 
 interface stackUndoRedo {
@@ -49,7 +50,7 @@ export const useApp = create<AppStore>()(devtools(persist((set) => ({
     currentNote: null,
     setCurrentNote: (note) => set((state) => ({ ...state, currentNote: note })),
     // this method need to reset every state when user is logged out
-    clean: () => set({ expired: false, currentNote: null, allTags: [], currentTags: [], stackHistory: { stackUndo: [], stackRedo: [] }}),
+    clean: () => set({ expired: false, currentNote: null, allTags: [], currentTags: [], stackHistory: { stackUndo: [], stackRedo: [] } }),
     allTags: [],
     setAllTags: (tags) => set((state) => ({ ...state, allTags: tags })),
     currentTags: [],

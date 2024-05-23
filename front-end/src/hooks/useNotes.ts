@@ -8,7 +8,11 @@ import { tempState } from "@/editor/lib/api";
 import { useApi } from "./useApi";
 import { convertToHtml } from "mammoth";
 import { ShareMode } from "@/lib/data/constant";
-import { EditorState } from "@tiptap/pm/state";
+import { TiptapTransformer } from "@hocuspocus/transformer";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import ExtensionKit from "@/editor/extensions/extension-kit";
+import { generateJSON } from "@tiptap/react";
+import { HocuspocusProvider } from "@hocuspocus/provider";
 
 const useNotes = () => {
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -28,16 +32,21 @@ const useNotes = () => {
   const setCurrentTags = useApp((state) => state.setCurrentTags);
 
   const callApi = useApi();
+  const navigate = useNavigate();
+  const location = useLocation()
+  const { id } = useParams()
+
+  const extensions = ExtensionKit()
 
   const createNote = async (id: string, title?: string) => {
-    const initialContent = "<p>Start writing your notes</p>";
+    // const initialContent = "<p>Start writing your notes</p>";
     try {
       const response = await axiosJWT.post(
         APIEndPoints.CREATE_NOTE,
         JSON.stringify({
           user_id: auth.id,
           title: title || "Untitled",
-          content: initialContent,
+          // content: initialContent,
           read_only: false,
           size: 0,
           parent_id: id,
@@ -46,21 +55,23 @@ const useNotes = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log(response.data);
       const currentNote = {
         id: response.data.id,
         title: response.data.title,
-        content: response.data.content,
+        // content: response.data.content,
         parent_id: response.data.parent_id,
         is_favorited: false,
         is_pinned: false,
         childrenNotes: null,
       };
-      setCurrentNote(currentNote);
-      stackHistory.stackUndo.push(response.data.id);
-      setStackHistory({...stackHistory, stackUndo: stackHistory.stackUndo});
+      // setCurrentNote(currentNote);
+      // stackHistory.stackUndo.push(response.data.id);
+      // stackHistory.stackUndo.push(location.pathname);
+      // setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
       // ref?.current?.setMarkdown(markdown);
-      window.editor?.commands.setContent(response.data.content);
+      // window.editor?.commands.setContent(response.data.content);
+      // navigate(`${response.data.id}`)
+      // clickANoteHandler(response.data.id)
       return currentNote;
     } catch (error) {
       console.log(error);
@@ -71,10 +82,8 @@ const useNotes = () => {
     }
   };
 
-  const updateNote = async (title?) => {
+  const updateNote = async (props: { title?: string, id?: string } = {}) => {
     setLoading(true);
-    console.log(tempState.waitingImage);
-    const editorContent = window.editor.getHTML();
     const formData = new FormData();
     // Append each of the files
     tempState.waitingImage.forEach((file) => {
@@ -83,20 +92,24 @@ const useNotes = () => {
     formData.append(
       "data",
       JSON.stringify({
-        content: editorContent,
-        title: title ? title : currentNote?.title,
+        title: props.title || currentNote?.title,
       })
     );
     try {
       const response = await axiosJWT.patch(
-        `note/${currentNote.id}`,
+        `note/${props.id || currentNote?.id}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      console.log(response);
-      await setCurrentNoteHandler(response.data);
+
+      if (props.id && props.id !== currentNote.id) {
+        clickANoteHandler(props.id)
+      }
+      else {
+        setCurrentNoteHandler(response.data);
+      }
       // toast({
       //   title: `Your note has been updated. 🙂`,
       //   status: "success",
@@ -120,12 +133,16 @@ const useNotes = () => {
       await axiosJWT.delete(`note/${id}`, {
         headers: { "Content-Type": "application/json" },
       });
-      setCurrentNote(null);
+      if (id == currentNote.id) {
+        setCurrentNote(null)
+        navigate('.', { state: { delete: true } })
+      }
       toast({
         title: `Your note has been deleted.`,
         status: "success",
         isClosable: true,
       });
+
     } catch (error) {
       if (error.response?.status === 403 || error.response?.status === 401) {
         setAuth(undefined);
@@ -145,7 +162,7 @@ const useNotes = () => {
           signal: controller.signal,
         }
       );
-      console.log(response.data);
+      // console.log(response.data);
       // setLoading(false);
       return response.data;
     } catch (error) {
@@ -197,9 +214,10 @@ const useNotes = () => {
         }
       );
       console.log(response.data);
-      setCurrentNoteHandler(response.data);
+      // setCurrentNoteHandler(response.data);
+      clickANoteHandler(response.data.id)
       setLoading(false);
-      return response.data;
+      // return response.data;
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -208,27 +226,31 @@ const useNotes = () => {
 
   const clickANoteUndo = async () => {
     stackHistory.stackRedo.push(stackHistory.stackUndo.pop());
-    const noteItem = await getANote(stackHistory.stackUndo.at(-1));
-    setStackHistory({stackUndo: stackHistory.stackUndo, stackRedo: stackHistory.stackRedo});
-    setCurrentNoteHandler(noteItem);
-    resetContentAndSelection(noteItem)
+    const path = stackHistory.stackUndo.at(-1)
+    setStackHistory({ stackUndo: stackHistory.stackUndo, stackRedo: stackHistory.stackRedo });
+    navigate(path)
+    // setCurrentNoteHandler(noteItem);
+    // resetContentAndSelection(noteItem)
   };
 
   const clickANoteRedo = async () => {
-    const noteItem = await getANote(stackHistory.stackRedo.at(-1));
+    const path = stackHistory.stackRedo.at(-1)
     stackHistory.stackUndo.push(stackHistory.stackRedo.pop());
-    setStackHistory({stackUndo: stackHistory.stackUndo, stackRedo: stackHistory.stackRedo});
-    setCurrentNoteHandler(noteItem);
-    resetContentAndSelection(noteItem)
+    setStackHistory({ stackUndo: stackHistory.stackUndo, stackRedo: stackHistory.stackRedo });
+    navigate(path)
+    // setCurrentNoteHandler(noteItem);
+    // resetContentAndSelection(noteItem)
   };
 
-  const clickANoteHandler = async (id) => {
-    if (currentNote && id===currentNote.id) return;
-    const noteItem = await getANote(id);
-    stackHistory.stackUndo.push(id);
-    setStackHistory({...stackHistory, stackUndo: stackHistory.stackUndo});
-    setCurrentNoteHandler(noteItem);
-    resetContentAndSelection(noteItem)
+  const clickANoteHandler = async (noteId: string, atRoot: boolean = false) => {
+    if (currentNote && noteId === currentNote.id) return;
+    // const noteItem = await getANote(id);
+    // stackHistory.stackUndo.push(id);
+    const pathname = id ? `${location.pathname.substring(0, location.pathname.lastIndexOf('/'))}/${noteId}` : `${location.pathname}/${noteId}`
+    stackHistory.stackUndo.push(pathname);
+    setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
+    // setCurrentNoteHandler(noteItem);
+    resetContentAndSelection(noteId, atRoot)
   };
 
   const setCurrentNoteHandler = (noteItem) => {
@@ -241,33 +263,23 @@ const useNotes = () => {
       is_pinned: noteItem.is_pinned,
       childNotes: noteItem.childNotes,
       parentPath: noteItem.parentPath,
+      shared: location.pathname.includes('shared') ? true : false
     });
     const tags = noteItem.tags?.map((tag) => {
       return { value: tag.description, label: tag.description, id: tag.id };
     });
     setCurrentTags(tags);
-    // ref?.current?.setMarkdown(noteItem.content);
-    // window.editor?.commands.setContent(noteItem.content);
-    return noteItem;
   };
 
-  function resetContentAndSelection(noteItem) {
-    // Capture the current selection
-    // const currentSelection = window.editor?.state?.selection;
 
-    // Reset the content
-    window.editor?.commands.setContent(noteItem.content);
 
-    // Create a new editor state while preserving the old selection
-    // const newEditorState = EditorState.create({
-    //   doc: window.editor.state.doc,
-    //   plugins: window.editor.state.plugins,
-    //   selection: currentSelection
-    // });
-
-    // Update the editor state
-    // window.editor.view.updateState(newEditorState);
-    window.note_tree?.select(noteItem?.id)
+  function resetContentAndSelection(id: string, atRoot: boolean) {
+    if (atRoot) {
+      navigate(`/notes/${id}`)
+      return
+    }
+    // /search needs location.state.data
+    navigate(`${id}`, { state: { data: location.state?.data } })
   }
 
   const handleSearch = async (keyword) => {
@@ -314,6 +326,8 @@ const useNotes = () => {
     temp.waitingImages.push(newFile);
     return group[0].replace(/src="[^"]+"/, `src="${url}"`);
   }
+
+  // BUG: rename and import
 
   const importNote = async (parentId, file) => {
     setLoading(true);
@@ -365,19 +379,30 @@ const useNotes = () => {
       const response = await axiosJWT.post(`note/import`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      const doc = TiptapTransformer.toYdoc(generateJSON(response.data.content, extensions), 'default', extensions)
+      new HocuspocusProvider({
+        url: "ws://127.0.0.1:1234",
+        name: response.data.id,
+        document: doc,
+        preserveConnection: false,
+      });
+      doc.destroy()
+
       const currentNote = {
         id: response.data.id,
         title: title,
-        content: response.data.content,
+        // content: response.data.content,
         parent_id: response.data.parent_id,
         is_favorited: false,
         is_pinned: false,
       };
-      setCurrentNote(currentNote);
-      stackHistory.stackUndo.push(response.data.id);
-      setStackHistory({...stackHistory, stackUndo: stackHistory.stackUndo});
-      window.editor.commands.setContent(tempState.content);
+      // setCurrentNote(currentNote);
+      // stackHistory.stackUndo.push(response.data.id);
+      // stackHistory.stackUndo.push(location.pathname);
+      // setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
+      // window.editor.commands.setContent(tempState.content);
       setLoading(false);
+      // clickANoteHandler(response.data.id)
       return currentNote;
     } catch (error) {
       setLoading(false);
@@ -409,18 +434,6 @@ const useNotes = () => {
     setLoading(false);
     return responseData;
   };
-
-  const getAllSharedNotes = async () => {
-    setLoading(true);
-    // const options = {
-    //   method: "POST",
-    //   data: { user_id: auth.id, keyword: keyword },
-    // };
-    // const { responseData } = await callApi(APIEndPoints.SEARCH, options);
-    setLoading(false);
-    // return responseData;
-    return []
-  }
 
   const getAttachments = async (noteId: string) => {
     const options = {
@@ -463,10 +476,24 @@ const useNotes = () => {
     const options = {
       method: "PATCH",
       data: {
-        is_anyone
+        is_anyone,
+        date: new Date()
       }
     }
     const { responseData } = await callApi(`note/is_anyone/${noteId}`, options);
+    return responseData
+  }
+
+  const updateCollaboratorPermission = async (noteId: string, email: string, mode: ShareMode) => {
+    const options = {
+      method: "POST",
+      data: {
+        share_mode: mode,
+        email,
+        date: new Date()
+      }
+    }
+    const { responseData } = await callApi(`note_collaborator/${noteId}`, options);
     return responseData
   }
 
@@ -484,12 +511,13 @@ const useNotes = () => {
       handelFilterNotes,
       mergeNotes,
       moveNote,
-      getAllSharedNotes,
       getAttachments,
       removeNoteCollaborator,
       findCollaboratorsOfNote,
       addCollaborator,
       updateGeneralPermission,
+      updateCollaboratorPermission,
+      setCurrentNoteHandler,
       clickANoteUndo,
       clickANoteRedo
     },

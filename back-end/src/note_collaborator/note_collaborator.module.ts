@@ -5,9 +5,10 @@ import { NoteCollaborator } from './entities/note_collaborator.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Note } from '../note/entities/note.entity';
 import { User } from '../user/entities/user.entity';
+import { PublicCollaborator } from '../public_collaborator/entities/public_collaborator.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([NoteCollaborator, Note, User])],
+  imports: [TypeOrmModule.forFeature([NoteCollaborator, Note, User, PublicCollaborator])],
   controllers: [NoteCollaboratorController],
   providers: [NoteCollaboratorService],
 })

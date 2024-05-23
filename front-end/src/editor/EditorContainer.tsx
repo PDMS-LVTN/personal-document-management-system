@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
-import Editor from "./Editor";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import ConfirmModal from "../components/ConfirmModal";
 
 import Montserract from "../assets/fonts/Montserrat/Montserrat-Regular.ttf";
@@ -61,8 +60,7 @@ import {
   LockKeyhole,
   Paperclip,
   Share2,
-  Link as LinkIcon
-
+  Link as LinkIcon,
 } from "lucide-react";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
 import { jsPDF } from "jspdf";
@@ -73,6 +71,7 @@ import useModal from "@/hooks/useModal";
 import SharedModal from "@/components/SharedModal";
 import { MdCreateNewFolder } from "react-icons/md";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import Editor from "./Editor";
 
 function EditorContainer({ editorRef }) {
   const currentNote = useApp((state) => state.currentNote);
@@ -190,7 +189,7 @@ function EditorContainer({ editorRef }) {
       },
       autoPaging: "text",
       margin: [20, 0, 20, 16],
-      html2canvas: { scale: 0.23 },
+      html2canvas: { scale: 0.235 },
     });
     setLoadingExport(false);
   };
@@ -216,7 +215,9 @@ function EditorContainer({ editorRef }) {
   const [modal, showModal] = useModal("xl");
 
   const handleCopyLink = () => {
-    const text = `${import.meta.env.VITE_CLIENT_PATH}/note/${currentNote.id}`;
+    const text = `${import.meta.env.VITE_CLIENT_PATH}/note/${
+      currentNote.id
+    }/shared/public`;
     navigator.clipboard.writeText(text);
   };
 
@@ -229,7 +230,7 @@ function EditorContainer({ editorRef }) {
       <Modal isOpen={isLoading} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalBody display="flex" justifyContent="center">
+          <ModalBody display="flex" justifyContent="center" alignItems="center">
             <Spinner
               thickness="4px"
               speed="0.65s"
@@ -276,9 +277,9 @@ function EditorContainer({ editorRef }) {
         close={handleCloseConfirm}
         action={"delete"}
       />
-      {currentNote && !location.pathname.includes("shared") && (
+      {currentNote ? (
         <div className="flex justify-between ml-7">
-          <div className="flex">
+          <div className="flex items-center">
             {stackHistory.stackUndo?.length <= 1 ? (
               <IoChevronBack
                 size={20}
@@ -335,129 +336,144 @@ function EditorContainer({ editorRef }) {
               color="var(--brand400)"
               style={{ alignSelf: "center", marginRight: "8px" }}
             />
-            <Box className="flex" style={{maxWidth:'100%' ,overflowX: 'auto'}}>
-              {currentNote.parentPath?.map((parent, id) => {
-                return (
-                  <>
-                    <Link
-                      key={id}
-                      style={{
-                        fontSize: "15px",
-                        // maxWidth: "180px",
-                        alignSelf: "center",
-                      }}
-                      className="path-item line-clamp-1"
-                      onClick={() => actions.clickANoteHandler(parent.id)}
-                    >
-                      {parent.title}
-                    </Link>
-                    <Menu>
-                      {({ isOpen }) => (
-                        <>
-                          <MenuButton
-                            as={IconButton}
-                            alignSelf={"center"}
-                            size={"xs"}
-                            _hover={{ bg: "gray.100" }}
-                            aria-label="Options"
-                            style={{ margin: "0 2px" }}
-                            icon={
-                              isOpen ? (
-                                <ChevronDownIcon
-                                  size={15}
-                                  style={{ margin: "0 auto" }}
-                                />
-                              ) : (
-                                <ChevronRightIcon
-                                  size={15}
-                                  style={{ margin: "0 auto" }}
-                                />
-                              )
-                            }
-                            variant="unstyled"
-                          ></MenuButton>
-                          <MenuList>
-                            {parent.childNotes?.map((child, id) => {
-                              return (
-                                <MenuItem
-                                  key={id}
-                                  onClick={() =>
-                                    actions.clickANoteHandler(child.id)
-                                  }
-                                >
-                                  {child.title}
-                                </MenuItem>
-                              );
-                            })}
-                          </MenuList>
-                        </>
-                      )}
-                    </Menu>
-                  </>
-                );
-              })}
-            </Box>
-            <Link
+            {!currentNote.shared ? (
+              <>
+                <Box
+                  className="flex"
+                  style={{ maxWidth: "100%", overflowX: "auto" }}
+                >
+                  {currentNote.parentPath?.map((parent, id) => {
+                    return (
+                      <Fragment key={id}>
+                        <Link
+                          style={{
+                            fontSize: "15px",
+                            // maxWidth: "180px",
+                            alignSelf: "center",
+                          }}
+                          className="path-item line-clamp-1"
+                          onClick={() =>
+                            actions.clickANoteHandler(parent.id, true)
+                          }
+                        >
+                          {parent.title}
+                        </Link>
+                        <Menu>
+                          {({ isOpen }) => (
+                            <>
+                              <MenuButton
+                                as={IconButton}
+                                alignSelf={"center"}
+                                size={"xs"}
+                                _hover={{ bg: "gray.100" }}
+                                aria-label="Options"
+                                style={{ margin: "0 2px" }}
+                                icon={
+                                  isOpen ? (
+                                    <ChevronDownIcon
+                                      size={15}
+                                      style={{ margin: "0 auto" }}
+                                    />
+                                  ) : (
+                                    <ChevronRightIcon
+                                      size={15}
+                                      style={{ margin: "0 auto" }}
+                                    />
+                                  )
+                                }
+                                variant="unstyled"
+                              ></MenuButton>
+                              <MenuList>
+                                {parent.childNotes?.map((child, id) => {
+                                  return (
+                                    <MenuItem
+                                      key={id}
+                                      onClick={() =>
+                                        actions.clickANoteHandler(
+                                          child.id,
+                                          true
+                                        )
+                                      }
+                                    >
+                                      {child.title}
+                                    </MenuItem>
+                                  );
+                                })}
+                              </MenuList>
+                            </>
+                          )}
+                        </Menu>
+                      </Fragment>
+                    );
+                  })}
+                </Box>
+                <Link
                   style={{
                     fontSize: "15px",
                     // maxWidth: "180px",
                     alignSelf: "center",
                   }}
                   className="path-item line-clamp-1"
-                  onClick={() => actions.clickANoteHandler(currentNote.id)}
+                  onClick={() =>
+                    actions.clickANoteHandler(currentNote.id, true)
+                  }
                 >
                   {currentNote.title}
-            </Link>
-            {currentNote.childNotes?.length > 0 && (
-                <Menu>
-                  {({ isOpen }) => (
-                    <>
-                      <MenuButton
-                        as={IconButton}
-                        alignSelf={"center"}
-                        size={"xs"}
-                        _hover={{ bg: "gray.100" }}
-                        aria-label="Options"
-                        style={{ marginLeft: "2px" }}
-                        icon={
-                          isOpen ? (
-                            <ChevronDownIcon
-                              size={15}
-                              style={{ margin: "0 auto" }}
-                            />
-                          ) : (
-                            <ChevronRightIcon
-                              size={15}
-                              style={{ margin: "0 auto" }}
-                            />
-                          )
-                        }
-                        variant="unstyled"
-                      ></MenuButton>
-                      <MenuList>
-                        {currentNote.childNotes.map((child, id) => {
-                          return (
-                            <MenuItem
-                              key={id}
-                              onClick={() =>
-                                actions.clickANoteHandler(child.id)
-                              }
-                            >
-                              {child.title}
-                            </MenuItem>
-                          );
-                        })}
-                      </MenuList>
-                    </>
-                  )}
-                </Menu>
+                </Link>
+                {currentNote.childNotes?.length > 0 && (
+                  <Menu>
+                    {({ isOpen }) => (
+                      <>
+                        <MenuButton
+                          as={IconButton}
+                          alignSelf={"center"}
+                          size={"xs"}
+                          _hover={{ bg: "gray.100" }}
+                          aria-label="Options"
+                          style={{ marginLeft: "2px" }}
+                          icon={
+                            isOpen ? (
+                              <ChevronDownIcon
+                                size={15}
+                                style={{ margin: "0 auto" }}
+                              />
+                            ) : (
+                              <ChevronRightIcon
+                                size={15}
+                                style={{ margin: "0 auto" }}
+                              />
+                            )
+                          }
+                          variant="unstyled"
+                        ></MenuButton>
+                        <MenuList>
+                          {currentNote.childNotes.map((child, id) => {
+                            return (
+                              <MenuItem
+                                key={id}
+                                onClick={() =>
+                                  actions.clickANoteHandler(child.id, true)
+                                }
+                              >
+                                {child.title}
+                              </MenuItem>
+                            );
+                          })}
+                        </MenuList>
+                      </>
+                    )}
+                  </Menu>
+                )}
+              </>
+            ) : (
+              <Text>{currentNote.title}</Text>
             )}
           </div>
-          <div className="flex justify-start items-center ml-8"></div>
+
           <Flex justifyContent="right">
             <Tooltip label="Delete note">
               <Button
-                isDisabled={currentNote === undefined}
+                isDisabled={currentNote.shared}
                 variant="ghost"
                 style={{
                   height: "40px",
@@ -474,7 +490,7 @@ function EditorContainer({ editorRef }) {
             </Tooltip>
             <Tooltip label="Save note">
               <Button
-                isDisabled={currentNote === undefined}
+                isDisabled={currentNote.shared}
                 variant="ghost"
                 style={{
                   height: "40px",
@@ -494,7 +510,7 @@ function EditorContainer({ editorRef }) {
             </Tooltip>
             <Tooltip label="Favorite">
               <Button
-                isDisabled={currentNote === undefined}
+                isDisabled={currentNote.shared}
                 variant="ghost"
                 style={{
                   height: "40px",
@@ -504,7 +520,7 @@ function EditorContainer({ editorRef }) {
                 }}
                 onClick={updateFavorite}
               >
-                {currentNote?.is_favorited ? (
+                {currentNote?.is_favorited && !currentNote.shared ? (
                   <FaStar size={20} color="var(--brand400)" />
                 ) : (
                   <FaRegStar size={20} color="var(--brand400)" />
@@ -514,8 +530,7 @@ function EditorContainer({ editorRef }) {
             <Tooltip label="Focus note">
               <Button
                 isDisabled={
-                  currentNote === undefined ||
-                  !location.pathname.includes("notes")
+                  currentNote.shared || !location.pathname.includes("note")
                 }
                 variant="ghost"
                 style={{
@@ -540,19 +555,38 @@ function EditorContainer({ editorRef }) {
               ></MenuButton>
               <MenuList>
                 <MenuItem
-                  icon={<Expand size={20} color="var(--brand400)" style={{padding: '1px'}}/>}
+                  icon={
+                    <Expand
+                      size={20}
+                      color="var(--brand400)"
+                      style={{ padding: "1px" }}
+                    />
+                  }
                   onClick={() => setFullScreen(!isFullScreen)}
                 >
-                  Full screen
+                  Max width
                 </MenuItem>
                 <MenuItem
                   onClick={handelExportFile}
-                  icon={<TbFileExport size={20} color="var(--brand400)"  style={{padding: '1px'}}/>}
+                  icon={
+                    <TbFileExport
+                      size={20}
+                      color="var(--brand400)"
+                      style={{ padding: "1px" }}
+                    />
+                  }
                 >
                   Export note
                 </MenuItem>
                 <MenuItem
-                  icon={<Share2 size={20} color="var(--brand400)"  style={{padding: '1px'}}/>}
+                  icon={
+                    <Share2
+                      size={20}
+                      color="var(--brand400)"
+                      style={{ padding: "1px" }}
+                    />
+                  }
+                  isDisabled={currentNote.shared}
                   onClick={() =>
                     showModal(
                       `Share "${currentNote.title}"`,
@@ -572,20 +606,41 @@ function EditorContainer({ editorRef }) {
                   Share
                 </MenuItem>
                 <MenuItem
-                  icon={<LinkIcon size={20} color="var(--brand400)"  style={{padding: '1px'}}/>}
+                  icon={
+                    <LinkIcon
+                      size={20}
+                      color="var(--brand400)"
+                      style={{ padding: "1px" }}
+                    />
+                  }
+                  isDisabled={currentNote.shared}
                   onClick={handleCopyLink}
                 >
                   Copy link
                 </MenuItem>
                 <MenuItem
-                  icon={<LockKeyhole size={20} color="var(--brand400)"  style={{padding: '1px'}}/>}
+                  icon={
+                    <LockKeyhole
+                      size={20}
+                      color="var(--brand400)"
+                      style={{ padding: "1px" }}
+                    />
+                  }
+                  isDisabled={currentNote.shared}
                 >
                   Lock note
                 </MenuItem>
                 <MenuItem
-                  icon={<Paperclip size={20} color="var(--brand400)"  style={{padding: '1px'}}/>}
+                  icon={
+                    <Paperclip
+                      size={20}
+                      color="var(--brand400)"
+                      style={{ padding: "1px" }}
+                    />
+                  }
+                  isDisabled={currentNote.shared}
                   onClick={() => {
-                    showDrawer("Attachments", (onClose) => (
+                    showDrawer("Attachments", (_) => (
                       <AttachmentsDrawer
                         actions={actions}
                         // noteId={currentNote.id}
@@ -598,38 +653,44 @@ function EditorContainer({ editorRef }) {
               </MenuList>
             </Menu>
           </Flex>
-          <Flex
-            alignItems="center"
-            pos="absolute"
-            bottom={0}
-            zIndex={3}
-            left={0}
-            right={0}
-            p={2}
-          >
-            <Tooltip
-              shouldWrapChildren={true}
-              label="Your note belongs to these tags"
+          {!currentNote.shared && (
+            <Flex
+              alignItems="center"
+              pos="absolute"
+              bottom={0}
+              zIndex={3}
+              left={0}
+              right={0}
+              p={2}
             >
-              <IoMdPricetag size={30} color="var(--brand400)" />
-            </Tooltip>
-            <FormControl ml={3}>
-              <CreatableSelect
-                id="input-tags"
-                size={'md'}
-                isMulti
-                // name="tags"
-                options={allTags}
-                menuPlacement="top"
-                placeholder="Select some tags..."
-                value={currentTags}
-                isClearable={false}
-                onCreateOption={handleCreate}
-                onChange={handleChange}
-              />
-            </FormControl>
-          </Flex>
+              <Tooltip
+                shouldWrapChildren={true}
+                label="Your note belongs to these tags"
+              >
+                <IoMdPricetag size={30} color="var(--brand400)" />
+              </Tooltip>
+              <FormControl ml={3}>
+                <CreatableSelect
+                  id="input-tags"
+                  size={"md"}
+                  isMulti
+                  // name="tags"
+                  options={allTags}
+                  menuPlacement="top"
+                  placeholder="Select some tags..."
+                  value={currentTags}
+                  isClearable={false}
+                  onCreateOption={handleCreate}
+                  onChange={handleChange}
+                />
+              </FormControl>
+            </Flex>
+          )}
         </div>
+      ) : (
+        <Text pl="2em" pr="2em" pt="2em" color="text.inactive">
+          <strong>Select</strong> or <strong>Create</strong> a new note to edit
+        </Text>
       )}
       <Editor editorRef={editorRef} />
     </div>

@@ -4,20 +4,13 @@ import { useTags } from "../../hooks/useTags";
 import { Button, Flex, IconButton, Text, useToast } from "@chakra-ui/react";
 import { IoMdPricetag } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
-import {
-  Outlet,
-  useLocation,
-  useNavigate,
-  useOutletContext,
-} from "react-router-dom";
-import { ContextType } from "../../layouts/TreeAndEditorContainer";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useApp } from "../../store/useApp";
 
 const TagContainer = () => {
   const { getAllTags } = useTags();
   const navigate = useNavigate();
   const [isShowNotes, setIsShowNotes] = useState(false);
-  const { ref } = useOutletContext<ContextType>();
   const { deleteTag } = useTags();
   const location = useLocation();
   const setCurrentTags = useApp((state) => state.setCurrentTags);
@@ -46,7 +39,6 @@ const TagContainer = () => {
   };
 
   useEffect(() => {
-    console.log("tag container mounts");
     let isMounted = true;
     const controller = new AbortController();
     const loadData = async () => {
@@ -62,7 +54,6 @@ const TagContainer = () => {
   }, []);
 
   useEffect(() => {
-    console.log("here");
     if (!location.state || location.state?.isGoBack) setIsShowNotes(false);
   }, [location.state]);
 
@@ -85,7 +76,7 @@ const TagContainer = () => {
             pb={3}
             pl="2em"
             pr="2em"
-            backgroundColor={'transparent'}
+            backgroundColor={"transparent"}
             display="flex"
             justifyContent="flex-start"
             height="40px"
@@ -100,8 +91,9 @@ const TagContainer = () => {
               <IoMdPricetag color="var(--brand300)" size="24px" />
             </span>
             {/* <IoMdPricetag size={30} color="#7540EE" /> */}
-            <Text fontWeight="300" fontSize={"14px"}>{item.label}</Text>
-            
+            <Text fontWeight="300" fontSize={"14px"}>
+              {item.label}
+            </Text>
           </Button>
           <IconButton
             marginLeft={"auto"}
@@ -115,13 +107,12 @@ const TagContainer = () => {
             icon={<IoClose />}
             onClick={() => handleDeleteTag(item.id)}
           />
-          
         </Flex>
       );
     });
   };
 
-  if (isShowNotes) return <Outlet context={{ ref }} />;
+  if (isShowNotes) return <Outlet />;
   return <Tags renderResults={renderResults} />;
 };
 

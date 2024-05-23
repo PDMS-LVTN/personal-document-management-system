@@ -15,6 +15,7 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { FileUploadModule } from './file_upload/file_upload.module';
 import { NoteCollaboratorModule } from './note_collaborator/note_collaborator.module';
+import { PublicCollaboratorModule } from './public_collaborator/public_collaborator.module';
 import { MailerModule } from './mailer/mailer.module';
 
 @Module({
@@ -32,6 +33,7 @@ import { MailerModule } from './mailer/mailer.module';
       rootPath: join(__dirname, '..', 'uploads/image_content'),
     }),
     NoteCollaboratorModule,
+    PublicCollaboratorModule,
     MailerModule,
   ],
   controllers: [AppController],
@@ -43,4 +45,4 @@ import { MailerModule } from './mailer/mailer.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

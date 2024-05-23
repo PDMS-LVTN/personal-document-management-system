@@ -1,11 +1,7 @@
 import { Stack, Button } from "@chakra-ui/react";
-// import HelpIcon from "../assets/help-icon.svg";
-// import NoteIcon from "../assets/note-icon.svg";
-// import StarIcon from "../assets/star-icon.svg";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-// import { IoPricetagOutline } from "react-icons/io5";
-import { Share2, Star, StickyNote, Tag, Info } from "lucide-react";
+import { Star, StickyNote, Tag, Users } from "lucide-react";
 
 const SideBar = () => {
   const navigate = useNavigate();
@@ -35,17 +31,11 @@ const SideBar = () => {
       leftIcon: <Tag color="var(--chakra-colors-text-inactive)" size={20} />,
       leftIconColor: <Tag color="var(--brand600)" size={20} />,
     },
-    // {
-    //   text: "Shared with me",
-    //   path: "/shared/note",
-    //   leftIcon: <Share2 color="var(--chakra-colors-text-inactive)" size={25} />,
-    //   leftIconColor: <Share2 color="var(--brand600)" size={25} />,
-    // },
     {
-      text: "Help",
-      path: "/help",
-      leftIcon: <Info />,
-      leftIconColor: <Info />,
+      text: "Shared",
+      path: "/shared",
+      leftIcon: <Users color="var(--chakra-colors-text-inactive)" size={22} />,
+      leftIconColor: <Users color="var(--brand600)" size={22} />,
     },
   ];
 

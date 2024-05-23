@@ -160,11 +160,14 @@ const Node = ({
                 if (e.key === "Escape") node.reset();
                 if (e.key === "Enter") {
                   node.submit(e.currentTarget.value);
-                  setCurrentNote({
-                    ...currentNote,
+                  // setCurrentNote({
+                  //   ...currentNote,
+                  //   title: e.currentTarget.value,
+                  // });
+                  await actions.updateNote({
                     title: e.currentTarget.value,
+                    id: node.id,
                   });
-                  actions.updateNote(e.currentTarget.value);
                 }
               }}
               autoFocus
@@ -194,6 +197,7 @@ const Node = ({
           <MenuList>
             <MenuItem
               onClick={() => {
+                // e.stopPropagation();
                 setIsMerge(true);
                 tree.delete(node.id);
               }}
@@ -218,7 +222,8 @@ const Node = ({
               />
             </MenuItem>
             <MenuItem
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 node.edit();
               }}
             >

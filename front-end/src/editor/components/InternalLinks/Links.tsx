@@ -27,7 +27,7 @@ const LinkDisplay = ({ link, type, actions, initialShowContext, id }) => {
         <Button
           size="xs"
           onClick={() => {
-            actions.clickANoteHandler(link.id);
+            actions.clickANoteHandler(link.id, true);
           }}
         >
           {link.title}
@@ -48,7 +48,7 @@ const LinkDisplay = ({ link, type, actions, initialShowContext, id }) => {
               className="text-left hover:bg-slate-100 rounded-md p-2 mb-1 w-full text-xs"
               dangerouslySetInnerHTML={{ __html: ref.content }}
               onClick={async () => {
-                await actions.clickANoteHandler(link.id);
+                await actions.clickANoteHandler(link.id, true);
                 if (type === "back") {
                   const linksFoundFromId = document.querySelectorAll(
                     `[data-id="${id}"]`

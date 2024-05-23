@@ -2,20 +2,24 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import {
-  Between,
+  // Between,
   Brackets,
   Equal,
-  In,
+  // In,
   IsNull,
-  Repository,
+  Not,
+  // Repository,
   TreeRepository,
 } from 'typeorm';
 import { Note } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ImageContent } from '../image_content/entities/image_content.entity';
+// import { ImageContent } from '../image_content/entities/image_content.entity';
 import { ImageContentService } from '../image_content/image_content.service';
-import { Tag } from '../tag/entities/tag.entity';
+// import { Tag } from '../tag/entities/tag.entity';
 import { FileUploadService } from '../file_upload/file_upload.service';
+import { TiptapTransformer } from '@hocuspocus/transformer';
+import * as Y from "yjs";
+import { ShareMode } from 'src/note_collaborator/entities/note_collaborator.entity';
 
 require('dotenv').config();
 
@@ -28,7 +32,7 @@ export class NoteService {
     // private readonly imageContentRepository: Repository<ImageContent>,
     private readonly imageContentService: ImageContentService,
     private readonly uploadFileService: FileUploadService,
-  ) {}
+  ) { }
   private readonly logger = new Logger(NoteService.name);
 
   async createNote(createNoteDto: CreateNoteDto) {
@@ -343,6 +347,7 @@ export class NoteService {
 
   async importNote(files, req) {
     const data = JSON.parse(req.body.data);
+    // this.logger.debug(data)
     const newNote: CreateNoteDto = {
       title: data.title ? data.title : 'Untitled',
       user_id: data.user_id,
@@ -400,9 +405,18 @@ export class NoteService {
         file_uploads: true,
       },
     });
+
+    const ydoc = new Y.Doc()
+    if (merged_note.binary_update_data) {
+      Y.applyUpdate(ydoc, merged_note.binary_update_data)
+    }
+    if (current_note.binary_update_data) {
+      Y.applyUpdate(ydoc, current_note.binary_update_data)
+    }
+
     const dto = {
       ...merged_note,
-      content: merged_note.content.concat(current_note.content),
+      content: merged_note.content?.concat(current_note.content || ''),
       tags: merged_note.tags.concat(current_note.tags),
       image_contents: merged_note.image_contents.concat(
         current_note.image_contents,
@@ -411,6 +425,9 @@ export class NoteService {
       backlinks: merged_note.backlinks.concat(current_note.backlinks),
       headlinks: merged_note.headlinks.concat(current_note.headlinks),
       file_uploads: merged_note.file_uploads.concat(current_note.file_uploads),
+      binary_update_data: Buffer.from(
+        Y.encodeStateAsUpdate(ydoc),
+      )
     };
 
     await this.noteRepository.save(dto);
@@ -418,8 +435,8 @@ export class NoteService {
     return await this.findOneNote(req.merged_note_id);
   }
 
-  async updateIsAnyone(id: string, is_anyone: boolean) {
-    return await this.noteRepository.update(id, { is_anyone });
+  async updateIsAnyone(id: string, is_anyone: ShareMode, date: Date) {
+    return await this.noteRepository.update(id, { is_anyone, shared_date: date });
   }
 
   async findAttachmentsOfNote(id: string) {
@@ -444,30 +461,32 @@ export class NoteService {
       select: {
         id: true,
         title: true,
-        content: true,
-        childNotes: {
-          id: true,
-          title: true,
-        },
-        parent_id: true,
-        is_favorited: true,
-        is_pinned: true,
+        is_anyone: true
+        // content: true,
+        // childNotes: {
+        //   id: true,
+        //   title: true,
+        // },
+        // parent_id: true,
+        // is_favorited: true,
+        // is_pinned: true,
       },
       where: {
         id: Equal(id),
-        is_anyone: true,
-      },
-      relations: {
-        childNotes: true,
-        headlinks: true,
-        backlinks: true,
-        tags: true,
-      },
+        is_anyone: Not(IsNull()),
+      }
+      // },
+      // relations: {
+      //   childNotes: true,
+      //   headlinks: true,
+      //   backlinks: true,
+      //   tags: true,
+      // },
     });
     if (!note) {
       throw new UnauthorizedException();
     }
-    return note;
+    return { title: note.title, share_mode: note.is_anyone, note_id: note.id };
   }
 
   async linkNote(headlink_id: string, req) {

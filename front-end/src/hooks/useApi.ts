@@ -22,8 +22,8 @@ export const useApi = () => {
             console.log(error)
             if (error.response?.status === 403 || error.response?.status === 401) {
                 setAuth(undefined);
-                clean();
             }
+            clean();
             responseError = error
         }
 
