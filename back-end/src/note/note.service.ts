@@ -196,7 +196,7 @@ export class NoteService {
     if (req.keyword) {
       if (req.onlyTitle) {
         queryBuilder.andWhere(
-          `MATCH(note.title) AGAINST ('${req.keyword}*' IN BOOLEAN MODE)`,
+          `MATCH(note.title) AGAINST ('"${req.keyword}"' IN BOOLEAN MODE)`,
         );
       } else {
         const others_filter = await queryBuilder
@@ -236,13 +236,20 @@ export class NoteService {
       .andWhere(
         new Brackets((qb) => {
           qb.where(
-            `MATCH(note.title) AGAINST ('${searchQuery}*' IN BOOLEAN MODE)`,
+            `MATCH(note.title) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
           ).orWhere(
-            `MATCH(note.content) AGAINST ('${searchQuery}*' IN BOOLEAN MODE)`,
+            // new Brackets((qb) => {
+            //   qb.where(
+            //     `note.content REGEXP '>([^<]*)${searchQuery}([^>]*)<'`,
+            //   ).andWhere(
+            //     `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
+            //   );
+            // }),
+            `MATCH(note.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
           );
         }),
       )
-      .limit(5)
+      // .limit(5)
       .getRawMany();
     const notes_matching_image_content =
       await this.imageContentService.searchImageContent(req);

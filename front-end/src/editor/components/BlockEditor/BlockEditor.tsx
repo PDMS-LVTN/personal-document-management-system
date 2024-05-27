@@ -32,6 +32,7 @@ type TipTapProps = {
   className?;
   ydoc?;
   provider?;
+  searchTerm?;
 };
 // export const BlockEditor = ({ aiToken, ydoc, provider }: TiptapProps) => {
 export const BlockEditor = ({
@@ -41,6 +42,7 @@ export const BlockEditor = ({
   className,
   ydoc,
   provider,
+  searchTerm,
 }: TipTapProps) => {
   // const aiState = useAIState()
   const menuContainerRef = useRef(null);
@@ -75,6 +77,10 @@ export const BlockEditor = ({
     }
     if (location.pathname.includes("shared")) editor.setEditable(editable);
     else if (!editor.isEditable) editor.setEditable(true);
+    if (searchTerm?.keyword) editor.commands.setSearchTerm(searchTerm.keyword);
+    if (searchTerm?.images)
+      editor.commands.setHighlightedImage(searchTerm.images);
+    else editor.commands.setHighlightedImage([]);
   }, [editor, editable]);
 
   if (!editor) {

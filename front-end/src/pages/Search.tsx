@@ -1,9 +1,8 @@
 import { Button } from "@chakra-ui/button";
 import { Flex, Text } from "@chakra-ui/layout";
-// import { useEffect, useState } from "react";
+import { Kbd } from "@chakra-ui/react";
 import useNotes from "../hooks/useNotes";
-// import { ContextType } from "../layouts/TreeAndEditorContainer";
-import { useLocation, useOutletContext } from "react-router";
+import { useLocation } from "react-router";
 import moment from "moment";
 
 export const Search = () => {
@@ -11,7 +10,8 @@ export const Search = () => {
   // const [searchResults, setSearchResults] = useState([]);
   const { actions } = useNotes();
   const location = useLocation();
-  const searchResults = location.state?.data;
+  const searchResults = location.state?.data.results;
+  const keyword = location.state?.data.keyword;
 
   // useEffect(() => {
   //   setSearchResults(location.state.data);
@@ -24,7 +24,13 @@ export const Search = () => {
           <Text fontSize="2xl" fontWeight="600">
             Search results
           </Text>
-          <Text>{searchResults?.length || "0"} notes found</Text>
+          <span>
+            {searchResults?.length || "0"} notes found for &nbsp;
+            <Kbd>{keyword}</Kbd>
+          </span>
+          {/* <span>
+            
+          </span> */}
         </Flex>
       </Flex>
       {searchResults && searchResults.length ? (
@@ -46,8 +52,12 @@ export const Search = () => {
               // backgroundColor="brand.50"
               gap={2}
               onClick={async () => {
-                await actions.clickANoteHandler(item.id);
-                close();
+                await actions.clickANoteHandler(item.id, false, {
+                  matchedImages:
+                    item.image_content_paths &&
+                    item.image_content_paths.slice(1, -1).split(","),
+                });
+                // close();
               }}
             >
               <Text

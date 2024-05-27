@@ -242,15 +242,15 @@ const useNotes = () => {
     // resetContentAndSelection(noteItem)
   };
 
-  const clickANoteHandler = async (noteId: string, atRoot: boolean = false) => {
-    if (currentNote && noteId === currentNote.id) return;
+  const clickANoteHandler = async (noteId: string, atRoot: boolean = false, optional?) => {
+    if (currentNote && noteId === currentNote.id && id) return;
     // const noteItem = await getANote(id);
     // stackHistory.stackUndo.push(id);
     const pathname = id ? `${location.pathname.substring(0, location.pathname.lastIndexOf('/'))}/${noteId}` : `${location.pathname}/${noteId}`
     stackHistory.stackUndo.push(pathname);
     setStackHistory({ ...stackHistory, stackUndo: stackHistory.stackUndo });
     // setCurrentNoteHandler(noteItem);
-    resetContentAndSelection(noteId, atRoot)
+    resetContentAndSelection(noteId, atRoot, optional)
   };
 
   const setCurrentNoteHandler = (noteItem) => {
@@ -271,15 +271,13 @@ const useNotes = () => {
     setCurrentTags(tags);
   };
 
-
-
-  function resetContentAndSelection(id: string, atRoot: boolean) {
+  function resetContentAndSelection(id: string, atRoot: boolean, optional?) {
     if (atRoot) {
       navigate(`/notes/${id}`)
       return
     }
     // /search needs location.state.data
-    navigate(`${id}`, { state: { data: location.state?.data } })
+    navigate(`${id}`, { state: { data: location.state?.data, optional } })
   }
 
   const handleSearch = async (keyword) => {

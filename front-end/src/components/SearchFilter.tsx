@@ -63,7 +63,9 @@ const SearchFilter = ({ editorRef, close }) => {
 
   const handelSubmit = async () => {
     close();
-    navigate("/search", { state: { data: results } });
+    navigate("/search", {
+      state: { data: { results, keyword: valueForm.keyword } },
+    });
   };
 
   const handelReset = () => {
@@ -279,7 +281,9 @@ const SearchFilter = ({ editorRef, close }) => {
             <Button
               colorScheme="brand"
               variant={valueForm.isFavorite ? "solid" : "outline"}
-              onClick={(e)=> {handelFilter({ isFavorite: !valueForm.isFavorite })}}
+              onClick={(e) => {
+                handelFilter({ isFavorite: !valueForm.isFavorite });
+              }}
             >
               Favorite
             </Button>

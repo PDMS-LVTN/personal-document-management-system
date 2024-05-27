@@ -37,7 +37,7 @@ const SearchModal = ({ editorRef, close }) => {
           height="fit-content"
           gap={2}
           onClick={async () => {
-            await actions.clickANoteHandler(item.id);
+            await actions.clickANoteHandler(item.id, true);
             close();
           }}
         >
@@ -87,16 +87,15 @@ const SearchModal = ({ editorRef, close }) => {
   );
 
   const handleInputOnchange = (e) => {
-    const { value } = e.target;
-    console.log(value == "");
-    setKeyword(value.target);
+    const value = e.target.value;
+    setKeyword(value);
     debouncedHandleSearch(value);
   };
 
   const handleKeyInput = (e) => {
     if (e.key == "Enter") {
       close();
-      navigate("/search", { state: { data: results } });
+      navigate("/search", { state: { data: { results, keyword } } });
     }
   };
   return (
@@ -108,7 +107,7 @@ const SearchModal = ({ editorRef, close }) => {
           placeholder="What are you looking for?"
           onChange={handleInputOnchange}
           onKeyUp={handleKeyInput}
-          fontSize={'14px'}
+          fontSize={"14px"}
         />
         <InputRightElement pos="absolute" top={0}>
           <IoIosSearch size={20} color="var(--brand400)" />
