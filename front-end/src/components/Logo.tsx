@@ -21,7 +21,12 @@ const style = {
 function Logo({ type = "light" }) {
   return (
     <Box
-      style={{ display: "flex", gap: style[type].gap, alignItems: "center", justifyContent: "start" }}
+      style={{
+        display: "flex",
+        gap: style[type].gap,
+        alignItems: "center",
+        justifyContent: "start",
+      }}
       p="1em"
       pos="relative"
     >
@@ -30,12 +35,10 @@ function Logo({ type = "light" }) {
         border="3px solid white"
         borderRadius="10px"
         bg={style[type].background}
+        height="37px"
+        width="37px"
       >
-        <object
-          data="brand-icon-white.svg"
-          height={style[type].logoSize}
-          width={style[type].logoSize}
-        />
+        <img src="/brand-icon-white.svg" alt="logo" />
       </Box>
       <Text
         fontSize={style[type]?.size}
