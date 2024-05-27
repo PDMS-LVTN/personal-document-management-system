@@ -129,7 +129,7 @@ export class ImageContentService {
     });
   }
 
-  searchImageContent(req) {
+  async searchImageContent(req) {
     // Return all notes that match keyword and search results only for one user's image_content.
 
     // Using full text search of MySQL, QUERY EXPANSION MODE. Faster with index compared with LIKE commands.
@@ -137,8 +137,8 @@ export class ImageContentService {
     // "QUERY EXPANSION" will search with related keywords, multiple words will search for separated words.
     // "BOOLEAN MODE" can search for exact keywords, can not search with related keywords.
     const searchQuery = req.body.keyword;
-
-    return this.imageContentRepository
+    // const notes_matching_image_content =
+    return await this.imageContentRepository
       .createQueryBuilder('image_content')
       .innerJoinAndSelect('image_content.note', 'note', 'note.user_id = :id', {
         id: req.body.user_id,
@@ -148,11 +148,13 @@ export class ImageContentService {
         'note.title AS title',
         'note.created_at AS created_at',
         'note.updated_at AS updated_at',
+        'CONCAT("[", GROUP_CONCAT(image_content.path), "]") AS image_content_paths',
       ])
       .where(
         `MATCH(image_content.content) AGAINST ('"${searchQuery}"' IN BOOLEAN MODE)`,
         // `image_content.content REGEXP '>([^<]*)size([^>]*)<'`,
       )
+      .groupBy('note_ID')
       .getRawMany();
   }
 

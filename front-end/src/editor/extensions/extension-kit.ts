@@ -55,6 +55,8 @@ import { Mathematics } from '@tiptap-pro/extension-mathematics'
 import { useSuggestion } from './InternalLink/suggestion'
 import { InternalLink } from './InternalLink/InternalLink';
 import { DeletionTracking } from './DeletionTracking';
+import SearchAndReplace from './SearchAndReplace';
+import ImageHighlight from './SearchAndReplace/imageHighlight';
 
 // interface ExtensionKitProps {
 //   provider?: HocuspocusProvider | null
@@ -177,7 +179,12 @@ export const ExtensionKit = () => [
     },
     suggestion: useSuggestion(),
   }),
-  DeletionTracking()
+  DeletionTracking(),
+  SearchAndReplace.configure({
+    searchResultClass: "search-result", // class to give to found items. default 'search-result'
+    disableRegex: false, // also no need to explain
+  }),
+  ImageHighlight
 ]
 
 export default ExtensionKit
