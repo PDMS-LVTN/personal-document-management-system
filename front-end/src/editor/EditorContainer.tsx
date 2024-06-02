@@ -271,8 +271,8 @@ function EditorContainer({ editorRef }) {
           const id = window.note_tree?.focusedNode?.id;
           if (id) {
             window.note_tree.delete(id);
-            actions.deleteNote(currentNote.id);
           }
+          actions.deleteNote(currentNote.id);
         }}
         close={handleCloseConfirm}
         action={"delete"}
