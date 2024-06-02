@@ -92,19 +92,19 @@ const useNotes = () => {
     formData.append(
       "data",
       JSON.stringify({
-        title: props.title || currentNote?.title,
+        title: props?.title || currentNote?.title,
       })
     );
     try {
       const response = await axiosJWT.patch(
-        `note/${props.id || currentNote?.id}`,
+        `note/${props?.id || currentNote?.id}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
 
-      if (props.id && props.id !== currentNote.id) {
+      if (props?.id && (!currentNote || props.id !== currentNote.id)) {
         clickANoteHandler(props.id)
       }
       else {
@@ -128,21 +128,24 @@ const useNotes = () => {
     }
   };
 
-  const deleteNote = async (id) => {
+  const deleteNote = async (noteId) => {
     try {
-      await axiosJWT.delete(`note/${id}`, {
+      await axiosJWT.delete(`note/${noteId}`, {
         headers: { "Content-Type": "application/json" },
       });
-      if (id == currentNote.id) {
+      const index = location.pathname.lastIndexOf('/')
+      const path = location.pathname.substring(0, index)
+      if (noteId == currentNote?.id) {
         setCurrentNote(null)
-        navigate('.', { state: { delete: true } })
+        if (id)
+          navigate(path, { state: { delete: true } })
+        else navigate(location.pathname, { state: { delete: true } })
       }
       toast({
         title: `Your note has been deleted.`,
         status: "success",
         isClosable: true,
       });
-
     } catch (error) {
       if (error.response?.status === 403 || error.response?.status === 401) {
         setAuth(undefined);

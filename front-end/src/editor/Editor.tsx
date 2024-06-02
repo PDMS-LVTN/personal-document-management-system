@@ -37,7 +37,7 @@ function Editor({ editorRef }) {
       });
       setProvider(providerRef.current);
     }
-  }, [id]);
+  }, [id, location]);
 
   useEffect(() => {
     return () => {
