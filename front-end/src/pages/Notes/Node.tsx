@@ -22,7 +22,7 @@ import { AiFillFile } from "react-icons/ai";
 import { FaFileCirclePlus } from "react-icons/fa6";
 import useNotes from "@/hooks/useNotes";
 import { Modal, ModalOverlay, ModalContent, ModalBody } from "@chakra-ui/react";
-import useModal from "@/hooks/useModal";
+// import useModal from "@/hooks/useModal";
 import SharedModal from "@/components/SharedModal";
 
 const Node = ({
@@ -36,8 +36,8 @@ const Node = ({
   tree: TreeApi<Note>;
   dragHandle?: (el: HTMLDivElement | null) => void;
 }) => {
-  const setCurrentNote = useApp((state) => state.setCurrentNote);
-  const currentNote = useApp((state) => state.currentNote);
+  // const setCurrentNote = useApp((state) => state.setCurrentNote);
+  // const currentNote = useApp((state) => state.currentNote);
   const setIsMerge = useApp((state) => state.setIsMerge);
   const { isLoading, actions } = useNotes();
   // const [modal, showModal] = useModal("lg");

@@ -16,7 +16,7 @@ const useAxiosJWT = () => {
 
     useEffect(() => {
         // BUG: this still logged multiple times
-        console.log("use axios")
+        // console.log("use axios")
         const requestIntercept = axiosJWT.interceptors.request.use(
             config => {
                 config.headers["Authorization"] = "Bearer " + authRef.current.accessToken;
